@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% block content %}<main><h1>Affiliate Network Status</h1><p>Networks are activated only after the publisher account and required site approvals are complete.</p><ul>{% for n in networks %}<li>{{ n.name }} — {{ 'Active' if n.active else 'Not connected yet' }}</li>{% endfor %}</ul></main>{% endblock %}

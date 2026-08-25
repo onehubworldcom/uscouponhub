@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}{{ store.name }} Promo Code & Coupon Codes {{ current_year }} | US Coupon Hub{% endblock %}
+{% block description %}Explore {{ store.name }} promo codes, coupon codes, sale information and shopping tips for {{ current_year }}. Review current offers and store terms before checkout.{% endblock %}
+{% block content %}
+<nav class="breadcrumbs"><a href="/">Home</a> <span>›</span> <span>{{ store.name }} Coupons</span></nav>
+<section class="storehero">
+  <p class="eyebrow">{{ store.category|upper }} • SAVINGS GUIDE</p>
+  <h1>{{ store.name }} Promo Code & Coupon Codes {{ current_year }}</h1>
+  <p class="lead">Find a clear overview of {{ store.name }} savings opportunities, including promo codes, coupon codes, sales and shopping tips. Availability and eligibility can change, so always review the offer details before checkout.</p>
+  <div class="dealbox"><div><b>Looking for a current offer?</b><small>Check the promotion details and exclusions before using it.</small></div><a class="primarybtn" href="#offers">Browse savings →</a></div>
+</section>
+<section id="offers" class="content seo-grid">
+ <article>
+  <h2>Ways to save at {{ store.name }}</h2>
+  <p>Depending on the promotion, {{ store.name }} shoppers may find coupon codes, promo codes, seasonal sales, limited-time offers or other eligible discounts. A discount is not guaranteed for every product or order.</p>
+  <ul><li>Check for a promo code field during checkout.</li><li>Compare sale prices with any available promotion.</li><li>Read minimum-spend, product and expiration rules.</li><li>Confirm the final total before placing an order.</li></ul>
+  <h2>How to use a {{ store.name }} promo code</h2>
+  <ol><li>Select qualifying products or services.</li><li>Proceed to the store's checkout page.</li><li>Enter an eligible promo or coupon code if a code field is provided.</li><li>Review whether the savings were applied before completing your purchase.</li></ol>
+  <h2>{{ store.name }} sales and seasonal shopping</h2>
+  <p>Seasonal events can sometimes bring additional shopping opportunities. Check our <a href="/seasonal/black-friday/">Black Friday</a>, <a href="/seasonal/cyber-monday/">Cyber Monday</a> and <a href="/seasonal/halloween/">Halloween</a> pages for event-based shopping information.</p>
+ </article>
+ <aside class="seo-card"><h3>{{ store.name }} savings checklist</h3><p>Before you buy, compare the available offer with the current sale price and review exclusions.</p><a href="/search/?q={{ store.name|urlencode }}">Find related stores →</a></aside>
+</section>
+<section class="content"><h2>About {{ store.name }}</h2><p>{{ store.name }} is listed in the US Coupon Hub store directory to help shoppers discover relevant savings pages. Store promotions and policies can change, so information should be verified with the merchant before purchase.</p><h2>{{ store.name }} Coupon FAQ</h2><details><summary>Does {{ store.name }} have promo codes?</summary><p>Availability can change. Review current store promotions and terms before using any code.</p></details><details><summary>Can I combine discounts?</summary><p>Combination rules depend on the merchant and the specific promotion. Check the applicable terms.</p></details><details><summary>Why might a promo code not work?</summary><p>A code may be expired, limited to selected products, require a minimum purchase, or be restricted to certain customers or locations.</p></details></section>
+{% endblock %}
+
+{% if affiliate_match %}
+<section class="affiliate-box"><h2>Shop {{ store.name }}</h2><p>We found an approved affiliate destination for this store.</p><a class="button" href="/go/{{ store.slug }}/" rel="nofollow sponsored">Get Deal</a></section>
+{% else %}
+<section class="affiliate-box"><h2>Looking for {{ store.name }} deals?</h2><p>We only show affiliate links after a verified merchant match is approved.</p></section>
+{% endif %}

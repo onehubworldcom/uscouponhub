@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}US Coupon Hub | Coupons, Promo Codes & Deals{% endblock %}</title>
+<meta name="description" content="{% block description %}Find coupons, promo codes, discount codes and deals from popular stores across the United States.{% endblock %}">
+<link rel="canonical" href="https://uscouponhub.com{{ request.path }}">
+<meta name="theme-color" content="#0b2b59">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="topbar">🇺🇸 Made for smarter shopping across the United States <span>•</span> Updated deals & seasonal savings</div>
+<header>
+  <a class="brand" href="/"><img src="/static/img/logo.png" alt="US Coupon Hub logo"><span class="brand-text"><b>US</b>CouponHub<small>.com</small></span></a>
+  <nav><a href="/">Home</a><a href="/search/">Search Stores</a><a href="/categories/shopping/">Categories</a><a href="/seasonal/black-friday/">Black Friday</a></nav>
+</header>
+<main>{% block content %}{% endblock %}</main>
+<footer><div><strong>US Coupon Hub</strong><p>Coupon codes, promo codes, discounts and smarter seasonal savings.</p></div><div><a href="/categories/shopping/">Categories</a> · <a href="/seasonal/black-friday/">Black Friday</a> · <a href="/robots.txt">Robots</a></div><p>© {{ current_year }} USCouponHub.com</p><p><a href="/affiliate-disclosure/">Affiliate Disclosure</a></p></footer>
+</body></html>
