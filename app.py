@@ -7,7 +7,12 @@ BASE=os.path.dirname(os.path.abspath(__file__))
 DB=os.environ.get('DATABASE_PATH', os.path.join(BASE,'data','uscouponhub.db'))
 CSV_FILE=os.environ.get('STORES_CSV', os.path.join(BASE,'data','Stores_Final.csv'))
 app=Flask(__name__)
-
+@app.template_filter('format_number')
+def format_number(value):
+    try:
+        return f"{int(value):,}"
+    except (ValueError, TypeError):
+        return value
 STATES={'california':'California','texas':'Texas','florida':'Florida','new-york':'New York','illinois':'Illinois','pennsylvania':'Pennsylvania','ohio':'Ohio','georgia':'Georgia','north-carolina':'North Carolina','michigan':'Michigan'}
 CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chicago, IL','houston':'Houston, TX','phoenix':'Phoenix, AZ','philadelphia':'Philadelphia, PA','san-antonio':'San Antonio, TX','san-diego':'San Diego, CA','dallas':'Dallas, TX','san-jose':'San Jose, CA'}
 CATEGORIES=['fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
