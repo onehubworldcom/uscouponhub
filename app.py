@@ -15,7 +15,7 @@ def format_number(value):
         return value
 STATES={'california':'California','texas':'Texas','florida':'Florida','new-york':'New York','illinois':'Illinois','pennsylvania':'Pennsylvania','ohio':'Ohio','georgia':'Georgia','north-carolina':'North Carolina','michigan':'Michigan'}
 CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chicago, IL','houston':'Houston, TX','phoenix':'Phoenix, AZ','philadelphia':'Philadelphia, PA','san-antonio':'San Antonio, TX','san-diego':'San Diego, CA','dallas':'Dallas, TX','san-jose':'San Jose, CA'}
-CATEGORIES=['fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
+CATEGORIES=['shopping','fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
 RESERVED={'states','cities','categories','seasonal','search','sitemap.xml','robots.txt','static','favicon.ico'}
 
 def conn():
