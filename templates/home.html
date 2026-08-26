@@ -30,7 +30,26 @@
   </div>
 </section>
 <section class="trust-strip"><span>🔎 Searchable store directory</span><span>⚡ Fast, mobile-friendly pages</span><span>🇺🇸 Built for US shoppers</span><span>🎉 Seasonal deal hubs</span></section>
-<section class="section popular-section"><div class="section-head"><div><p class="eyebrow">STORE DIRECTORY</p><h2>Start with popular stores</h2><p>Every store page is built with a clean, focused coupon-search experience.</p></div><a class="text-link" href="/search/">Browse all stores →</a></div><div class="grid stores-grid">{% for s in stores %}<a class="card store-card" href="/{{ s.slug }}"><div class="store-icon">{{ s.name[0] }}</div><div><b>{{ s.name }}</b><span>{{ s.name }} Promo Code {{ current_year }}</span></div><i>→</i></a>{% endfor %}</div></section>
+<section class="section popular-section">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">FEATURED BRANDS</p>
+      <h2>Start with stores you know</h2>
+      <p>Quickly jump into popular brands or browse the complete coupon directory.</p>
+    </div>
+    <a class="text-link" href="/search/">Browse all stores →</a>
+  </div>
+  <div class="featured-brands" aria-label="Featured brand searches">
+    <a href="/search/?q=Nike"><span class="brand-mark nike">N</span><b>Nike</b><small>View deals →</small></a>
+    <a href="/search/?q=Walmart"><span class="brand-mark walmart">W</span><b>Walmart</b><small>View deals →</small></a>
+    <a href="/search/?q=Amazon"><span class="brand-mark amazon">A</span><b>Amazon</b><small>View deals →</small></a>
+    <a href="/search/?q=Target"><span class="brand-mark target">T</span><b>Target</b><small>View deals →</small></a>
+    <a href="/search/?q=Best%20Buy"><span class="brand-mark bestbuy">B</span><b>Best Buy</b><small>View deals →</small></a>
+    <a href="/search/?q=Adidas"><span class="brand-mark adidas">A</span><b>Adidas</b><small>View deals →</small></a>
+  </div>
+  <div class="directory-divider"><span>MORE STORES TO EXPLORE</span></div>
+  <div class="grid stores-grid">{% for s in stores %}<a class="card store-card" href="/{{ s.slug }}"><div class="store-icon">{% if s.name[0].isdigit() %}S{% else %}{{ s.name[0]|upper }}{% endif %}</div><div><b>{{ s.name }}</b><span>{{ s.name }} Promo Code {{ current_year }}</span></div><i aria-hidden="true">→</i></a>{% endfor %}</div>
+</section>
 <section class="seasonal-wrap"><div class="section"><div class="section-head"><div><p class="eyebrow">SHOP BY SEASON</p><h2>Big savings moments</h2></div><p>Dedicated pages for major US shopping events and seasonal deal discovery.</p></div><div class="grid three seasonal-grid"><a class="season-card halloween" href="/seasonal/halloween/"><span>🎃</span><b>Halloween Deals</b><small>Costumes, candy & party savings</small><em>Explore →</em></a><a class="season-card blackfriday" href="/seasonal/black-friday/"><span>🖤</span><b>Black Friday</b><small>Major shopping event deals</small><em>Explore →</em></a><a class="season-card cyber" href="/seasonal/cyber-monday/"><span>💻</span><b>Cyber Monday</b><small>Online offers & promo codes</small><em>Explore →</em></a></div></div></section>
 <section class="section how"><p class="eyebrow">HOW US COUPON HUB WORKS</p><h2>A simpler way to look for savings</h2><div class="steps"><div><strong>01</strong><h3>Search a store</h3><p>Find your favorite brand using the store directory.</p></div><div><strong>02</strong><h3>Check current offers</h3><p>Review coupon, promo and discount information.</p></div><div><strong>03</strong><h3>Shop with confidence</h3><p>Visit the store and use an offer when available.</p></div></div></section>
 {% endblock %}
