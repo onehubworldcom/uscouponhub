@@ -3,29 +3,68 @@
 {% block description %}Explore {{ store.name }} promo codes, coupon codes, sale information and shopping tips for {{ current_year }}. Review current offers and store terms before checkout.{% endblock %}
 {% block content %}
 <nav class="breadcrumbs"><a href="/">Home</a> <span>›</span> <span>{{ store.name }} Coupons</span></nav>
-<section class="storehero">
-  <p class="eyebrow">{{ store.category|upper }} • SAVINGS GUIDE</p>
-  <h1>{{ store.name }} Promo Code & Coupon Codes {{ current_year }}</h1>
-  <p class="lead">Find a clear overview of {{ store.name }} savings opportunities, including promo codes, coupon codes, sales and shopping tips. Availability and eligibility can change, so always review the offer details before checkout.</p>
-  <div class="dealbox"><div><b>Looking for a current offer?</b><small>Check the promotion details and exclusions before using it.</small></div><a class="primarybtn" href="#offers">Browse savings →</a></div>
+<section class="storehero coupon-hero">
+  <div class="storehero-inner">
+    <p class="eyebrow">{{ store.category|upper }} • SAVINGS GUIDE</p>
+    <h1>{{ store.name }} Coupons & Promo Codes</h1>
+    <p class="lead">Browse current savings opportunities for {{ store.name }}. We show verified codes when available and clearly separate code offers from no-code deals.</p>
+    <div class="coupon-hero-points"><span>✓ Clear offer details</span><span>✓ One-click copy</span><span>✓ Check terms before checkout</span></div>
+  </div>
 </section>
-<section id="offers" class="content seo-grid">
- <article>
-  <h2>Ways to save at {{ store.name }}</h2>
-  <p>Depending on the promotion, {{ store.name }} shoppers may find coupon codes, promo codes, seasonal sales, limited-time offers or other eligible discounts. A discount is not guaranteed for every product or order.</p>
-  <ul><li>Check for a promo code field during checkout.</li><li>Compare sale prices with any available promotion.</li><li>Read minimum-spend, product and expiration rules.</li><li>Confirm the final total before placing an order.</li></ul>
-  <h2>How to use a {{ store.name }} promo code</h2>
-  <ol><li>Select qualifying products or services.</li><li>Proceed to the store's checkout page.</li><li>Enter an eligible promo or coupon code if a code field is provided.</li><li>Review whether the savings were applied before completing your purchase.</li></ol>
-  <h2>{{ store.name }} sales and seasonal shopping</h2>
-  <p>Seasonal events can sometimes bring additional shopping opportunities. Check our <a href="/seasonal/black-friday/">Black Friday</a>, <a href="/seasonal/cyber-monday/">Cyber Monday</a> and <a href="/seasonal/halloween/">Halloween</a> pages for event-based shopping information.</p>
- </article>
- <aside class="seo-card"><h3>{{ store.name }} savings checklist</h3><p>Before you buy, compare the available offer with the current sale price and review exclusions.</p><a href="/search/?q={{ store.name|urlencode }}">Find related stores →</a></aside>
-</section>
-<section class="content"><h2>About {{ store.name }}</h2><p>{{ store.name }} is listed in the US Coupon Hub store directory to help shoppers discover relevant savings pages. Store promotions and policies can change, so information should be verified with the merchant before purchase.</p><h2>{{ store.name }} Coupon FAQ</h2><details><summary>Does {{ store.name }} have promo codes?</summary><p>Availability can change. Review current store promotions and terms before using any code.</p></details><details><summary>Can I combine discounts?</summary><p>Combination rules depend on the merchant and the specific promotion. Check the applicable terms.</p></details><details><summary>Why might a promo code not work?</summary><p>A code may be expired, limited to selected products, require a minimum purchase, or be restricted to certain customers or locations.</p></details></section>
-{% endblock %}
 
-{% if affiliate_match %}
-<section class="affiliate-box"><h2>Shop {{ store.name }}</h2><p>We found an approved affiliate destination for this store.</p><a class="button" href="/go/{{ store.slug }}/" rel="nofollow sponsored">Get Deal</a></section>
-{% else %}
-<section class="affiliate-box"><h2>Looking for {{ store.name }} deals?</h2><p>We only show affiliate links after a verified merchant match is approved.</p></section>
-{% endif %}
+<section id="offers" class="coupon-section">
+  <div class="coupon-section-head">
+    <div><p class="eyebrow">LATEST SAVINGS</p><h2>{{ store.name }} offers</h2><p>Choose a coupon code or a no-code deal below.</p></div>
+    <span class="offer-count">{{ offers|length }} verified listing{{ '' if offers|length == 1 else 's' }}</span>
+  </div>
+
+  {% if offers %}
+  <div class="coupon-list">
+    {% for offer in offers %}
+    <article class="coupon-card {% if offer.verified %}is-verified{% endif %}">
+      <div class="coupon-card-top"><span class="coupon-badge">{{ offer.badge or 'OFFER' }}</span>{% if offer.verified %}<span class="verified-pill">✓ Verified</span>{% endif %}</div>
+      <div class="coupon-main">
+        <div class="coupon-copy"><h3>{{ offer.title }}</h3>{% if offer.description %}<p>{{ offer.description }}</p>{% endif %}</div>
+        <div class="coupon-action">
+          {% if offer.code %}
+          <button class="code-button" type="button" data-code="{{ offer.code }}" onclick="copyCoupon(this)"><span class="code-label">{{ offer.code[:3] }}••••</span><strong>Show & Copy</strong></button>
+          {% elif affiliate_match %}
+          <a class="get-deal-button" href="/go/{{ store.slug }}/" rel="nofollow sponsored">Get Deal →</a>
+          {% else %}
+          <a class="get-deal-button muted-deal" href="#terms">View Details →</a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="coupon-meta"><span>📌 Review offer terms</span>{% if offer.expires_at %}<span>⏰ Expires {{ offer.expires_at }}</span>{% else %}<span>🕒 Availability can change</span>{% endif %}</div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="no-offers-card">
+    <div class="no-offers-icon">🏷️</div>
+    <div><h3>No verified coupon code is listed yet</h3><p>We do not invent discount codes. When a verified offer is added for {{ store.name }}, it will appear here with a Show & Copy button.</p></div>
+    {% if affiliate_match %}<a class="get-deal-button" href="/go/{{ store.slug }}/" rel="nofollow sponsored">Check Current Deal →</a>{% endif %}
+  </div>
+  {% endif %}
+</section>
+
+<section id="terms" class="content seo-grid coupon-info-grid">
+ <article>
+  <h2>How to use a {{ store.name }} coupon</h2>
+  <ol class="coupon-steps"><li><span>1</span><div><b>Choose an offer</b><small>Pick a verified code or a no-code deal.</small></div></li><li><span>2</span><div><b>Copy the code</b><small>Select “Show & Copy” and continue to checkout.</small></div></li><li><span>3</span><div><b>Check the savings</b><small>Confirm the discount is applied before placing your order.</small></div></li></ol>
+  <h2>Ways to save at {{ store.name }}</h2>
+  <p>Depending on the promotion, shoppers may find coupon codes, promo codes, seasonal sales, limited-time offers or other eligible discounts. A discount is not guaranteed for every product or order.</p>
+ </article>
+ <aside class="seo-card"><h3>Saving checklist</h3><p>Compare the offer with the current sale price and review exclusions before buying.</p><a href="/search/?q={{ store.name|urlencode }}">Find related stores →</a></aside>
+</section>
+<section class="content"><h2>About {{ store.name }}</h2><p>{{ store.name }} is listed in the US Coupon Hub store directory to help shoppers discover relevant savings pages. Store promotions and policies can change, so information should be verified with the merchant before purchase.</p><h2>{{ store.name }} Coupon FAQ</h2><details><summary>Does {{ store.name }} have promo codes?</summary><p>Availability can change. Verified offers will be displayed above when they are available.</p></details><details><summary>Can I combine discounts?</summary><p>Combination rules depend on the merchant and the specific promotion. Check the applicable terms.</p></details><details><summary>Why might a promo code not work?</summary><p>A code may be expired, limited to selected products, require a minimum purchase, or be restricted to certain customers or locations.</p></details></section>
+<script>
+function copyCoupon(button){
+  const code=button.dataset.code;
+  const label=button.querySelector('.code-label');
+  const original=button.querySelector('strong').textContent;
+  const done=()=>{label.textContent=code;button.querySelector('strong').textContent='Copied ✓';button.classList.add('copied');setTimeout(()=>{button.querySelector('strong').textContent=original;button.classList.remove('copied')},2200)};
+  if(navigator.clipboard){navigator.clipboard.writeText(code).then(done).catch(()=>{label.textContent=code;done()})}else{label.textContent=code;done()}
+}
+</script>
+{% endblock %}
