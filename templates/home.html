@@ -1,22 +1,36 @@
 {% extends 'base.html' %}
 {% block title %}US Coupon Hub | Coupon Codes, Promo Codes & Deals {{ current_year }}{% endblock %}
 {% block content %}
-<section class="hero hero-premium">
+<section class="hero hero-premium hero-upgraded">
   <div class="hero-copy">
-    <p class="eyebrow">🇺🇸 AMERICA'S COUPON & DEAL DISCOVERY HUB</p>
+    <div class="hero-kicker"><span>🇺🇸</span> AMERICA'S DEAL & SAVINGS HUB</div>
     <h1>Shop smarter.<br><span>Save more.</span></h1>
-    <p class="hero-lead">Search coupon codes, promo codes and store deals in one place. Explore brands Americans know and seasonal savings worth checking.</p>
-    <form class="search" action="/search/" method="get"><input name="q" placeholder="Search Nike, Walmart, Gaffos or any store..." aria-label="Search stores"><button>Find Deals <span>→</span></button></form>
-    <div class="quick-search"><span>Trending:</span><a href="/search/?q=deals">Deals</a><a href="/seasonal/black-friday/">Black Friday</a><a href="/seasonal/halloween/">Halloween</a></div>
-    <div class="stats"><span><b>{{ total | format_number }}+</b> Stores indexed</span><span><b>50</b> States to explore</span><span><b>{{ current_year }}</b> Current year</span></div>
+    <p class="hero-lead">Find coupon codes, promo codes and store deals in one simple place. Search brands you know and discover seasonal savings across the United States.</p>
+    <form class="search hero-search" action="/search/" method="get">
+      <input name="q" placeholder="Search Nike, Walmart, Gaffos or any store..." aria-label="Search stores">
+      <button type="submit">Find Deals <span>→</span></button>
+    </form>
+    <div class="quick-search"><strong>Trending now:</strong><a href="/search/?q=deals">🔥 Deals</a><a href="/seasonal/black-friday/">🖤 Black Friday</a><a href="/seasonal/cyber-monday/">💻 Cyber Monday</a></div>
+    <div class="stats hero-stats">
+      <span><b>{{ total | format_number }}+</b> Stores indexed</span>
+      <span><b>50</b> States to explore</span>
+      <span><b>{{ current_year }}</b> Latest savings</span>
+    </div>
   </div>
   <div class="hero-visual">
     <div class="deal-orbit orbit-one"></div><div class="deal-orbit orbit-two"></div>
-    <div class="flagcard"><div class="mini-flag">★ ★ ★ ★ ★</div><div class="deal-badge">SAVE</div><p class="eyebrow light">US COUPONHUB</p><h2>Deals that<br>feel like a win.</h2><p>Find stores, discover offers and jump into seasonal savings.</p><div class="flag-stats"><span>🎟️ Promo Codes</span><span>🏷️ Discounts</span></div></div>
+    <div class="flagcard">
+      <div class="mini-flag">★ ★ ★ ★ ★</div><div class="deal-badge">SAVE BIG</div>
+      <p class="eyebrow light">US COUPON HUB</p>
+      <h2>Deals that<br>feel like a win.</h2>
+      <p>Search stores, discover offers and explore the biggest seasonal savings moments.</p>
+      <div class="flag-stats"><span>🎟️ Promo Codes</span><span>🏷️ Discounts</span></div>
+      <div class="hero-card-note">✓ Built for smarter US shopping</div>
+    </div>
   </div>
 </section>
 <section class="trust-strip"><span>🔎 Searchable store directory</span><span>⚡ Fast, mobile-friendly pages</span><span>🇺🇸 Built for US shoppers</span><span>🎉 Seasonal deal hubs</span></section>
 <section class="section popular-section"><div class="section-head"><div><p class="eyebrow">STORE DIRECTORY</p><h2>Start with popular stores</h2><p>Every store page is built with a clean, focused coupon-search experience.</p></div><a class="text-link" href="/search/">Browse all stores →</a></div><div class="grid stores-grid">{% for s in stores %}<a class="card store-card" href="/{{ s.slug }}"><div class="store-icon">{{ s.name[0] }}</div><div><b>{{ s.name }}</b><span>{{ s.name }} Promo Code {{ current_year }}</span></div><i>→</i></a>{% endfor %}</div></section>
 <section class="seasonal-wrap"><div class="section"><div class="section-head"><div><p class="eyebrow">SHOP BY SEASON</p><h2>Big savings moments</h2></div><p>Dedicated pages for major US shopping events and seasonal deal discovery.</p></div><div class="grid three seasonal-grid"><a class="season-card halloween" href="/seasonal/halloween/"><span>🎃</span><b>Halloween Deals</b><small>Costumes, candy & party savings</small><em>Explore →</em></a><a class="season-card blackfriday" href="/seasonal/black-friday/"><span>🖤</span><b>Black Friday</b><small>Major shopping event deals</small><em>Explore →</em></a><a class="season-card cyber" href="/seasonal/cyber-monday/"><span>💻</span><b>Cyber Monday</b><small>Online offers & promo codes</small><em>Explore →</em></a></div></div></section>
-<section class="section how"><p class="eyebrow">HOW USCOUPONHUB WORKS</p><h2>A simpler way to look for savings</h2><div class="steps"><div><strong>01</strong><h3>Search a store</h3><p>Find your brand using the store directory.</p></div><div><strong>02</strong><h3>Check current offers</h3><p>Review coupon, promo and discount information.</p></div><div><strong>03</strong><h3>Shop with confidence</h3><p>Visit the store and use an offer when available.</p></div></div></section>
+<section class="section how"><p class="eyebrow">HOW US COUPON HUB WORKS</p><h2>A simpler way to look for savings</h2><div class="steps"><div><strong>01</strong><h3>Search a store</h3><p>Find your favorite brand using the store directory.</p></div><div><strong>02</strong><h3>Check current offers</h3><p>Review coupon, promo and discount information.</p></div><div><strong>03</strong><h3>Shop with confidence</h3><p>Visit the store and use an offer when available.</p></div></div></section>
 {% endblock %}
