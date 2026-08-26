@@ -7,6 +7,32 @@
 <link rel="canonical" href="https://uscouponhub.com{{ request.path }}">
 <meta name="theme-color" content="#0b2b59">
 <link rel="stylesheet" href="/static/css/style.css">
+
+<style>
+header{
+  min-height:130px;
+  padding-top:10px;
+  padding-bottom:10px;
+  display:flex;
+  align-items:center;
+}
+header .brand{
+  display:flex;
+  align-items:center;
+}
+header .brand img{
+  height:151px !important;
+  width:auto !important;
+  max-width:403px !important;
+  object-fit:contain;
+  display:block;
+}
+@media (max-width:700px){
+  header{min-height:100px;}
+  header .brand img{height:113px !important; max-width:302px !important;}
+}
+</style>
+
 </head>
 <body>
 <div class="topbar">🇺🇸 Made for smarter shopping across the United States <span>•</span> Updated deals & seasonal savings</div>
