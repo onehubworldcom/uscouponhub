@@ -3,3 +3,29 @@
 
 /* Homepage polish */
 .hero-upgraded{min-height:680px}.hero-kicker{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #dfe7f2;color:#b82031;padding:9px 14px;border-radius:999px;font-size:12px;font-weight:900;letter-spacing:1.5px;box-shadow:0 10px 25px #173b6710;margin-bottom:18px}.hero-search{border-radius:18px;padding:9px;box-shadow:0 18px 45px #173b6718}.hero-search input{font-size:17px}.hero-search button{min-height:52px;padding:0 28px}.hero-search button:hover{transform:translateY(-1px);box-shadow:0 10px 22px #e52b3840}.quick-search strong{color:#334155}.hero-stats{padding-top:8px}.hero-stats span{position:relative}.hero-card-note{margin-top:26px;padding-top:18px;border-top:1px solid #ffffff22;color:#dce7fa;font-size:13px;font-weight:700;position:relative}.flagcard{border:1px solid #ffffff16}.trust-strip span{display:flex;align-items:center;gap:6px}.popular-section{padding-top:88px}@media(max-width:950px){.hero-upgraded{min-height:auto}.hero-kicker{font-size:11px}}@media(max-width:650px){.hero-kicker{font-size:10px;letter-spacing:1px;padding:8px 11px}.hero-search button{width:100%}.hero-stats{flex-direction:column;gap:12px}.hero-stats span{padding-bottom:10px;border-bottom:1px solid #dfe6ef}.hero-stats span:last-child{border-bottom:0}.quick-search{gap:8px}}
+
+
+/* Directory premium interaction upgrade */
+.popular-section{position:relative}
+.featured-brands{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin:4px 0 34px}
+.featured-brands>a{min-height:122px;background:linear-gradient(145deg,#fff,#f7f9fd);border:1px solid var(--line);border-radius:18px;padding:18px;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;position:relative;overflow:hidden;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.featured-brands>a:after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;right:-35px;bottom:-42px;background:#e52b3810;transition:transform .25s ease}
+.featured-brands>a:hover{transform:translateY(-6px);box-shadow:0 18px 36px #132d5118;border-color:#c7d3e4}
+.featured-brands>a:hover:after{transform:scale(1.5)}
+.featured-brands b,.featured-brands small,.brand-mark{position:relative;z-index:1}
+.featured-brands b{font-size:15px}
+.featured-brands small{font-size:11px;font-weight:800;color:var(--red)}
+.brand-mark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:950;font-size:17px;box-shadow:0 8px 18px #10264a18}
+.brand-mark.nike{background:#111827}.brand-mark.walmart{background:#2366b8}.brand-mark.amazon{background:#ff9900}.brand-mark.target{background:#cc1f2f}.brand-mark.bestbuy{background:#1154a3}.brand-mark.adidas{background:#202020}
+.directory-divider{display:flex;align-items:center;gap:16px;color:#7b8798;font-size:11px;font-weight:900;letter-spacing:1.8px;margin:10px 0 18px}
+.directory-divider:before,.directory-divider:after{content:"";height:1px;background:var(--line);flex:1}
+.store-card{position:relative;overflow:hidden;min-height:92px;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.store-card:before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:0 6px 6px 0;background:var(--red);transform:scaleY(0);transition:transform .2s ease}
+.store-card:hover:before{transform:scaleY(1)}
+.store-card:hover{transform:translateY(-6px);box-shadow:0 18px 38px #132d5118;border-color:#c9d4e3}
+.store-card:hover .store-icon{transform:scale(1.06) rotate(-2deg);box-shadow:0 10px 22px #173b6816}
+.store-card:hover i{transform:translateX(5px);color:#c91528}
+.store-card i{font-size:18px;transition:transform .2s ease,color .2s ease}
+.store-icon{transition:transform .2s ease,box-shadow .2s ease}
+@media(max-width:1100px){.featured-brands{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.featured-brands{grid-template-columns:repeat(2,1fr);gap:10px}.featured-brands>a{min-height:108px;padding:15px}.directory-divider{margin-top:4px}.store-card{min-height:84px}}
