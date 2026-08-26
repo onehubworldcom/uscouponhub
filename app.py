@@ -1,4 +1,4 @@
-import csv, os, re, sqlite3
+import csv, os, re, sqlite3, hashlib
 from affiliate import get_match, get_networks, build_destination, log_click
 from datetime import datetime
 from flask import Flask, render_template, abort, Response, request, url_for, redirect
@@ -120,6 +120,23 @@ def affiliate_go(slug):
         c.close(); return redirect(url_for('store_page',slug=slug))
     log_click(c,store['id'],match['id'],match['network_id']); c.close()
     return redirect(destination, code=302)
+
+@app.route('/ebay/account-deletion', methods=['GET', 'POST'])
+def ebay_account_deletion():
+    endpoint = 'https://uscouponhub.com/ebay/account-deletion'
+    if request.method == 'GET':
+        challenge_code = request.args.get('challenge_code', '')
+        verification_token = os.environ.get('EBAY_VERIFICATION_TOKEN', '')
+        if not challenge_code or not verification_token:
+            abort(400)
+        challenge_response = hashlib.sha256(
+            (challenge_code + verification_token + endpoint).encode('utf-8')
+        ).hexdigest()
+        return {'challengeResponse': challenge_response}, 200
+
+    # Acknowledge deletion notifications immediately. This application does not
+    # persist eBay user data, so there is no eBay user record to delete here.
+    return '', 204
 
 @app.route('/affiliate-disclosure/')
 def affiliate_disclosure():
