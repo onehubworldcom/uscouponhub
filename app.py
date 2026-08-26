@@ -227,6 +227,22 @@ def ebay_search_page():
         items = items or []
     return render_template('ebay_search.html', q=q, items=items, error=error)
 
+@app.route('/ebay/debug/')
+def ebay_debug():
+    # Safe diagnostic endpoint: never returns credential values.
+    client_id = os.environ.get('EBAY_CLIENT_ID', '').strip()
+    client_secret = os.environ.get('EBAY_CLIENT_SECRET', '').strip()
+    ebay_env = os.environ.get('EBAY_ENV', 'production').strip().lower()
+    marketplace = os.environ.get('EBAY_MARKETPLACE_ID', 'EBAY_US').strip()
+
+    return {
+        'client_id_present': bool(client_id),
+        'client_secret_present': bool(client_secret),
+        'ebay_env': ebay_env,
+        'marketplace_id': marketplace
+    }
+
+
 @app.route('/ebay/account-deletion', methods=['GET', 'POST'])
 def ebay_account_deletion():
     endpoint = 'https://uscouponhub.com/ebay/account-deletion'
