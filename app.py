@@ -1,4 +1,5 @@
-import csv, os, re, sqlite3, hashlib
+import csv, os, re, sqlite3, hashlib, base64, json, time
+from urllib import request as urlrequest, parse as urlparse, error as urlerror
 from affiliate import get_match, get_networks, build_destination, log_click
 from datetime import datetime
 from flask import Flask, render_template, abort, Response, request, url_for, redirect
@@ -17,6 +18,100 @@ STATES={'california':'California','texas':'Texas','florida':'Florida','new-york'
 CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chicago, IL','houston':'Houston, TX','phoenix':'Phoenix, AZ','philadelphia':'Philadelphia, PA','san-antonio':'San Antonio, TX','san-diego':'San Diego, CA','dallas':'Dallas, TX','san-jose':'San Jose, CA'}
 CATEGORIES=['shopping','fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
 RESERVED={'states','cities','categories','seasonal','search','sitemap.xml','robots.txt','static','favicon.ico'}
+
+# eBay Browse API integration
+# Credentials stay in Render environment variables and are never sent to the browser.
+_EBAY_TOKEN = None
+_EBAY_TOKEN_EXPIRES_AT = 0
+
+def ebay_api_base():
+    env = os.environ.get('EBAY_ENV', 'production').strip().lower()
+    return 'https://api.sandbox.ebay.com' if env == 'sandbox' else 'https://api.ebay.com'
+
+def ebay_get_application_token():
+    global _EBAY_TOKEN, _EBAY_TOKEN_EXPIRES_AT
+    now = time.time()
+    if _EBAY_TOKEN and now < (_EBAY_TOKEN_EXPIRES_AT - 60):
+        return _EBAY_TOKEN
+
+    client_id = os.environ.get('EBAY_CLIENT_ID', '').strip()
+    client_secret = os.environ.get('EBAY_CLIENT_SECRET', '').strip()
+    if not client_id or not client_secret:
+        return None
+
+    basic = base64.b64encode(f'{client_id}:{client_secret}'.encode('utf-8')).decode('ascii')
+    body = urlparse.urlencode({
+        'grant_type': 'client_credentials',
+        'scope': 'https://api.ebay.com/oauth/api_scope'
+    }).encode('utf-8')
+    req = urlrequest.Request(
+        ebay_api_base() + '/identity/v1/oauth2/token',
+        data=body,
+        headers={
+            'Authorization': 'Basic ' + basic,
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json'
+        },
+        method='POST'
+    )
+    try:
+        with urlrequest.urlopen(req, timeout=15) as response:
+            payload = json.loads(response.read().decode('utf-8'))
+    except (urlerror.URLError, urlerror.HTTPError, ValueError, TimeoutError):
+        return None
+
+    token = payload.get('access_token')
+    if not token:
+        return None
+    _EBAY_TOKEN = token
+    _EBAY_TOKEN_EXPIRES_AT = now + max(60, int(payload.get('expires_in', 7200)))
+    return _EBAY_TOKEN
+
+def ebay_search_items(query, limit=12):
+    token = ebay_get_application_token()
+    if not token:
+        return None, 'eBay is not configured yet.'
+
+    params = urlparse.urlencode({
+        'q': query,
+        'limit': max(1, min(int(limit), 50))
+    })
+    req = urlrequest.Request(
+        ebay_api_base() + '/buy/browse/v1/item_summary/search?' + params,
+        headers={
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json',
+            'X-EBAY-C-MARKETPLACE-ID': os.environ.get('EBAY_MARKETPLACE_ID', 'EBAY_US')
+        }
+    )
+    try:
+        with urlrequest.urlopen(req, timeout=15) as response:
+            payload = json.loads(response.read().decode('utf-8'))
+    except urlerror.HTTPError as exc:
+        return None, f'eBay search is temporarily unavailable (HTTP {exc.code}).'
+    except (urlerror.URLError, ValueError, TimeoutError):
+        return None, 'eBay search is temporarily unavailable.'
+
+    items = []
+    for item in payload.get('itemSummaries', []):
+        price = item.get('price') or {}
+        image = (item.get('image') or {}).get('imageUrl', '')
+        shipping = item.get('shippingOptions') or []
+        shipping_cost = ''
+        if shipping and shipping[0].get('shippingCost'):
+            sc = shipping[0]['shippingCost']
+            if sc.get('value') not in (None, ''):
+                shipping_cost = f"{sc.get('currency', '')} {sc.get('value', '')}".strip()
+        items.append({
+            'title': item.get('title', 'eBay item'),
+            'price': f"{price.get('currency', '')} {price.get('value', '')}".strip(),
+            'image': image,
+            'url': item.get('itemWebUrl', ''),
+            'condition': item.get('condition', ''),
+            'shipping': shipping_cost
+        })
+    return items, None
+
 
 def conn():
     c=sqlite3.connect(DB); c.row_factory=sqlite3.Row
@@ -120,6 +215,17 @@ def affiliate_go(slug):
         c.close(); return redirect(url_for('store_page',slug=slug))
     log_click(c,store['id'],match['id'],match['network_id']); c.close()
     return redirect(destination, code=302)
+
+
+@app.route('/ebay/search/')
+def ebay_search_page():
+    q = request.args.get('q', '').strip()
+    items = []
+    error = None
+    if q:
+        items, error = ebay_search_items(q)
+        items = items or []
+    return render_template('ebay_search.html', q=q, items=items, error=error)
 
 @app.route('/ebay/account-deletion', methods=['GET', 'POST'])
 def ebay_account_deletion():

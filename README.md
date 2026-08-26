@@ -26,3 +26,11 @@ For initial testing SQLite is fine. For a public site with high traffic, migrate
 - `/go/<store-slug>/` logs a click and redirects only to an approved destination.
 - Never put API keys in source code; use environment variables.
 - Do not activate a network until the account/site is approved and its terms allow the intended implementation.
+
+
+## eBay Browse API
+- Added `/ebay/search/` for live eBay item searches.
+- Set `EBAY_CLIENT_ID` and `EBAY_CLIENT_SECRET` as environment variables in Render.
+- Default production marketplace is `EBAY_US`.
+- The client secret stays server-side and is never exposed to visitors.
+- eBay item search displays listings, not guaranteed coupon codes.
