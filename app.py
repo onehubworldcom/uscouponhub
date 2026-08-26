@@ -23,20 +23,24 @@ RESERVED={'states','cities','categories','seasonal','search','sitemap.xml','robo
 # Credentials stay in Render environment variables and are never sent to the browser.
 _EBAY_TOKEN = None
 _EBAY_TOKEN_EXPIRES_AT = 0
+_EBAY_LAST_ERROR = None
 
 def ebay_api_base():
     env = os.environ.get('EBAY_ENV', 'production').strip().lower()
     return 'https://api.sandbox.ebay.com' if env == 'sandbox' else 'https://api.ebay.com'
 
 def ebay_get_application_token():
-    global _EBAY_TOKEN, _EBAY_TOKEN_EXPIRES_AT
+    global _EBAY_TOKEN, _EBAY_TOKEN_EXPIRES_AT, _EBAY_LAST_ERROR
     now = time.time()
+    _EBAY_LAST_ERROR = None
+
     if _EBAY_TOKEN and now < (_EBAY_TOKEN_EXPIRES_AT - 60):
         return _EBAY_TOKEN
 
     client_id = os.environ.get('EBAY_CLIENT_ID', '').strip()
     client_secret = os.environ.get('EBAY_CLIENT_SECRET', '').strip()
     if not client_id or not client_secret:
+        _EBAY_LAST_ERROR = 'Missing EBAY_CLIENT_ID or EBAY_CLIENT_SECRET.'
         return None
 
     basic = base64.b64encode(f'{client_id}:{client_secret}'.encode('utf-8')).decode('ascii')
@@ -44,6 +48,7 @@ def ebay_get_application_token():
         'grant_type': 'client_credentials',
         'scope': 'https://api.ebay.com/oauth/api_scope'
     }).encode('utf-8')
+
     req = urlrequest.Request(
         ebay_api_base() + '/identity/v1/oauth2/token',
         data=body,
@@ -54,15 +59,34 @@ def ebay_get_application_token():
         },
         method='POST'
     )
+
     try:
         with urlrequest.urlopen(req, timeout=15) as response:
             payload = json.loads(response.read().decode('utf-8'))
-    except (urlerror.URLError, urlerror.HTTPError, ValueError, TimeoutError):
+    except urlerror.HTTPError as exc:
+        try:
+            raw = exc.read().decode('utf-8', errors='replace')[:500]
+            data = json.loads(raw)
+            message = data.get('error_description') or data.get('message') or data.get('error')
+        except Exception:
+            message = None
+        _EBAY_LAST_ERROR = f'OAuth HTTP {exc.code}' + (f': {message}' if message else '')
+        return None
+    except urlerror.URLError as exc:
+        _EBAY_LAST_ERROR = f'OAuth connection error: {exc.reason}'
+        return None
+    except TimeoutError:
+        _EBAY_LAST_ERROR = 'OAuth request timed out.'
+        return None
+    except ValueError:
+        _EBAY_LAST_ERROR = 'OAuth returned an invalid response.'
         return None
 
     token = payload.get('access_token')
     if not token:
+        _EBAY_LAST_ERROR = 'OAuth response did not contain an access token.'
         return None
+
     _EBAY_TOKEN = token
     _EBAY_TOKEN_EXPIRES_AT = now + max(60, int(payload.get('expires_in', 7200)))
     return _EBAY_TOKEN
@@ -70,7 +94,7 @@ def ebay_get_application_token():
 def ebay_search_items(query, limit=12):
     token = ebay_get_application_token()
     if not token:
-        return None, 'eBay is not configured yet.'
+        return None, _EBAY_LAST_ERROR or 'eBay OAuth is not available yet.'
 
     params = urlparse.urlencode({
         'q': query,
@@ -235,11 +259,15 @@ def ebay_debug():
     ebay_env = os.environ.get('EBAY_ENV', 'production').strip().lower()
     marketplace = os.environ.get('EBAY_MARKETPLACE_ID', 'EBAY_US').strip()
 
+    token = ebay_get_application_token()
+
     return {
         'client_id_present': bool(client_id),
         'client_secret_present': bool(client_secret),
         'ebay_env': ebay_env,
-        'marketplace_id': marketplace
+        'marketplace_id': marketplace,
+        'oauth_token_obtained': bool(token),
+        'oauth_error': _EBAY_LAST_ERROR
     }
 
 
