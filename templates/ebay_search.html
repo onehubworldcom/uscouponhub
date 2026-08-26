@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Search eBay Deals | US Coupon Hub{% endblock %}
+{% block description %}Search current eBay listings from US Coupon Hub.{% endblock %}
+{% block content %}
+<section class="directory-hero">
+  <p class="eyebrow">EBAY SEARCH</p>
+  <h1>Search eBay listings</h1>
+  <p>Search current eBay items directly from US Coupon Hub.</p>
+  <form class="search directory-search" action="/ebay/search/" method="get">
+    <input name="q" value="{{ q }}" placeholder="Search eBay for phones, shoes, collectibles..." aria-label="Search eBay">
+    <button type="submit">Search eBay</button>
+  </form>
+</section>
+<section class="section search-results">
+  {% if q %}
+    <h2>eBay results for “{{ q }}”</h2>
+    {% if error %}
+      <div class="empty-state"><h3>Search not available</h3><p>{{ error }}</p></div>
+    {% elif items %}
+      <div class="grid stores-grid">
+        {% for item in items %}
+        <article class="card store-card">
+          <div class="store-icon">{% if item.image %}<img src="{{ item.image }}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:12px">{% else %}e{% endif %}</div>
+          <div>
+            <b>{{ item.title }}</b>
+            <span>{{ item.price }}{% if item.condition %} · {{ item.condition }}{% endif %}{% if item.shipping %} · Shipping {{ item.shipping }}{% endif %}</span>
+            {% if item.url %}<a class="text-link" href="{{ item.url }}" target="_blank" rel="nofollow sponsored noopener">View on eBay →</a>{% endif %}
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state"><h3>No matching eBay items found</h3><p>Try another search term.</p></div>
+    {% endif %}
+  {% else %}
+    <h2>Find an item</h2>
+    <p class="muted">Enter a product or keyword above to search eBay.</p>
+  {% endif %}
+</section>
+{% endblock %}
