@@ -22,7 +22,7 @@ def format_number(value):
 STATES={'california':'California','texas':'Texas','florida':'Florida','new-york':'New York','illinois':'Illinois','pennsylvania':'Pennsylvania','ohio':'Ohio','georgia':'Georgia','north-carolina':'North Carolina','michigan':'Michigan'}
 CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chicago, IL','houston':'Houston, TX','phoenix':'Phoenix, AZ','philadelphia':'Philadelphia, PA','san-antonio':'San Antonio, TX','san-diego':'San Diego, CA','dallas':'Dallas, TX','san-jose':'San Jose, CA'}
 CATEGORIES=['shopping','fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
-RESERVED={'states','cities','categories','seasonal','search','stores','about','privacy','terms','disclaimer','contact','affiliate-disclosure','affiliate-status','sitemap.xml','robots.txt','static','favicon.ico'}
+RESERVED={'states','cities','categories','seasonal','guides','search','stores','about','privacy','terms','disclaimer','contact','affiliate-disclosure','affiliate-status','sitemap.xml','robots.txt','static','favicon.ico'}
 
 
 CATEGORY_CONFIG={
@@ -35,6 +35,74 @@ CATEGORY_CONFIG={
     'food-drink': {'label':'Food & Drink','aliases':['food','drink','groceries','grocery'], 'query':'food kitchen', 'subcategories':['Groceries','Restaurants','Coffee & Tea','Kitchen']},
     'software': {'label':'Software','aliases':['software','apps','app','digital'], 'query':'software', 'subcategories':['Security','Productivity','Creative','Business']},
     'baby-kids': {'label':'Baby & Kids','aliases':['baby','kids','children','toys'], 'query':'baby kids', 'subcategories':['Baby Gear','Kids Clothing','Toys','School']},
+}
+
+SHOPPING_GUIDES = {
+    'save-money-online-shopping': {
+        'title': 'Best Online Shopping Tips to Save Money',
+        'description': 'Practical ways to compare prices, plan purchases and use legitimate discounts when shopping online.',
+        'intro': 'Saving money online is usually about preparation rather than chasing every offer. A simple routine can help you compare options and avoid spending more than planned.',
+        'sections': [
+            ('Start with a shopping list', 'Write down what you actually need before searching. A list makes it easier to compare similar products and reduces impulse purchases.'),
+            ('Compare the final price', 'Look beyond the headline price. Check shipping, taxes, membership requirements and any conditions that change the final amount you pay.'),
+            ('Check coupons carefully', 'Read the terms of a promo code before relying on it. Some codes apply only to selected products, new customers or a minimum order value.'),
+            ('Time larger purchases', 'For non-urgent purchases, compare prices around major seasonal sales. Do not assume every advertised sale is automatically the lowest available price.'),
+            ('Keep your budget in control', 'Set a spending limit before browsing. A discount is useful only when the purchase itself fits your needs and budget.')],
+        'tips': ['Compare at least two trustworthy sellers when possible.', 'Keep a note of prices for larger planned purchases.', 'Avoid entering payment details on unfamiliar or suspicious websites.']},
+    'find-legit-promo-codes': {
+        'title': 'How to Find Legit Promo Codes',
+        'description': 'A practical guide to checking promo codes and avoiding expired or misleading offers.',
+        'intro': 'Promo codes can reduce the cost of an order, but not every code found online is active or relevant. A careful checking process helps you focus on offers that are clear and useful.',
+        'sections': [('Check the source', 'Start with the merchant website, its official emails or reputable deal resources. Be cautious when a page makes unrealistic promises.'), ('Read the conditions', 'Check the expiry date, minimum spend, product exclusions and whether the code is limited to specific customers.'), ('Test one code at a time', 'Apply codes individually at checkout so you can see exactly which discount is accepted and how it changes the total.'), ('Do not share unnecessary information', 'A coupon should not require you to provide sensitive information that is unrelated to the purchase.'), ('Report incorrect listings', 'If you find an expired or misleading code, report it to the website that listed it when a reporting option is available.')],
+        'tips': ['Treat unusually large discount claims with extra caution.', 'Check whether an offer changes the final checkout price.', 'Keep screenshots or order records for important promotions.']},
+    'black-friday-shopping-guide': {
+        'title': 'Complete Black Friday Shopping Guide',
+        'description': 'Plan a focused Black Friday shopping strategy with budgets, price checks and safe checkout habits.',
+        'intro': 'Black Friday can bring a large number of promotions in a short period. Planning ahead helps you decide what matters and avoid rushed purchases.',
+        'sections': [('Make a priority list', 'Separate must-have items from nice-to-have purchases and assign a maximum budget to each category.'), ('Research before the event', 'Learn the normal price range of important items before sale season so you have context for advertised discounts.'), ('Check retailer terms', 'Review return policies, shipping deadlines and any limits attached to sale items.'), ('Compare alternatives', 'If one product sells out, compare similar options rather than immediately buying an unrelated item.'), ('Protect your accounts', 'Use strong, unique passwords and shop through trusted websites and official retailer apps.')],
+        'tips': ['Keep your budget visible while shopping.', 'Do not buy only because a countdown creates pressure.', 'Save order confirmations and delivery information.']},
+    'cyber-monday-shopping-guide': {
+        'title': 'Cyber Monday Shopping Guide',
+        'description': 'How to prepare for online-focused Cyber Monday promotions and shop with a clear plan.',
+        'intro': 'Cyber Monday is centered on online shopping, which makes comparison easier but also increases the number of offers competing for attention.',
+        'sections': [('Prepare accounts in advance', 'For trusted stores you already use, update your delivery information before a busy shopping period.'), ('Compare product details', 'Check model numbers, sizes, versions and included accessories before comparing prices.'), ('Watch total cost', 'Free shipping thresholds and delivery fees can change which offer is actually better.'), ('Use trusted payment methods', 'Prefer familiar checkout systems and verify that you are on the correct website before paying.'), ('Review the order immediately', 'After checkout, confirm the item, quantity, shipping address and final amount in your order confirmation.')],
+        'tips': ['Do not reuse passwords across shopping accounts.', 'Read product descriptions instead of relying only on images.', 'Be cautious with unfamiliar sites offering unrealistic prices.']},
+    'holiday-shopping-calendar': {
+        'title': 'Holiday Shopping Calendar and Planning Guide',
+        'description': 'A simple planning framework for major seasonal shopping periods throughout the year.',
+        'intro': 'A shopping calendar is useful because different needs appear at different times of the year. Planning ahead can reduce last-minute pressure and help you set realistic budgets.',
+        'sections': [('List important dates', 'Note birthdays, school needs, travel plans and major holidays that may require purchases.'), ('Plan seasonal categories', 'Think ahead about gifts, clothing, home items and event supplies instead of buying everything at the last minute.'), ('Set monthly limits', 'Divide expected spending across several months when possible.'), ('Track useful price ranges', 'For planned purchases, note typical prices so future offers have context.'), ('Leave room for changes', 'Shipping delays, stock changes and personal needs can shift plans, so avoid spending the entire budget too early.')],
+        'tips': ['Use a calendar for planned purchases.', 'Prioritize needs before seasonal extras.', 'Review your plan before each major sale period.']},
+    'back-to-school-shopping-guide': {
+        'title': 'Back-to-School Shopping Guide',
+        'description': 'A practical way to organize school shopping lists, compare essentials and avoid duplicate purchases.',
+        'intro': 'Back-to-school shopping is easier when the list is organized by priority. Start with required items and check what is already available at home.',
+        'sections': [('Check the official list', 'Use the school or teacher list when available and separate required items from optional preferences.'), ('Inventory supplies at home', 'Check backpacks, stationery and other supplies before buying replacements.'), ('Compare quality and price', 'The cheapest item is not always the best value if it needs to be replaced quickly.'), ('Buy in stages', 'Purchase essentials first and wait on optional items until the actual need is clear.'), ('Keep receipts', 'Receipts help with exchanges when sizes, specifications or requirements change.')],
+        'tips': ['Avoid buying duplicate supplies.', 'Check sizing policies for clothing and shoes.', 'Set a category budget before browsing.']},
+    'compare-online-deals': {
+        'title': 'How to Compare Online Deals',
+        'description': 'Compare products, prices, shipping and return terms instead of judging an offer by the discount percentage alone.',
+        'intro': 'A good deal is about the complete purchase, not only a large percentage shown in an advertisement.',
+        'sections': [('Match the exact product', 'Compare the same model, size, condition and included accessories whenever possible.'), ('Calculate the total', 'Include shipping, taxes and required fees before deciding which option costs less.'), ('Check delivery timing', 'A lower price may not be useful if delivery is too late for your needs.'), ('Read return rules', 'Understand the return window, condition requirements and any restocking or shipping costs.'), ('Consider seller reliability', 'Use established retailers or marketplaces with clear buyer protections.')],
+        'tips': ['Create a simple comparison list for expensive purchases.', 'Do not compare different product versions as if they are identical.', 'Keep the final checkout amount as your main comparison number.']},
+    'smart-holiday-gift-shopping': {
+        'title': 'Smart Holiday Gift Shopping Tips',
+        'description': 'Plan thoughtful gifts with a budget, delivery timeline and flexible backup options.',
+        'intro': 'Holiday gift shopping can become stressful when every purchase is left until the final days. A small plan makes the process easier and more personal.',
+        'sections': [('Make a recipient list', 'List recipients and a rough spending range before searching for products.'), ('Focus on interests', 'Use the recipient’s hobbies and needs instead of choosing only what is heavily promoted.'), ('Order early when possible', 'Extra time provides more flexibility if an item is delayed or needs to be exchanged.'), ('Keep a backup idea', 'Popular items can sell out, so identify one or two alternatives in advance.'), ('Respect your total budget', 'Small gifts add up quickly, so review the total before final checkout.')],
+        'tips': ['Track purchases to avoid duplicate gifts.', 'Check return deadlines for gifts.', 'Avoid overspending to match someone else’s budget.']},
+    'avoid-expired-coupon-codes': {
+        'title': 'How to Avoid Expired Coupon Codes',
+        'description': 'A checklist for verifying coupon dates, terms and checkout results before relying on a code.',
+        'intro': 'Expired coupon codes are common because promotions change quickly. A short verification checklist can save time and prevent disappointment at checkout.',
+        'sections': [('Look for dates', 'Prefer listings that clearly state when an offer was checked or when it expires.'), ('Check exclusions', 'Some codes exclude sale items, specific brands or certain categories.'), ('Confirm account requirements', 'A code may be limited to new customers, members or a particular region.'), ('Apply before payment', 'Verify that the discount appears in the order summary before completing payment.'), ('Do not force a purchase', 'If the code does not work, compare the normal price instead of buying solely because you expected a discount.')],
+        'tips': ['Read the exact error message when a code fails.', 'Try only codes that match your order conditions.', 'Remember that some offers are automatically applied and need no code.']},
+    'seasonal-shopping-deals-guide': {
+        'title': 'Seasonal Shopping Deals Guide',
+        'description': 'Use seasonal sales as part of a year-round shopping plan without relying on hype or unnecessary purchases.',
+        'intro': 'Seasonal promotions can be useful for planned purchases, but the best approach is to start with a need and then evaluate available offers.',
+        'sections': [('Plan around real needs', 'Make a list of purchases you expect in the coming months before major sale periods begin.'), ('Understand the season', 'Different events emphasize different product categories, so compare what is actually relevant to your list.'), ('Check stock and alternatives', 'Have alternatives ready for popular products that may sell out.'), ('Review policies before checkout', 'Seasonal sales can have different return or delivery conditions.'), ('Track results after shopping', 'Review whether the purchases were useful and within budget to improve future planning.')],
+        'tips': ['Use seasonal events as opportunities, not obligations.', 'Compare the final price before buying.', 'Keep a record of large purchases for warranty and return purposes.']},
 }
 
 # Smart eBay search mapping. Generic directory labels can produce unrelated
@@ -487,6 +555,18 @@ def ebay_account_deletion():
     # This app does not currently store eBay user records.
     return '', 204
 
+
+@app.route('/guides/')
+def guides_page():
+    return render_template('guides.html', guides=SHOPPING_GUIDES)
+
+@app.route('/guides/<guide_slug>/')
+def guide_page(guide_slug):
+    guide=SHOPPING_GUIDES.get(guide_slug)
+    if not guide:
+        abort(404)
+    return render_template('guide.html', guide=guide, guide_slug=guide_slug)
+
 @app.route('/about/')
 def about_page():
     return render_template('about.html')
@@ -558,7 +638,7 @@ def sitemap_index():
 
 @app.route('/sitemap-static.xml')
 def sitemap_static():
-    base='https://uscouponhub.com'; urls=[f'{base}/',f'{base}/stores/',f'{base}/about/',f'{base}/privacy/',f'{base}/terms/',f'{base}/disclaimer/',f'{base}/contact/',f'{base}/affiliate-disclosure/']+[f'{base}/states/{s}/' for s in STATES]+[f'{base}/cities/{x}/' for x in CITIES]+[f'{base}/categories/{x}/' for x in CATEGORIES]
+    base='https://uscouponhub.com'; urls=[f'{base}/',f'{base}/stores/',f'{base}/guides/',f'{base}/about/',f'{base}/privacy/',f'{base}/terms/',f'{base}/disclaimer/',f'{base}/contact/',f'{base}/affiliate-disclosure/']+[f'{base}/guides/{slug}/' for slug in SHOPPING_GUIDES]+[f'{base}/states/{s}/' for s in STATES]+[f'{base}/cities/{x}/' for x in CITIES]+[f'{base}/categories/{x}/' for x in CATEGORIES]
     return Response('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{u}</loc></url>' for u in urls)+'</urlset>',mimetype='application/xml')
 
 @app.route('/sitemap-stores-<int:part>.xml')
