@@ -1,1 +1,52 @@
-{% extends 'base.html' %}{% block title %}{{ category }} Coupons, Promo Codes & Deals {{ current_year }}{% endblock %}{% block content %}<section class="storehero"><p class="eyebrow">SHOP BY CATEGORY</p><h1>{{ category }} Coupons & Deals {{ current_year }}</h1><p>Browse store pages and current savings opportunities in {{ category|lower }}.</p></section><section class="section"><div class="grid">{% for s in stores %}<a class="card" href="/{{ s.slug }}"><b>{{ s.name }}</b> <span>Coupons & Promo Codes</span></a>{% endfor %}</div></section>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}{{ category }} Coupons, Deals & Shopping {{ current_year }} | US Coupon Hub{% endblock %}
+{% block content %}
+<section class="storehero">
+  <p class="eyebrow">SHOP BY CATEGORY</p>
+  <h1>{{ category }} Coupons & Deals {{ current_year }}</h1>
+  <p>First explore relevant stores and shopping areas, then compare current eBay products without leaving US Coupon Hub.</p>
+</section>
+
+{% if subcategories %}
+<section class="section">
+  <h2>Explore {{ category }}</h2>
+  <div class="grid">
+    {% for sub in subcategories %}
+    <a class="card" href="/ebay/search/?q={{ sub|urlencode }}"><b>{{ sub }}</b><span>Browse current eBay products →</span></a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="section">
+  <h2>Relevant stores on US Coupon Hub</h2>
+  {% if stores %}
+  <div class="grid">
+    {% for s in stores %}<a class="card" href="/{{ s.slug }}"><b>{{ s.name }}</b><span>Coupons & Promo Codes</span></a>{% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state"><h3>No verified category stores listed yet</h3><p>We’ll keep the category useful by showing live product matches below.</p></div>
+  {% endif %}
+</section>
+
+<section class="section search-results">
+  <div style="display:flex;justify-content:space-between;gap:20px;align-items:end;flex-wrap:wrap">
+    <div><p class="eyebrow">LIVE EBAY SEARCH</p><h2>Popular {{ category }} products</h2><p class="muted">Current product listings matched to this category.</p></div>
+    <a class="text-link" href="/ebay/search/?q={{ category|urlencode }}">Search all {{ category }} on eBay →</a>
+  </div>
+  {% if ebay_error %}
+    <div class="empty-state"><h3>Live products are temporarily unavailable</h3><p>{{ ebay_error }}</p></div>
+  {% elif ebay_items %}
+    <div class="grid stores-grid">
+      {% for item in ebay_items %}
+      <article class="card store-card">
+        <div class="store-icon">{% if item.image %}<img src="{{ item.image }}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:12px">{% else %}e{% endif %}</div>
+        <div><b>{{ item.title }}</b><span>{{ item.price }}{% if item.condition %} · {{ item.condition }}{% endif %}</span>{% if item.url %}<a class="text-link" href="{{ item.url }}" target="_blank" rel="nofollow sponsored noopener">View on eBay →</a>{% endif %}</div>
+      </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state"><h3>No live products found</h3><p>Try one of the subcategories above.</p></div>
+  {% endif %}
+</section>
+{% endblock %}
