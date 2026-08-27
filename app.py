@@ -6,7 +6,12 @@ from flask import Flask, render_template, abort, Response, request, url_for, red
 
 BASE=os.path.dirname(os.path.abspath(__file__))
 DB=os.environ.get('DATABASE_PATH', os.path.join(BASE,'data','uscouponhub.db'))
-CSV_FILE=os.environ.get('STORES_CSV', os.path.join(BASE,'data','Stores_Final.csv'))
+DEFAULT_CSV=os.path.join(BASE,'data','Stores_Final.csv')
+if not os.path.exists(DEFAULT_CSV):
+    # The project ZIP stores the CSV in the project root, so support both
+    # layouts and avoid a fresh deployment starting with an empty database.
+    DEFAULT_CSV=os.path.join(BASE,'Stores_Final.csv')
+CSV_FILE=os.environ.get('STORES_CSV', DEFAULT_CSV)
 app=Flask(__name__)
 @app.template_filter('format_number')
 def format_number(value):
