@@ -337,8 +337,12 @@ def log_search(c, q, route_type, matched_slug=None, results_count=0):
 @app.route('/stores')
 def search_page():
     q=request.args.get('q','').strip()
-    page=max(1,int(request.args.get('page',1)))
-    per_page=50; offset=(page-1)*per_page
+    try:
+        page=max(1, int(request.args.get('page', 1)))
+    except (TypeError, ValueError):
+        page=1
+    per_page=50
+    offset=(page-1)*per_page
     c=conn(); route_type,target,classified_count=classify_search(c,q)
     if q and route_type=='store' and target:
         log_search(c,q,'store',target,classified_count); c.close()
@@ -357,8 +361,17 @@ def search_page():
     else:
         total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1').fetchone()[0]
         results=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(per_page,offset)).fetchall()
+    total_pages=max(1, (total + per_page - 1) // per_page)
+    if page > total_pages:
+        page=total_pages
+        offset=(page-1)*per_page
+        if q:
+            pattern=f'%{q}%'
+            results=c.execute('SELECT * FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?) ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(pattern,pattern,per_page,offset)).fetchall()
+        else:
+            results=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(per_page,offset)).fetchall()
     c.close()
-    return render_template('search.html',q=q,results=results,page=page,total=total,per_page=per_page)
+    return render_template('search.html',q=q,results=results,page=page,total=total,per_page=per_page,total_pages=total_pages)
 
 @app.route('/search-insights/')
 def search_insights():
