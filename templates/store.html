@@ -48,6 +48,15 @@
   {% endif %}
 </section>
 
+<section class="ebay-store-bridge">
+  <div class="ebay-store-copy">
+    <span class="ebay-live-badge">LIVE EBAY SEARCH</span>
+    <h2>Find {{ store.name }} deals on eBay</h2>
+    <p>Search live eBay listings related to {{ store.name }} and compare available products, prices and shipping.</p>
+  </div>
+  <a class="ebay-store-button" href="/ebay/search/?q={{ store.name|urlencode }}">Search {{ store.name }} on eBay <span>→</span></a>
+</section>
+
 <section id="terms" class="content seo-grid coupon-info-grid">
  <article>
   <h2>How to use a {{ store.name }} coupon</h2>
