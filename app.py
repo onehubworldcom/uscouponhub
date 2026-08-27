@@ -163,6 +163,8 @@ def init_db():
     c.execute('''CREATE TABLE IF NOT EXISTS affiliate_merchants (id INTEGER PRIMARY KEY AUTOINCREMENT, network_id INTEGER NOT NULL, merchant_name TEXT NOT NULL, merchant_domain TEXT, merchant_external_id TEXT, status TEXT DEFAULT 'pending', UNIQUE(network_id, merchant_external_id))''')
     c.execute('''CREATE TABLE IF NOT EXISTS store_affiliate_matches (id INTEGER PRIMARY KEY AUTOINCREMENT, store_id INTEGER NOT NULL, network_id INTEGER NOT NULL, merchant_id INTEGER, affiliate_url TEXT, status TEXT DEFAULT 'pending', match_method TEXT DEFAULT 'manual', confidence REAL, created_at TEXT)''')
     c.execute('''CREATE TABLE IF NOT EXISTS affiliate_clicks (id INTEGER PRIMARY KEY AUTOINCREMENT, store_id INTEGER, match_id INTEGER, network_id INTEGER, clicked_at TEXT)''')
+    # Privacy-friendly search analytics: no IPs, cookies, or account identifiers.
+    c.execute('''CREATE TABLE IF NOT EXISTS search_events (id INTEGER PRIMARY KEY AUTOINCREMENT, query TEXT NOT NULL, normalized_query TEXT NOT NULL, route_type TEXT NOT NULL, matched_slug TEXT, results_count INTEGER DEFAULT 0, created_at TEXT NOT NULL)''')
     c.execute('''CREATE TABLE IF NOT EXISTS offers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         store_id INTEGER NOT NULL,
@@ -179,6 +181,7 @@ def init_db():
     c.execute('CREATE INDEX IF NOT EXISTS idx_offers_store ON offers(store_id, active)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_match_store ON store_affiliate_matches(store_id, status)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_click_store ON affiliate_clicks(store_id)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_search_events_query ON search_events(normalized_query, created_at)')
     for priority, slug, name in [(1,'sovrn','Sovrn Commerce'),(2,'awin','Awin'),(3,'cj','CJ Affiliate'),(4,'impact','Impact'),(5,'rakuten','Rakuten Advertising'),(6,'ebay','eBay Partner Network')]:
         c.execute('INSERT OR IGNORE INTO affiliate_networks(name,slug,priority,active,created_at) VALUES (?,?,?,?,?)',(name,slug,priority,0,datetime.utcnow().isoformat()))
     count=c.execute('SELECT COUNT(*) FROM stores').fetchone()[0]
@@ -205,17 +208,71 @@ def home():
     c=conn(); stores=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT 12').fetchall(); total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1').fetchone()[0]; c.close()
     return render_template('home.html',stores=stores,total=total)
 
+def normalize_search_query(value):
+    value=(value or '').strip().lower()
+    value=re.sub(r'\s+',' ',value)
+    return value[:180]
+
+def classify_search(c, q):
+    """Choose the best internal destination without sending users off-site."""
+    normalized=normalize_search_query(q)
+    if not normalized:
+        return 'directory', None, 0
+    q_slug=clean_slug(normalized)
+    exact=c.execute('SELECT * FROM stores WHERE active=1 AND (slug=? OR lower(name)=?) LIMIT 1',(q_slug,normalized)).fetchone()
+    if exact:
+        return 'store', exact['slug'], 1
+    category_map={'fashion':'fashion','clothes':'fashion','clothing':'fashion','shoes':'fashion','electronics':'electronics','tech':'electronics','beauty':'beauty','makeup':'beauty','home':'home-garden','garden':'home-garden','travel':'travel','food':'food-drink','software':'software','baby':'baby-kids','kids':'baby-kids','shopping':'shopping'}
+    if normalized in category_map:
+        return 'category', category_map[normalized], 1
+    pattern=f'%{normalized}%'
+    count=c.execute('SELECT COUNT(*) FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?)',(pattern,pattern)).fetchone()[0]
+    if count==1:
+        one=c.execute('SELECT slug FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?) LIMIT 1',(pattern,pattern)).fetchone()
+        if one:
+            return 'store', one['slug'], count
+    return ('directory' if count else 'ebay'), None, count
+
+def log_search(c, q, route_type, matched_slug=None, results_count=0):
+    if not q:
+        return
+    c.execute('INSERT INTO search_events(query,normalized_query,route_type,matched_slug,results_count,created_at) VALUES (?,?,?,?,?,?)',(q[:180],normalize_search_query(q),route_type,matched_slug,results_count,datetime.utcnow().isoformat()))
+    c.commit()
+
 @app.route('/search/')
 def search_page():
-    q=request.args.get('q','').strip(); page=max(1,int(request.args.get('page',1))); per_page=50; offset=(page-1)*per_page
-    c=conn()
+    q=request.args.get('q','').strip()
+    page=max(1,int(request.args.get('page',1)))
+    per_page=50; offset=(page-1)*per_page
+    c=conn(); route_type,target,classified_count=classify_search(c,q)
+    if q and route_type=='store' and target:
+        log_search(c,q,'store',target,classified_count); c.close()
+        return redirect(url_for('store_page',slug=target))
+    if q and route_type=='category' and target:
+        log_search(c,q,'category',target,classified_count); c.close()
+        return redirect(url_for('category_page',category_slug=target))
+    if q and route_type=='ebay':
+        log_search(c,q,'ebay',None,0); c.close()
+        return redirect(url_for('ebay_search_page',q=q))
     if q:
-        pattern=f'%{q}%'; total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?)',(pattern,pattern)).fetchone()[0]
+        pattern=f'%{q}%'
+        total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?)',(pattern,pattern)).fetchone()[0]
         results=c.execute('SELECT * FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?) ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(pattern,pattern,per_page,offset)).fetchall()
+        log_search(c,q,'directory',None,total)
     else:
         total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1').fetchone()[0]
         results=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(per_page,offset)).fetchall()
-    c.close(); return render_template('search.html',q=q,results=results,page=page,total=total,per_page=per_page)
+    c.close()
+    return render_template('search.html',q=q,results=results,page=page,total=total,per_page=per_page)
+
+@app.route('/search-insights/')
+def search_insights():
+    days=max(1,min(365,int(request.args.get('days',30))))
+    c=conn(); since=f'-{days} days'
+    summary=c.execute("SELECT COUNT(*) AS searches, COUNT(DISTINCT normalized_query) AS unique_queries FROM search_events WHERE created_at >= datetime(\'now\', ?)",(since,)).fetchone()
+    top=c.execute("SELECT normalized_query, COUNT(*) AS volume, SUM(CASE WHEN route_type=\'store\' THEN 1 ELSE 0 END) AS store_matches, SUM(CASE WHEN route_type=\'category\' THEN 1 ELSE 0 END) AS category_matches, SUM(CASE WHEN route_type=\'ebay\' THEN 1 ELSE 0 END) AS ebay_fallbacks FROM search_events WHERE created_at >= datetime(\'now\', ?) AND normalized_query<>\'\' GROUP BY normalized_query ORDER BY volume DESC, normalized_query LIMIT 100",(since,)).fetchall()
+    c.close()
+    return render_template('search_insights.html',days=days,summary=summary,top=top)
 
 @app.route('/<slug>')
 def store_page(slug):
