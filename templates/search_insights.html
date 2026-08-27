@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Search Insights | US Coupon Hub{% endblock %}
+{% block content %}
+<section class="directory-hero"><p class="eyebrow">SEARCH INSIGHTS</p><h1>What shoppers are looking for</h1><p>Aggregated search demand for the last {{ days }} days. No IP addresses or personal identifiers are stored.</p></section>
+<section class="section search-results"><div class="coupon-info-grid"><article class="seo-card"><h3>Total searches</h3><p style="font-size:2rem"><b>{{ summary.searches|format_number }}</b></p></article><article class="seo-card"><h3>Unique queries</h3><p style="font-size:2rem"><b>{{ summary.unique_queries|format_number }}</b></p></article></div><h2>Top search terms</h2><div class="coupon-list">{% for row in top %}<article class="coupon-card"><div class="coupon-main"><div class="coupon-copy"><h3>{{ row.normalized_query }}</h3><p>{{ row.volume }} searches • Store {{ row.store_matches }} • Category {{ row.category_matches }} • eBay fallback {{ row.ebay_fallbacks }}</p></div><a class="get-deal-button" href="/search/?q={{ row.normalized_query|urlencode }}">Open →</a></div></article>{% else %}<div class="empty-state"><h3>No searches recorded yet</h3><p>Searches will appear here as visitors use the site search.</p></div>{% endfor %}</div></section>
+{% endblock %}
