@@ -13,7 +13,7 @@
 </section>
 <section class="section search-results">
   {% if q %}
-    <h2>eBay results for “{{ q }}”</h2>
+    <h2>eBay results for “{{ q }}”</h2>{% if matched_query and matched_query|lower != q|lower %}<p class="muted">Showing the closest product matches for this search: {{ matched_query }}</p>{% endif %}
     {% if error %}
       <div class="empty-state"><h3>Search not available</h3><p>{{ error }}</p></div>
     {% elif items %}
