@@ -32,6 +32,51 @@ CATEGORY_CONFIG={
     'baby-kids': {'label':'Baby & Kids','aliases':['baby','kids','children','toys'], 'query':'baby kids', 'subcategories':['Baby Gear','Kids Clothing','Toys','School']},
 }
 
+# Smart eBay search mapping. Generic directory labels can produce unrelated
+# marketplace results, so translate them into product-focused searches.
+SMART_EBAY_SEARCH = {
+    'shopping': ['popular shopping products', 'electronics home fashion'],
+    'deals': ['clearance deals new products', 'sale items free shipping'],
+    'department stores': ['department store clothing home goods', 'brand name retail clothing home'],
+    'department store': ['department store clothing home goods', 'brand name retail clothing home'],
+    'gift cards': ['gift cards digital codes', 'apple amazon visa gift cards'],
+    'gift card': ['gift cards digital codes', 'apple amazon visa gift cards'],
+    'fashion': ['new clothing shoes accessories', 'fashion apparel deals'],
+    'electronics': ['consumer electronics phones laptops', 'electronics accessories new'],
+    'beauty': ['beauty skincare makeup new', 'makeup fragrance skincare'],
+    'home & garden': ['home kitchen garden products', 'home decor furniture deals'],
+    'travel': ['travel luggage accessories', 'travel bags organizers'],
+    'food & drink': ['kitchen food storage coffee', 'kitchen cookware accessories'],
+    'software': ['software digital license', 'computer software license'],
+    'baby & kids': ['baby gear kids toys', 'baby clothing toys'],
+}
+
+def smart_ebay_queries(query, category=''):
+    normalized = normalize_search_query(query)
+    cat = normalize_search_query(category)
+    candidates = []
+    if normalized in SMART_EBAY_SEARCH:
+        candidates.extend(SMART_EBAY_SEARCH[normalized])
+    else:
+        if normalized:
+            candidates.append((query or '').strip())
+        simplified = re.sub(r'^[0-9][0-9.\-\s]*', '', query or '').strip()
+        if simplified and normalize_search_query(simplified) != normalized:
+            candidates.append(simplified)
+        if cat in SMART_EBAY_SEARCH:
+            candidates.extend(SMART_EBAY_SEARCH[cat])
+        else:
+            category_slug = category_from_query(cat) if cat else None
+            if category_slug:
+                candidates.append(CATEGORY_CONFIG[category_slug].get('query', category_slug.replace('-', ' ')))
+    seen=set(); ordered=[]
+    for candidate in candidates:
+        candidate=(candidate or '').strip(); key=normalize_search_query(candidate)
+        if candidate and key not in seen:
+            seen.add(key); ordered.append(candidate)
+    return ordered[:4]
+
+
 def category_from_query(value):
     normalized=normalize_search_query(value) if 'normalize_search_query' in globals() else (value or '').strip().lower()
     for slug, cfg in CATEGORY_CONFIG.items():
@@ -155,6 +200,34 @@ def ebay_search_items(query, limit=12):
             'shipping': shipping_cost
         })
     return items, None
+
+def ebay_items_match_query(items, query):
+    # Only enforce relevance for specific store/brand searches. Generic labels
+    # intentionally use mapped product searches and should not be filtered here.
+    generic={'store','stores','shop','shopping','deal','deals','boutique','online'}
+    words=[w for w in re.findall(r'[a-z0-9]+', normalize_search_query(query)) if len(w)>=3 and w not in generic and not w.isdigit()]
+    if not words:
+        return True
+    sample=' '.join((item.get('title') or '').lower() for item in (items or [])[:6])
+    return any(word in sample for word in words)
+
+def ebay_search_smart(query, category='', limit=12):
+    queries=smart_ebay_queries(query, category)
+    if not queries:
+        return [], None, ''
+    last_error=None
+    original_normalized=normalize_search_query(query)
+    for index, candidate in enumerate(queries):
+        items, error=ebay_search_items(candidate, limit=limit)
+        if items:
+            # If an exact store search returns clearly unrelated items, continue
+            # to the alternate query/category instead of showing bad matches.
+            if index == 0 and original_normalized not in SMART_EBAY_SEARCH and not ebay_items_match_query(items, candidate) and len(queries) > 1:
+                continue
+            return items, None, candidate
+        if error:
+            last_error=error
+    return [], last_error, queries[0]
 
 
 def conn():
@@ -321,12 +394,14 @@ def affiliate_go(slug):
 @app.route('/ebay/search/')
 def ebay_search_page():
     q = request.args.get('q', '').strip()
+    category = request.args.get('category', '').strip()
     items = []
     error = None
+    matched_query = ''
     if q:
-        items, error = ebay_search_items(q)
+        items, error, matched_query = ebay_search_smart(q, category=category)
         items = items or []
-    return render_template('ebay_search.html', q=q, items=items, error=error)
+    return render_template('ebay_search.html', q=q, items=items, error=error, matched_query=matched_query, category=category)
 
 @app.route('/ebay/debug/')
 def ebay_debug():
@@ -430,8 +505,8 @@ def category_page(category_slug):
         if clauses:
             stores=c.execute(f'SELECT * FROM stores WHERE active=1 AND ({clauses}) ORDER BY name COLLATE NOCASE LIMIT 24',params).fetchall()
     c.close()
-    ebay_items, ebay_error=ebay_search_items(cfg['query'], limit=9)
-    return render_template('category.html',category=category,category_slug=category_slug,stores=stores,subcategories=cfg.get('subcategories',[]),ebay_items=ebay_items or [],ebay_error=ebay_error)
+    ebay_items, ebay_error, ebay_query=ebay_search_smart(category, category=category, limit=9)
+    return render_template('category.html',category=category,category_slug=category_slug,stores=stores,subcategories=cfg.get('subcategories',[]),ebay_items=ebay_items or [],ebay_error=ebay_error,ebay_query=ebay_query)
 
 @app.route('/seasonal/<event_slug>/')
 def seasonal_page(event_slug): return render_template('seasonal.html',event=event_slug.replace('-',' ').title())
