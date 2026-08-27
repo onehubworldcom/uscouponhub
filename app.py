@@ -272,20 +272,29 @@ def ebay_debug():
 
 
 @app.route('/ebay/account-deletion', methods=['GET', 'POST'])
+@app.route('/ebay/account-deletion/', methods=['GET', 'POST'])
 def ebay_account_deletion():
-    endpoint = 'https://uscouponhub.com/ebay/account-deletion'
+    # IMPORTANT: eBay verifies the SHA-256 hash using the exact public endpoint
+    # URL configured in the eBay Developer Portal. Keep this URL in Render's
+    # environment variables so it can match the deployed domain exactly.
+    endpoint = os.environ.get(
+        'EBAY_ACCOUNT_DELETION_ENDPOINT',
+        'https://uscouponhub.onrender.com/ebay/account-deletion'
+    ).strip().rstrip('/')
+
     if request.method == 'GET':
-        challenge_code = request.args.get('challenge_code', '')
-        verification_token = os.environ.get('EBAY_VERIFICATION_TOKEN', '')
-        if not challenge_code or not verification_token:
-            abort(400)
+        challenge_code = request.args.get('challenge_code', '').strip()
+        verification_token = os.environ.get('EBAY_VERIFICATION_TOKEN', '').strip()
+        if not challenge_code or not verification_token or not endpoint:
+            return {'error': 'Missing challenge code or eBay verification configuration.'}, 400
+
         challenge_response = hashlib.sha256(
             (challenge_code + verification_token + endpoint).encode('utf-8')
         ).hexdigest()
         return {'challengeResponse': challenge_response}, 200
 
-    # Acknowledge deletion notifications immediately. This application does not
-    # persist eBay user data, so there is no eBay user record to delete here.
+    # Acknowledge eBay marketplace account deletion notifications immediately.
+    # This app does not currently store eBay user records.
     return '', 204
 
 @app.route('/affiliate-disclosure/')

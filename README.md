@@ -34,3 +34,13 @@ For initial testing SQLite is fine. For a public site with high traffic, migrate
 - Default production marketplace is `EBAY_US`.
 - The client secret stays server-side and is never exposed to visitors.
 - eBay item search displays listings, not guaranteed coupon codes.
+
+
+## eBay Marketplace Account Deletion setup
+
+For the Production eBay keyset, configure these Render environment variables:
+
+- `EBAY_VERIFICATION_TOKEN` - a private token you choose.
+- `EBAY_ACCOUNT_DELETION_ENDPOINT` - the exact public HTTPS URL entered in eBay Developer Portal, for example `https://uscouponhub.onrender.com/ebay/account-deletion`.
+
+In eBay Developer Portal > Alerts & Notifications > Marketplace Account Deletion, enter the same endpoint URL and the same verification token. The app responds to eBay's GET challenge with the required SHA-256 `challengeResponse` and accepts POST deletion notifications with HTTP 204.
