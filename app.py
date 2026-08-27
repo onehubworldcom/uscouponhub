@@ -274,26 +274,44 @@ def ebay_debug():
 @app.route('/ebay/account-deletion', methods=['GET', 'POST'])
 @app.route('/ebay/account-deletion/', methods=['GET', 'POST'])
 def ebay_account_deletion():
-    # IMPORTANT: eBay verifies the SHA-256 hash using the exact public endpoint
-    # URL configured in the eBay Developer Portal. Keep this URL in Render's
-    # environment variables so it can match the deployed domain exactly.
+    # eBay Marketplace Account Deletion notification endpoint.
+    # eBay sends a GET request containing challenge_code when it validates
+    # this URL. The response must contain the SHA-256 challengeResponse.
     endpoint = os.environ.get(
         'EBAY_ACCOUNT_DELETION_ENDPOINT',
         'https://uscouponhub.onrender.com/ebay/account-deletion'
     ).strip().rstrip('/')
 
-    if request.method == 'GET':
-        challenge_code = request.args.get('challenge_code', '').strip()
-        verification_token = os.environ.get('EBAY_VERIFICATION_TOKEN', '').strip()
-        if not challenge_code or not verification_token or not endpoint:
-            return {'error': 'Missing challenge code or eBay verification configuration.'}, 400
+    verification_token = os.environ.get('EBAY_VERIFICATION_TOKEN', '').strip()
+
+    # eBay uses challenge_code. Also accept challengeCode for safe compatibility
+    # with manual tests or alternate clients.
+    challenge_code = (
+        request.args.get('challenge_code')
+        or request.args.get('challengeCode')
+        or ''
+    ).strip()
+
+    if challenge_code:
+        if not verification_token or not endpoint:
+            return {
+                'error': 'Missing eBay verification configuration.'
+            }, 500
 
         challenge_response = hashlib.sha256(
             (challenge_code + verification_token + endpoint).encode('utf-8')
         ).hexdigest()
         return {'challengeResponse': challenge_response}, 200
 
-    # Acknowledge eBay marketplace account deletion notifications immediately.
+    # A normal GET without a challenge is useful for health checks. It must not
+    # expose secrets or configuration values.
+    if request.method == 'GET':
+        return {
+            'status': 'eBay account deletion endpoint is ready',
+            'challenge_required': True
+        }, 200
+
+    # Acknowledge actual account-deletion notifications immediately.
     # This app does not currently store eBay user records.
     return '', 204
 
