@@ -19,6 +19,26 @@ CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chi
 CATEGORIES=['shopping','fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
 RESERVED={'states','cities','categories','seasonal','search','sitemap.xml','robots.txt','static','favicon.ico'}
 
+
+CATEGORY_CONFIG={
+    'shopping': {'label':'Shopping','aliases':['shopping','deals','stores'], 'query':'shopping deals', 'subcategories':['Department Stores','Deals','Gift Cards']},
+    'fashion': {'label':'Fashion','aliases':['fashion','clothes','clothing','apparel','shoes'], 'query':'fashion clothing shoes', 'subcategories':['Women’s Fashion','Men’s Fashion','Shoes','Accessories']},
+    'electronics': {'label':'Electronics','aliases':['electronics','tech','technology','gadgets'], 'query':'electronics', 'subcategories':['Phones & Tablets','Laptops & Computers','TV & Home Theater','Gaming','Cameras']},
+    'beauty': {'label':'Beauty','aliases':['beauty','makeup','skincare','skin care','cosmetics'], 'query':'beauty skincare makeup', 'subcategories':['Makeup','Skin Care','Hair Care','Fragrance']},
+    'home-garden': {'label':'Home & Garden','aliases':['home','garden','furniture','home decor'], 'query':'home garden', 'subcategories':['Furniture','Home Decor','Kitchen','Garden']},
+    'travel': {'label':'Travel','aliases':['travel','hotel','hotels','flights'], 'query':'travel accessories', 'subcategories':['Hotels','Flights','Luggage','Travel Accessories']},
+    'food-drink': {'label':'Food & Drink','aliases':['food','drink','groceries','grocery'], 'query':'food kitchen', 'subcategories':['Groceries','Restaurants','Coffee & Tea','Kitchen']},
+    'software': {'label':'Software','aliases':['software','apps','app','digital'], 'query':'software', 'subcategories':['Security','Productivity','Creative','Business']},
+    'baby-kids': {'label':'Baby & Kids','aliases':['baby','kids','children','toys'], 'query':'baby kids', 'subcategories':['Baby Gear','Kids Clothing','Toys','School']},
+}
+
+def category_from_query(value):
+    normalized=normalize_search_query(value) if 'normalize_search_query' in globals() else (value or '').strip().lower()
+    for slug, cfg in CATEGORY_CONFIG.items():
+        if normalized == slug or normalized in cfg['aliases']:
+            return slug
+    return None
+
 # eBay Browse API integration
 # Credentials stay in Render environment variables and are never sent to the browser.
 _EBAY_TOKEN = None
@@ -222,9 +242,9 @@ def classify_search(c, q):
     exact=c.execute('SELECT * FROM stores WHERE active=1 AND (slug=? OR lower(name)=?) LIMIT 1',(q_slug,normalized)).fetchone()
     if exact:
         return 'store', exact['slug'], 1
-    category_map={'fashion':'fashion','clothes':'fashion','clothing':'fashion','shoes':'fashion','electronics':'electronics','tech':'electronics','beauty':'beauty','makeup':'beauty','home':'home-garden','garden':'home-garden','travel':'travel','food':'food-drink','software':'software','baby':'baby-kids','kids':'baby-kids','shopping':'shopping'}
-    if normalized in category_map:
-        return 'category', category_map[normalized], 1
+    category_slug=category_from_query(normalized)
+    if category_slug:
+        return 'category', category_slug, 1
     pattern=f'%{normalized}%'
     count=c.execute('SELECT COUNT(*) FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?)',(pattern,pattern)).fetchone()[0]
     if count==1:
@@ -394,7 +414,24 @@ def city_page(city_slug):
 @app.route('/categories/<category_slug>/')
 def category_page(category_slug):
     if category_slug not in CATEGORIES: abort(404)
-    category=category_slug.replace('-',' ').title(); c=conn(); stores=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT 24').fetchall(); c.close(); return render_template('category.html',category=category,stores=stores)
+    cfg=CATEGORY_CONFIG.get(category_slug, {'label':category_slug.replace('-',' ').title(),'query':category_slug.replace('-',' '),'subcategories':[]})
+    category=cfg['label']
+    c=conn()
+    # Prefer stores explicitly assigned to this category. If the imported directory
+    # has not been categorized yet, use a transparent name/keyword match rather
+    # than showing an unrelated alphabetical list.
+    stores=c.execute('SELECT * FROM stores WHERE active=1 AND lower(category)=? ORDER BY name COLLATE NOCASE LIMIT 24',(category.lower(),)).fetchall()
+    if not stores:
+        words=[w for w in re.split(r'[^a-z0-9]+', cfg['query'].lower()) if len(w)>2]
+        aliases=cfg.get('aliases', [])
+        terms=list(dict.fromkeys(words+aliases))[:8]
+        clauses=' OR '.join(['lower(name) LIKE ?' for _ in terms])
+        params=[f'%{term.lower()}%' for term in terms]
+        if clauses:
+            stores=c.execute(f'SELECT * FROM stores WHERE active=1 AND ({clauses}) ORDER BY name COLLATE NOCASE LIMIT 24',params).fetchall()
+    c.close()
+    ebay_items, ebay_error=ebay_search_items(cfg['query'], limit=9)
+    return render_template('category.html',category=category,category_slug=category_slug,stores=stores,subcategories=cfg.get('subcategories',[]),ebay_items=ebay_items or [],ebay_error=ebay_error)
 
 @app.route('/seasonal/<event_slug>/')
 def seasonal_page(event_slug): return render_template('seasonal.html',event=event_slug.replace('-',' ').title())
