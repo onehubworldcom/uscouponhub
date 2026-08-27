@@ -17,7 +17,7 @@ def format_number(value):
 STATES={'california':'California','texas':'Texas','florida':'Florida','new-york':'New York','illinois':'Illinois','pennsylvania':'Pennsylvania','ohio':'Ohio','georgia':'Georgia','north-carolina':'North Carolina','michigan':'Michigan'}
 CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chicago, IL','houston':'Houston, TX','phoenix':'Phoenix, AZ','philadelphia':'Philadelphia, PA','san-antonio':'San Antonio, TX','san-diego':'San Diego, CA','dallas':'Dallas, TX','san-jose':'San Jose, CA'}
 CATEGORIES=['shopping','fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
-RESERVED={'states','cities','categories','seasonal','search','sitemap.xml','robots.txt','static','favicon.ico'}
+RESERVED={'states','cities','categories','seasonal','search','about','privacy','terms','disclaimer','contact','affiliate-disclosure','affiliate-status','sitemap.xml','robots.txt','static','favicon.ico'}
 
 
 CATEGORY_CONFIG={
@@ -467,6 +467,26 @@ def ebay_account_deletion():
     # This app does not currently store eBay user records.
     return '', 204
 
+@app.route('/about/')
+def about_page():
+    return render_template('about.html')
+
+@app.route('/privacy/')
+def privacy_page():
+    return render_template('privacy.html')
+
+@app.route('/terms/')
+def terms_page():
+    return render_template('terms.html')
+
+@app.route('/disclaimer/')
+def disclaimer_page():
+    return render_template('disclaimer.html')
+
+@app.route('/contact/')
+def contact_page():
+    return render_template('contact.html')
+
 @app.route('/affiliate-disclosure/')
 def affiliate_disclosure():
     return render_template('affiliate_disclosure.html')
@@ -518,7 +538,7 @@ def sitemap_index():
 
 @app.route('/sitemap-static.xml')
 def sitemap_static():
-    base='https://uscouponhub.com'; urls=[f'{base}/']+[f'{base}/states/{s}/' for s in STATES]+[f'{base}/cities/{x}/' for x in CITIES]+[f'{base}/categories/{x}/' for x in CATEGORIES]
+    base='https://uscouponhub.com'; urls=[f'{base}/',f'{base}/about/',f'{base}/privacy/',f'{base}/terms/',f'{base}/disclaimer/',f'{base}/contact/',f'{base}/affiliate-disclosure/']+[f'{base}/states/{s}/' for s in STATES]+[f'{base}/cities/{x}/' for x in CITIES]+[f'{base}/categories/{x}/' for x in CATEGORIES]
     return Response('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{u}</loc></url>' for u in urls)+'</urlset>',mimetype='application/xml')
 
 @app.route('/sitemap-stores-<int:part>.xml')
