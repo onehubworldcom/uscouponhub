@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 {% block title %}{{ category }} Coupons, Deals & Shopping {{ current_year }} | US Coupon Hub{% endblock %}
 {% block content %}
+<style>
+/* Category page card spacing fix */
+.category-page .category-card b,
+.category-page .category-card span{display:block}
+.category-page .category-card b{margin-bottom:8px;font-size:18px}
+.category-page .category-card span{color:#526277;line-height:1.45}
+.category-page .category-card{min-height:116px;display:flex;flex-direction:column;justify-content:center}
+.category-page .category-section-title{margin-bottom:18px}
+</style>
+<div class="category-page">
 <section class="storehero">
   <p class="eyebrow">SHOP BY CATEGORY</p>
   <h1>{{ category }} Coupons & Deals {{ current_year }}</h1>
@@ -9,20 +19,20 @@
 
 {% if subcategories %}
 <section class="section">
-  <h2>Explore {{ category }}</h2>
+  <h2 class="category-section-title">Explore {{ category }}</h2>
   <div class="grid">
     {% for sub in subcategories %}
-    <a class="card" href="/ebay/search/?q={{ sub|urlencode }}"><b>{{ sub }}</b><span>Browse current eBay products →</span></a>
+    <a class="card category-card" href="/ebay/search/?q={{ sub|urlencode }}"><b>{{ sub }}</b><span>Browse current eBay products →</span></a>
     {% endfor %}
   </div>
 </section>
 {% endif %}
 
 <section class="section">
-  <h2>Relevant stores on US Coupon Hub</h2>
+  <h2 class="category-section-title">Relevant stores on US Coupon Hub</h2>
   {% if stores %}
   <div class="grid">
-    {% for s in stores %}<a class="card" href="/{{ s.slug }}"><b>{{ s.name }}</b><span>Coupons & Promo Codes</span></a>{% endfor %}
+    {% for s in stores %}<a class="card category-card" href="/{{ s.slug }}"><b>{{ s.name }}</b><span>Coupons &amp; Promo Codes</span></a>{% endfor %}
   </div>
   {% else %}
   <div class="empty-state"><h3>No verified category stores listed yet</h3><p>We’ll keep the category useful by showing live product matches below.</p></div>
@@ -49,4 +59,5 @@
     <div class="empty-state"><h3>No live products found</h3><p>Try one of the subcategories above.</p></div>
   {% endif %}
 </section>
+</div>
 {% endblock %}
