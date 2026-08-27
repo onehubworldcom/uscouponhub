@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}{{ guide.title }} | US Coupon Hub{% endblock %}
+{% block description %}{{ guide.description }}{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><p class="eyebrow">SHOPPING GUIDE</p><h1>{{ guide.title }}</h1><p>{{ guide.description }}</p></div></section>
+<section class="section article-section"><article class="article-card"><p class="article-intro">{{ guide.intro }}</p>{% for heading, text in guide.sections %}<section><h2>{{ loop.index }}. {{ heading }}</h2><p>{{ text }}</p></section>{% endfor %}<div class="guide-tips"><h2>Quick checklist</h2><ul>{% for tip in guide.tips %}<li>{{ tip }}</li>{% endfor %}</ul></div><p class="article-note">This guide is provided for general shopping information. Always review the seller’s current price, terms and policies before completing a purchase.</p></article><p class="back-guides"><a href="/guides/">← Back to all shopping guides</a></p></section>
+{% endblock %}

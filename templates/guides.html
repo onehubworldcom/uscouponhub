@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}Shopping Guides | Save Money & Shop Smarter | US Coupon Hub{% endblock %}
+{% block description %}Original shopping guides with practical tips for saving money, comparing deals, using promo codes and planning seasonal purchases.{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><p class="eyebrow">SHOPPING GUIDES</p><h1>Shop smarter with practical guides</h1><p>Helpful, original guides for comparing online deals, using promo codes carefully and planning seasonal shopping.</p></div></section>
+<section class="section"><div class="section-head"><div><p class="eyebrow">US COUPON HUB RESOURCES</p><h2>Guides for better shopping decisions</h2><p>Start with a topic below and use the tips as a simple checklist before you buy.</p></div></div><div class="grid guides-grid">{% for slug, guide in guides.items() %}<a class="guide-card" href="/guides/{{ slug }}/"><span class="guide-icon">✦</span><div><h3>{{ guide.title }}</h3><p>{{ guide.description }}</p><b>Read guide →</b></div></a>{% endfor %}</div></section>
+{% endblock %}
