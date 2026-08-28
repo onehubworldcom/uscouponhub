@@ -1,1 +1,42 @@
-{% extends 'base.html' %}{% block title %}Coupons & Local Shopping Deals in {{ city }} | US Coupon Hub<section><h2>Popular Stores to Explore</h2><div class="store-grid">{% for store in stores|default([]) %}<a class="store-card" href="/{{ store.slug }}"><strong>{{ store.name }}</strong><span>Coupons & promo codes</span></a>{% endfor %}</div></section>{% endblock %}{% block content %}<section class="storehero"><p class="eyebrow">LOCAL SAVINGS GUIDE</p><h1>Coupons and Shopping Deals in {{ city }}</h1><p>Explore useful shopping and savings information for {{ city }}. We will only expand city pages with genuinely helpful local content, events and store information.</p></section><section class="content"><h2>Shopping in {{ city }}</h2><p>This page is designed for useful local savings information—not duplicate city keyword pages. As local store, event and seasonal deal data is added, this guide can grow with unique information for shoppers.</p></section><section><h2>Popular Stores to Explore</h2><div class="store-grid">{% for store in stores|default([]) %}<a class="store-card" href="/{{ store.slug }}"><strong>{{ store.name }}</strong><span>Coupons & promo codes</span></a>{% endfor %}</div></section>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Coupons & Local Shopping Deals in {{ city }} | US Coupon Hub{% endblock %}
+{% block description %}Explore shopping resources, popular stores and practical savings information for {{ city }}.{% endblock %}
+
+{% block content %}
+<section class="storehero">
+  <p class="eyebrow">LOCAL SAVINGS GUIDE</p>
+  <h1>Coupons and Shopping Deals in {{ city }}</h1>
+  <p>Explore practical shopping and savings resources for {{ city }}. Individual store pages provide additional information and links where available.</p>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">POPULAR STORES</p>
+      <h2>Stores to explore</h2>
+      <p>Browse the US Coupon Hub directory to compare stores and shopping resources.</p>
+    </div>
+    <a class="text-link" href="/stores/">Search all stores →</a>
+  </div>
+  {% if stores %}
+  <div class="grid stores-grid">
+    {% for store in stores %}
+    <a class="card store-card" href="/{{ store.slug }}">
+      <div class="store-icon">{% if store.name and store.name[0].isdigit() %}S{% else %}{{ store.name[0]|upper }}{% endif %}</div>
+      <div><b>{{ store.name }}</b><span>Coupons &amp; promo codes</span></div>
+      <i aria-hidden="true">→</i>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+
+<section class="section">
+  <div class="seo-card">
+    <p class="eyebrow">PRACTICAL SHOPPING</p>
+    <h2>Shopping tips for {{ city }}</h2>
+    <p>Compare the final cost, delivery timing and return policies before ordering. For local events and store-specific information, confirm details directly with the relevant business or official organizer.</p>
+    <a class="text-link" href="/guides/">Explore shopping guides →</a>
+  </div>
+</section>
+{% endblock %}
