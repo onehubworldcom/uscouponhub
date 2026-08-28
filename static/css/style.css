@@ -41,3 +41,9 @@
 
 /* Trust & legal pages */
 .site-footer{display:grid;gap:12px}.footer-links{display:flex;flex-wrap:wrap;gap:10px 18px}.footer-links a{font-size:13px}.legal-hero{background:linear-gradient(145deg,#edf4ff,#fff);border-bottom:1px solid var(--line);padding:72px 8% 48px}.legal-wrap{max-width:980px;margin:0 auto}.legal-hero h1{font-size:48px;letter-spacing:-1.8px;margin:8px 0 12px;color:var(--navy)}.legal-lead{font-size:19px;line-height:1.65;color:#5f6d80;max-width:760px}.legal-content{background:#fff;margin:48px auto 70px;padding:42px 52px;border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 45px #173b670c}.legal-content h2{margin:30px 0 10px;color:var(--navy);font-size:25px}.legal-content h2:first-child{margin-top:0}.legal-content p,.legal-content li{color:#56657a;line-height:1.75;font-size:16px}.legal-content ul{padding-left:22px}@media(max-width:700px){.legal-hero{padding:52px 20px 34px}.legal-hero h1{font-size:38px}.legal-content{margin:28px 14px 48px;padding:28px 22px;border-radius:16px}.footer-links{gap:9px 14px}}
+
+/* Legacy directory safety: prevents unstyled store lists from stretching vertically */
+.store-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.store-grid .store-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;text-decoration:none;color:var(--ink)}
+@media(max-width:950px){.store-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.store-grid{grid-template-columns:1fr}}
