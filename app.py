@@ -303,6 +303,62 @@ def ebay_search_smart(query, category='', limit=12):
     return [], last_error, queries[0]
 
 
+
+def amazon_associate_tag():
+    return os.environ.get('AMAZON_ASSOCIATE_TAG', 'uscouponhub-20').strip()
+
+def amazon_search_url(query):
+    """Build a tagged Amazon.com search link without inventing product links."""
+    q=(query or '').strip()
+    params={'k': q}
+    tag=amazon_associate_tag()
+    if tag:
+        params['tag']=tag
+    return 'https://www.amazon.com/s?' + urlparse.urlencode(params)
+
+def automatic_store_offers(store, existing_offers):
+    """Safe automatic savings cards for stores with no verified coupon feed.
+    These are no-code deals, not fabricated promo codes.
+    """
+    if existing_offers:
+        return list(existing_offers)
+    category=(store['category'] or 'Shopping').replace('-', ' ').title()
+    return [
+        {
+            'title': f'Shop current {store["name"]} offers',
+            'description': 'Automatic savings card. Compare current prices and available promotions before checkout. No coupon code is claimed.',
+            'code': None,
+            'offer_type': 'auto-deal',
+            'badge': 'AUTO DEAL',
+            'verified': 0,
+            'expires_at': None,
+            'active': 1,
+            'source': 'auto'
+        },
+        {
+            'title': f'Compare {category} prices on Amazon',
+            'description': 'Search current products and offers on Amazon. Availability and prices can change.',
+            'code': None,
+            'offer_type': 'amazon',
+            'badge': 'AMAZON',
+            'verified': 0,
+            'expires_at': None,
+            'active': 1,
+            'source': 'amazon'
+        },
+        {
+            'title': f'Check live eBay listings for {store["name"]}',
+            'description': 'Search current eBay listings and compare available items, prices and shipping.',
+            'code': None,
+            'offer_type': 'ebay',
+            'badge': 'EBAY',
+            'verified': 0,
+            'expires_at': None,
+            'active': 1,
+            'source': 'ebay'
+        }
+    ]
+
 def conn():
     c=sqlite3.connect(DB); c.row_factory=sqlite3.Row
     return c
@@ -464,8 +520,19 @@ def store_page(slug):
     related=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? AND name LIKE ? COLLATE NOCASE ORDER BY name LIMIT 6',(slug,f'{first}%')).fetchall()
     if len(related)<6:
         extra=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? ORDER BY name COLLATE NOCASE LIMIT ?',(slug,6-len(related))).fetchall(); related=list(related)+list(extra)
-    offers=c.execute('SELECT * FROM offers WHERE store_id=? AND active=1 ORDER BY verified DESC, id DESC',(store['id'],)).fetchall()
-    match=get_match(c, store['id']); c.close(); return render_template('store.html',store=store,related=related,offers=offers,affiliate_match=match)
+    db_offers=c.execute('SELECT * FROM offers WHERE store_id=? AND active=1 ORDER BY verified DESC, id DESC',(store['id'],)).fetchall()
+    offers=automatic_store_offers(store, db_offers)
+    match=get_match(c, store['id']); c.close()
+    return render_template('store.html',store=store,related=related,offers=offers,affiliate_match=match,amazon_url=amazon_search_url(store['name']))
+
+
+@app.route('/amazon/search/<slug>/')
+def amazon_store_search(slug):
+    if slug in RESERVED: abort(404)
+    c=conn(); store=c.execute('SELECT * FROM stores WHERE slug=? AND active=1',(slug,)).fetchone(); c.close()
+    if not store: abort(404)
+    return redirect(amazon_search_url(store['name']), code=302)
+
 
 @app.route('/go/<slug>/')
 def affiliate_go(slug):
