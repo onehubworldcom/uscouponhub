@@ -1,46 +1,56 @@
 {% extends 'base.html' %}
 {% block title %}US Coupon Hub | Coupon Codes, Promo Codes & Deals {{ current_year }}{% endblock %}
 {% block content %}
-<section class="hero hero-premium coupon-discovery-hero">
+<section class="hero hero-premium hero-upgraded">
   <div class="hero-copy">
-    <div class="hero-kicker"><span>🇺🇸</span> SMARTER SHOPPING STARTS HERE</div>
-    <h1>Find the deal.<br><span>Keep the savings.</span></h1>
-    <p class="hero-lead">Search stores, explore coupon pages and compare shopping options from one clean, simple hub built for US shoppers.</p>
+    <div class="hero-kicker"><span>🇺🇸</span> AMERICA'S DEAL & SAVINGS HUB</div>
+    <h1>Shop smarter.<br><span>Save more.</span></h1>
+    <p class="hero-lead">Find coupon codes, promo codes and store deals in one simple place. Search brands you know and discover seasonal savings across the United States.</p>
     <form class="search hero-search" action="/search/" method="get">
-      <input name="q" placeholder="Search a store or product..." aria-label="Search stores or products">
-      <button type="submit">Search Deals <span>→</span></button>
+      <input name="q" placeholder="Search Nike, Walmart, Gaffos or any store..." aria-label="Search stores">
+      <button type="submit">Find Deals <span>→</span></button>
     </form>
-    <div class="quick-search"><strong>Popular:</strong><a href="/search/?q=Amazon">Amazon</a><a href="/search/?q=Nike">Nike</a><a href="/search/?q=Walmart">Walmart</a><a href="/seasonal/black-friday/">Black Friday</a></div>
-    <div class="stats hero-stats"><span><b>{{ total | format_number }}+</b> Stores indexed</span><span><b>50</b> States to explore</span><span><b>3 ways</b> to discover deals</span></div>
+    <div class="quick-search"><strong>Trending now:</strong><a href="/search/?q=deals">🔥 Deals</a><a href="/seasonal/black-friday/">🖤 Black Friday</a><a href="/seasonal/cyber-monday/">💻 Cyber Monday</a></div>
+    <div class="stats hero-stats">
+      <span><b>{{ total | format_number }}+</b> Stores indexed</span>
+      <span><b>50</b> States to explore</span>
+      <span><b>{{ current_year }}</b> Latest savings</span>
+    </div>
   </div>
-  <div class="hero-visual discovery-panel-wrap">
-    <div class="discovery-panel">
-      <div class="discovery-panel-top"><span class="live-dot"></span><b>DEAL DISCOVERY</b><small>Start with what you need</small></div>
-      <div class="discovery-row"><span class="discovery-icon">🏷️</span><div><b>Coupon pages</b><small>Browse store-specific savings</small></div><span>→</span></div>
-      <div class="discovery-row"><span class="discovery-icon">🛒</span><div><b>Amazon search</b><small>Search marketplace listings</small></div><span>→</span></div>
-      <div class="discovery-row"><span class="discovery-icon">🛍️</span><div><b>eBay deals</b><small>Compare live marketplace results</small></div><span>→</span></div>
-      <div class="discovery-save"><strong>Tip:</strong> Compare the final price, not only the discount percentage.</div>
+  <div class="hero-visual">
+    <div class="deal-orbit orbit-one"></div><div class="deal-orbit orbit-two"></div>
+    <div class="flagcard">
+      <div class="mini-flag">★ ★ ★ ★ ★</div><div class="deal-badge">SAVE BIG</div>
+      <p class="eyebrow light">US COUPON HUB</p>
+      <h2>Deals that<br>feel like a win.</h2>
+      <p>Search stores, discover offers and explore the biggest seasonal savings moments.</p>
+      <div class="flag-stats"><span>🎟️ Promo Codes</span><span>🏷️ Discounts</span></div>
+      <div class="hero-card-note">✓ Built for smarter US shopping</div>
     </div>
   </div>
 </section>
-<section class="trust-strip"><span>🔎 Searchable store directory</span><span>🏷️ Clear coupon information</span><span>🛒 Marketplace comparison</span><span>📱 Mobile-friendly pages</span></section>
-<section class="section start-saving-section">
-  <div class="section-head"><div><p class="eyebrow">START SAVING</p><h2>Choose how you want to shop</h2><p>Three simple paths to discover relevant deals without clutter.</p></div></div>
-  <div class="saving-paths grid three">
-    <a class="saving-path" href="/stores/"><span>🏪</span><h3>Browse stores</h3><p>Explore coupon and promo-code pages for brands in our directory.</p><b>Explore stores →</b></a>
-    <a class="saving-path" href="/stores/?q=amazon"><span>📦</span><h3>Search Amazon</h3><p>Find Amazon-related store pages and continue to marketplace search.</p><b>Find Amazon →</b></a>
-    <a class="saving-path" href="/ebay/search/"><span>🛍️</span><h3>Search eBay</h3><p>Search available eBay listings and compare product options.</p><b>Search eBay →</b></a>
-  </div>
-</section>
+<section class="trust-strip"><span>🔎 Searchable store directory</span><span>⚡ Fast, mobile-friendly pages</span><span>🇺🇸 Built for US shoppers</span><span>🎉 Seasonal deal hubs</span></section>
 <section class="section popular-section">
-  <div class="section-head"><div><p class="eyebrow">FEATURED SEARCHES</p><h2>Start with stores you know</h2><p>Quickly jump into popular brands or browse the complete directory.</p></div><a class="text-link" href="/stores/">Browse all stores →</a></div>
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">FEATURED BRANDS</p>
+      <h2>Start with stores you know</h2>
+      <p>Quickly jump into popular brands or browse the complete coupon directory.</p>
+    </div>
+    <a class="text-link" href="/search/">Browse all stores →</a>
+  </div>
   <div class="featured-brands" aria-label="Featured brand searches">
-    <a href="/search/?q=Nike"><span class="brand-mark nike">N</span><b>Nike</b><small>View savings →</small></a><a href="/search/?q=Walmart"><span class="brand-mark walmart">W</span><b>Walmart</b><small>View savings →</small></a><a href="/search/?q=Amazon"><span class="brand-mark amazon">A</span><b>Amazon</b><small>View savings →</small></a><a href="/search/?q=Target"><span class="brand-mark target">T</span><b>Target</b><small>View savings →</small></a><a href="/search/?q=Best%20Buy"><span class="brand-mark bestbuy">B</span><b>Best Buy</b><small>View savings →</small></a><a href="/search/?q=Adidas"><span class="brand-mark adidas">A</span><b>Adidas</b><small>View savings →</small></a>
+    <a href="/search/?q=Nike"><span class="brand-mark nike">N</span><b>Nike</b><small>View deals →</small></a>
+    <a href="/search/?q=Walmart"><span class="brand-mark walmart">W</span><b>Walmart</b><small>View deals →</small></a>
+    <a href="/search/?q=Amazon"><span class="brand-mark amazon">A</span><b>Amazon</b><small>View deals →</small></a>
+    <a href="/search/?q=Target"><span class="brand-mark target">T</span><b>Target</b><small>View deals →</small></a>
+    <a href="/search/?q=Best%20Buy"><span class="brand-mark bestbuy">B</span><b>Best Buy</b><small>View deals →</small></a>
+    <a href="/search/?q=Adidas"><span class="brand-mark adidas">A</span><b>Adidas</b><small>View deals →</small></a>
   </div>
   <div class="directory-divider"><span>MORE STORES TO EXPLORE</span></div>
-  <div class="grid stores-grid">{% for s in stores %}<a class="card store-card" href="/{{ s.slug }}"><div class="store-icon">{% if s.name[0].isdigit() %}S{% else %}{{ s.name[0]|upper }}{% endif %}</div><div><b>{{ s.name }}</b><span>{{ s.name }} coupons & deals</span></div><i aria-hidden="true">→</i></a>{% endfor %}</div>
+  <div class="grid stores-grid">{% for s in stores %}<a class="card store-card" href="/{{ s.slug }}"><div class="store-icon">{% if s.name[0].isdigit() %}S{% else %}{{ s.name[0]|upper }}{% endif %}</div><div><b>{{ s.name }}</b><span>{{ s.name }} Promo Code {{ current_year }}</span></div><i aria-hidden="true">→</i></a>{% endfor %}</div>
 </section>
 <section class="seasonal-wrap"><div class="section"><div class="section-head"><div><p class="eyebrow">SHOP BY SEASON</p><h2>Big savings moments</h2></div><p>Dedicated pages for major US shopping events and seasonal deal discovery.</p></div><div class="grid three seasonal-grid"><a class="season-card halloween" href="/seasonal/halloween/"><span>🎃</span><b>Halloween Deals</b><small>Costumes, candy & party savings</small><em>Explore →</em></a><a class="season-card blackfriday" href="/seasonal/black-friday/"><span>🖤</span><b>Black Friday</b><small>Major shopping event deals</small><em>Explore →</em></a><a class="season-card cyber" href="/seasonal/cyber-monday/"><span>💻</span><b>Cyber Monday</b><small>Online offers & promo codes</small><em>Explore →</em></a></div></div></section>
-<section class="section guides-home"><div class="section-head"><div><p class="eyebrow">SHOPPING GUIDES</p><h2>Make every shopping decision smarter</h2><p>Original, practical guides for comparing prices, checking promo codes and planning purchases.</p></div><a class="text-link" href="/guides/">View all guides →</a></div><div class="grid three mini-guides"><a class="guide-card" href="/guides/save-money-online-shopping/"><h3>Save money shopping online</h3><p>Simple habits for comparing the full cost and sticking to a budget.</p><b>Read guide →</b></a><a class="guide-card" href="/guides/find-legit-promo-codes/"><h3>Find legitimate promo codes</h3><p>Check sources, conditions and expiry details before checkout.</p><b>Read guide →</b></a><a class="guide-card" href="/guides/compare-online-deals/"><h3>Compare online deals</h3><p>Look beyond the discount percentage and compare the final purchase.</p><b>Read guide →</b></a></div></section>
-<section class="section how"><p class="eyebrow">HOW IT WORKS</p><h2>A simpler way to look for savings</h2><div class="steps"><div><strong>01</strong><h3>Search</h3><p>Find a store, category or product idea.</p></div><div><strong>02</strong><h3>Compare</h3><p>Review offers and marketplace options.</p></div><div><strong>03</strong><h3>Verify</h3><p>Check final price and merchant terms before buying.</p></div></div></section>
+<section class="section guides-home"><div class="section-head"><div><p class="eyebrow">SHOPPING GUIDES</p><h2>Make every shopping decision smarter</h2><p>Original, practical guides for comparing prices, checking promo codes and planning seasonal purchases.</p></div><a class="text-link" href="/guides/">View all guides →</a></div><div class="grid three mini-guides"><a class="guide-card" href="/guides/save-money-online-shopping/"><h3>Save money shopping online</h3><p>Simple habits for comparing the full cost and sticking to a budget.</p><b>Read guide →</b></a><a class="guide-card" href="/guides/find-legit-promo-codes/"><h3>Find legitimate promo codes</h3><p>Check sources, conditions and expiry details before checkout.</p><b>Read guide →</b></a><a class="guide-card" href="/guides/compare-online-deals/"><h3>Compare online deals</h3><p>Look beyond the discount percentage and compare the final purchase.</p><b>Read guide →</b></a></div></section>
+<section class="section how"><p class="eyebrow">HOW US COUPON HUB WORKS</p><h2>A simpler way to look for savings</h2><div class="steps"><div><strong>01</strong><h3>Search a store</h3><p>Find your favorite brand using the store directory.</p></div><div><strong>02</strong><h3>Check current offers</h3><p>Review coupon, promo and discount information.</p></div><div><strong>03</strong><h3>Shop with confidence</h3><p>Visit the store and use an offer when available.</p></div></div></section>
 {% endblock %}
