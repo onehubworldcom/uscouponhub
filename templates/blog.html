@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}Shopping Blog | Daily Savings Ideas | US Coupon Hub{% endblock %}
+{% block description %}Fresh shopping and savings articles from US Coupon Hub, with practical ideas for planning purchases, comparing deals and spending smarter.{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><p class="eyebrow">US COUPON HUB BLOG</p><h1>Fresh shopping & savings ideas</h1><p>New, practical articles can be added regularly to help shoppers plan purchases, compare offers and shop smarter.</p></div></section>
+<section class="section"><div class="section-head"><div><p class="eyebrow">LATEST ARTICLES</p><h2>Read the newest tips</h2><p>Short, useful articles built around real shopping decisions.</p></div></div><div class="grid guides-grid">{% for slug, post in posts.items() %}<a class="guide-card" href="/blog/{{ slug }}/"><span class="guide-icon">✦</span><div><small>{{ post.date }}</small><h3>{{ post.title }}</h3><p>{{ post.description }}</p><b>Read article →</b></div></a>{% endfor %}</div></section>
+{% endblock %}

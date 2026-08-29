@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} | US Coupon Hub{% endblock %}
+{% block description %}{{ post.description }}{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><p class="eyebrow">SHOPPING BLOG • {{ post.date }}</p><h1>{{ post.title }}</h1><p>{{ post.description }}</p></div></section>
+<section class="section article-section"><article class="article-card"><p class="article-intro">{{ post.intro }}</p>{% for heading, text in post.sections %}<section><h2>{{ loop.index }}. {{ heading }}</h2><p>{{ text }}</p></section>{% endfor %}<div class="guide-tips"><h2>Quick checklist</h2><ul>{% for tip in post.tips %}<li>{{ tip }}</li>{% endfor %}</ul></div><p class="article-note">This article provides general shopping information. Prices, offers and store policies can change, so always verify current details before purchasing.</p></article><p class="back-guides"><a href="/blog/">← Back to the blog</a></p></section>
+{% endblock %}
