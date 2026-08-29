@@ -111,15 +111,84 @@ BLOG_POSTS = {
         'title': 'How to Plan a Weekly Shopping Budget',
         'description': 'A simple weekly shopping budget routine to help organize purchases, compare prices and avoid unnecessary spending.',
         'date': '2026-08-29',
-        'intro': 'A weekly shopping budget gives you a simple limit before browsing. The goal is not to remove every extra purchase, but to make planned choices and understand the total cost.',
-        'sections': [
-            ('Start with essentials', 'List groceries and household items you actually need before opening shopping apps or visiting stores.'),
-            ('Set one total limit', 'Choose a realistic weekly amount and keep the total visible while comparing products and shipping costs.'),
-            ('Separate planned and optional purchases', 'Mark items that can wait. This makes it easier to compare alternatives without turning every promotion into a purchase.'),
-            ('Compare the final price', 'Check shipping, taxes, membership conditions and bundle requirements before deciding which option is actually cheaper.'),
-            ('Review at the end of the week', 'Look back at what you bought and what was left over. A short review can improve next week’s list.')
-        ],
+        'category': 'Budgeting',
+        'read_time': '5 min read',
+        'icon': '🧾',
+        'intro': 'A weekly shopping budget gives you a clear limit before browsing. The goal is not to remove every extra purchase, but to make planned choices and understand the total cost.',
+        'sections': [('Start with essentials', 'List groceries and household items you actually need before opening shopping apps or visiting stores.'), ('Set one total limit', 'Choose a realistic weekly amount and keep the total visible while comparing products and shipping costs.'), ('Separate planned and optional purchases', 'Mark items that can wait so promotions do not automatically become purchases.'), ('Compare the final price', 'Check shipping, taxes, membership conditions and bundle requirements before deciding which option is actually cheaper.'), ('Review at the end of the week', 'Look back at what you bought and what was left over. A short review can improve next week’s list.')],
         'tips': ['Make the list before browsing deals.', 'Use a weekly total instead of chasing every individual discount.', 'Keep receipts for larger purchases and returns.']
+    },
+    'how-to-compare-online-prices': {
+        'title': 'How to Compare Online Prices Before You Buy',
+        'description': 'A practical method for comparing products, shipping costs and seller terms before making an online purchase.',
+        'date': '2026-08-28', 'category': 'Smart Shopping', 'read_time': '6 min read', 'icon': '🔎',
+        'intro': 'A lower sticker price does not always mean a lower final cost. Comparing the same product carefully can help you make a clearer decision.',
+        'sections': [('Match the exact product', 'Check model numbers, sizes, colors and included accessories so you are comparing like with like.'), ('Calculate the total cost', 'Include shipping, taxes and required membership fees when reviewing offers.'), ('Check delivery timing', 'A cheaper option may not be useful if the delivery date does not meet your needs.'), ('Read return information', 'Before buying, review the return window and any conditions that apply to the item.'), ('Save your comparison', 'For larger purchases, keep a short note of the options so you can avoid repeatedly starting from scratch.')],
+        'tips': ['Compare the final checkout total.', 'Check the exact product version.', 'Use trusted sellers and payment methods.']
+    },
+    'how-to-check-promo-code': {
+        'title': 'How to Check Whether a Promo Code Is Worth Using',
+        'description': 'A simple checklist for reading promo code conditions and checking whether a discount really improves the final price.',
+        'date': '2026-08-27', 'category': 'Promo Codes', 'read_time': '4 min read', 'icon': '🏷️',
+        'intro': 'Promo codes can be useful, but the percentage alone does not tell the full story. A quick check of the conditions can prevent surprises at checkout.',
+        'sections': [('Read the requirements', 'Look for minimum spend rules, product exclusions and customer eligibility.'), ('Check the expiry date', 'A code can be listed online after it has already expired, so verify the current terms.'), ('Apply one code at a time', 'Testing codes individually makes it easier to see which discount actually changes the total.'), ('Watch for shipping changes', 'A code may remove free shipping eligibility or change the basket in another way.'), ('Compare with other offers', 'A store-wide sale or bundle may sometimes provide a better result than a promo code.')],
+        'tips': ['Check the final amount after applying the code.', 'Do not share unnecessary personal information for a coupon.', 'Save important order confirmations.']
+    },
+    'how-to-avoid-impulse-buying-online': {
+        'title': 'How to Avoid Impulse Buying While Shopping Online',
+        'description': 'Simple habits that can help you pause, prioritize needs and make more intentional online purchases.',
+        'date': '2026-08-26', 'category': 'Budgeting', 'read_time': '5 min read', 'icon': '🛒',
+        'intro': 'Online shopping makes it easy to move from browsing to checkout in a few minutes. Adding a small pause to your routine can make decisions more deliberate.',
+        'sections': [('Shop from a list', 'Start with the items you intended to buy and keep optional items separate.'), ('Use a waiting period', 'For non-urgent purchases, step away before checkout and review the item later.'), ('Ask what problem it solves', 'Consider whether the item fills a real need or is mainly a response to a limited-time message.'), ('Set a maximum', 'A spending limit gives you a simple boundary while browsing.'), ('Unsubscribe from noisy alerts', 'Reduce notifications that repeatedly create pressure to shop when you do not need anything.')],
+        'tips': ['Keep a wish list for items that can wait.', 'Avoid shopping when bored or rushed.', 'Review optional purchases before payment.']
+    },
+    'back-to-school-shopping-checklist': {
+        'title': 'Back-to-School Shopping Checklist for Smarter Spending',
+        'description': 'A practical checklist for organizing school purchases, comparing prices and avoiding duplicate items.',
+        'date': '2026-08-25', 'category': 'Seasonal', 'read_time': '6 min read', 'icon': '🎒',
+        'intro': 'Back-to-school shopping can involve many small purchases that add up quickly. A checklist helps you see what is already available before buying more.',
+        'sections': [('Check what you already have', 'Look through supplies, bags and clothing before creating a new shopping list.'), ('Separate required and optional items', 'Start with school requirements, then decide which upgrades can wait.'), ('Set category budgets', 'Give supplies, clothing and technology separate limits if they are all part of the plan.'), ('Compare multi-pack value', 'Check the unit price and expected use instead of assuming a larger package is always better.'), ('Plan replacements later', 'Leave some budget for items that may be needed after the school year begins.')],
+        'tips': ['Bring the school list while shopping.', 'Check sizes and compatibility before ordering online.', 'Keep receipts for returns or exchanges.']
+    },
+    'how-to-track-seasonal-sales': {
+        'title': 'How to Track Seasonal Sales Without Buying Unnecessarily',
+        'description': 'Use a simple watch list and price notes to follow seasonal offers without letting every promotion drive a purchase.',
+        'date': '2026-08-24', 'category': 'Seasonal', 'read_time': '5 min read', 'icon': '📅',
+        'intro': 'Seasonal sales can be useful when they match a planned need. Tracking only the items you already care about keeps the process focused.',
+        'sections': [('Create a watch list', 'Write down products or categories you expect to need in the coming months.'), ('Note a normal price range', 'A rough baseline gives context when a promotion appears.'), ('Set a maximum budget', 'Decide what you are comfortable spending before the event begins.'), ('Compare terms during the sale', 'Check stock, delivery dates and return policies alongside the advertised price.'), ('Skip irrelevant deals', 'A large discount does not create value if the product was not useful to you.')],
+        'tips': ['Track only planned purchases.', 'Compare final costs, not just discount percentages.', 'Do not let countdown timers rush your decision.']
+    },
+    'safe-online-shopping-checklist': {
+        'title': 'Safe Online Shopping Checklist Before Checkout',
+        'description': 'A straightforward safety checklist for verifying websites, reviewing orders and protecting your shopping accounts.',
+        'date': '2026-08-23', 'category': 'Safety', 'read_time': '5 min read', 'icon': '🔒',
+        'intro': 'A few checks before payment can reduce mistakes and help you confirm that you are using the intended store and account.',
+        'sections': [('Check the website address', 'Make sure the spelling and domain match the store you intended to visit.'), ('Use strong unique passwords', 'Avoid reusing the same password across shopping accounts.'), ('Review the basket', 'Confirm item, quantity, size, shipping address and final total before payment.'), ('Use familiar payment methods', 'Prefer payment methods you understand and can verify.'), ('Keep your confirmation', 'Save the order number and confirmation details until the order is complete.')],
+        'tips': ['Be cautious with unrealistic prices.', 'Do not enter payment details on unfamiliar lookalike sites.', 'Review account activity after major purchases.']
+    },
+    'how-to-build-holiday-gift-budget': {
+        'title': 'How to Build a Holiday Gift Budget',
+        'description': 'A simple planning approach for setting gift limits, organizing recipients and reducing last-minute holiday pressure.',
+        'date': '2026-08-22', 'category': 'Holiday Planning', 'read_time': '6 min read', 'icon': '🎁',
+        'intro': 'Holiday spending becomes easier to manage when the total is planned before the busiest shopping period begins.',
+        'sections': [('List recipients first', 'Write down everyone you expect to buy for before looking at products.'), ('Set a total holiday limit', 'Choose an overall amount that fits your finances, then divide it across categories.'), ('Use individual ranges', 'A range is often more flexible than forcing every gift to have the same price.'), ('Plan early purchases', 'Buying a few planned gifts earlier can reduce last-minute pressure.'), ('Keep a simple record', 'Track what has been purchased so you do not accidentally duplicate gifts.')],
+        'tips': ['Include wrapping and delivery costs.', 'Do not use discounts as a reason to exceed your total plan.', 'Keep gift receipts where appropriate.']
+    },
+    'when-to-buy-big-ticket-items': {
+        'title': 'When to Buy Big-Ticket Items: A Planning Guide',
+        'description': 'A calm approach to researching larger purchases, comparing options and deciding when an offer is worth considering.',
+        'date': '2026-08-21', 'category': 'Smart Shopping', 'read_time': '7 min read', 'icon': '📦',
+        'intro': 'Larger purchases benefit from a slower decision process. Planning the need, features and budget before watching sales can make comparisons easier.',
+        'sections': [('Define the must-have features', 'Write down the features that matter before reading promotional messages.'), ('Research normal pricing', 'Review a few trustworthy sellers to understand the typical range.'), ('Compare ownership costs', 'Consider accessories, subscriptions, maintenance or delivery where relevant.'), ('Review the seller policy', 'Check warranty, return and support information before purchasing.'), ('Decide your trigger price', 'Choose a price range you would be comfortable paying rather than reacting to every sale.')],
+        'tips': ['Take your time when the purchase is not urgent.', 'Compare exact models and versions.', 'Keep all order and warranty information.']
+    },
+    'simple-online-shopping-routine': {
+        'title': 'A Simple Online Shopping Routine That Saves Time',
+        'description': 'A repeatable five-step routine for making lists, comparing options and keeping online purchases organized.',
+        'date': '2026-08-20', 'category': 'Shopping Habits', 'read_time': '4 min read', 'icon': '⚡',
+        'intro': 'A repeatable shopping routine can reduce repeated searching and make it easier to stay focused on what you need.',
+        'sections': [('Make one list', 'Keep planned purchases in one place instead of searching from memory.'), ('Set a research limit', 'Choose a reasonable amount of time for comparing options.'), ('Check the final cost', 'Review shipping, taxes and delivery before deciding.'), ('Save useful stores', 'Keep a short list of retailers you have already evaluated and trust.'), ('Archive confirmations', 'Store important order information where you can find it later.')],
+        'tips': ['Use the same checklist for larger purchases.', 'Avoid opening many unrelated deal pages at once.', 'Review your list before starting a new shopping session.']
     }
 }
 
