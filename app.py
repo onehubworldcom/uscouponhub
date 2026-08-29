@@ -22,7 +22,7 @@ def format_number(value):
 STATES={'california':'California','texas':'Texas','florida':'Florida','new-york':'New York','illinois':'Illinois','pennsylvania':'Pennsylvania','ohio':'Ohio','georgia':'Georgia','north-carolina':'North Carolina','michigan':'Michigan'}
 CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chicago, IL','houston':'Houston, TX','phoenix':'Phoenix, AZ','philadelphia':'Philadelphia, PA','san-antonio':'San Antonio, TX','san-diego':'San Diego, CA','dallas':'Dallas, TX','san-jose':'San Jose, CA'}
 CATEGORIES=['shopping','fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
-RESERVED={'states','cities','categories','seasonal','guides','search','stores','about','privacy','terms','disclaimer','contact','affiliate-disclosure','affiliate-status','sitemap.xml','robots.txt','static','favicon.ico'}
+RESERVED={'states','cities','categories','seasonal','guides','blog','search','stores','about','privacy','terms','disclaimer','contact','affiliate-disclosure','affiliate-status','sitemap.xml','robots.txt','static','favicon.ico'}
 
 
 CATEGORY_CONFIG={
@@ -103,6 +103,24 @@ SHOPPING_GUIDES = {
         'intro': 'Seasonal promotions can be useful for planned purchases, but the best approach is to start with a need and then evaluate available offers.',
         'sections': [('Plan around real needs', 'Make a list of purchases you expect in the coming months before major sale periods begin.'), ('Understand the season', 'Different events emphasize different product categories, so compare what is actually relevant to your list.'), ('Check stock and alternatives', 'Have alternatives ready for popular products that may sell out.'), ('Review policies before checkout', 'Seasonal sales can have different return or delivery conditions.'), ('Track results after shopping', 'Review whether the purchases were useful and within budget to improve future planning.')],
         'tips': ['Use seasonal events as opportunities, not obligations.', 'Compare the final price before buying.', 'Keep a record of large purchases for warranty and return purposes.']},
+}
+
+
+BLOG_POSTS = {
+    'how-to-plan-weekly-shopping-budget': {
+        'title': 'How to Plan a Weekly Shopping Budget',
+        'description': 'A simple weekly shopping budget routine to help organize purchases, compare prices and avoid unnecessary spending.',
+        'date': '2026-08-29',
+        'intro': 'A weekly shopping budget gives you a simple limit before browsing. The goal is not to remove every extra purchase, but to make planned choices and understand the total cost.',
+        'sections': [
+            ('Start with essentials', 'List groceries and household items you actually need before opening shopping apps or visiting stores.'),
+            ('Set one total limit', 'Choose a realistic weekly amount and keep the total visible while comparing products and shipping costs.'),
+            ('Separate planned and optional purchases', 'Mark items that can wait. This makes it easier to compare alternatives without turning every promotion into a purchase.'),
+            ('Compare the final price', 'Check shipping, taxes, membership conditions and bundle requirements before deciding which option is actually cheaper.'),
+            ('Review at the end of the week', 'Look back at what you bought and what was left over. A short review can improve next week’s list.')
+        ],
+        'tips': ['Make the list before browsing deals.', 'Use a weekly total instead of chasing every individual discount.', 'Keep receipts for larger purchases and returns.']
+    }
 }
 
 # Smart eBay search mapping. Generic directory labels can produce unrelated
@@ -623,6 +641,20 @@ def ebay_account_deletion():
     return '', 204
 
 
+
+@app.route('/blog')
+@app.route('/blog/')
+def blog_page():
+    return render_template('blog.html', posts=BLOG_POSTS)
+
+@app.route('/blog/<post_slug>')
+@app.route('/blog/<post_slug>/')
+def blog_post_page(post_slug):
+    post=BLOG_POSTS.get(post_slug)
+    if not post:
+        abort(404)
+    return render_template('blog_post.html', post=post, post_slug=post_slug)
+
 @app.route('/guides/')
 def guides_page():
     return render_template('guides.html', guides=SHOPPING_GUIDES)
@@ -705,7 +737,7 @@ def sitemap_index():
 
 @app.route('/sitemap-static.xml')
 def sitemap_static():
-    base='https://uscouponhub.com'; urls=[f'{base}/',f'{base}/stores/',f'{base}/guides/',f'{base}/about/',f'{base}/privacy/',f'{base}/terms/',f'{base}/disclaimer/',f'{base}/contact/',f'{base}/affiliate-disclosure/']+[f'{base}/guides/{slug}/' for slug in SHOPPING_GUIDES]+[f'{base}/states/{s}/' for s in STATES]+[f'{base}/cities/{x}/' for x in CITIES]+[f'{base}/categories/{x}/' for x in CATEGORIES]
+    base='https://uscouponhub.com'; urls=[f'{base}/',f'{base}/stores/',f'{base}/guides/',f'{base}/about/',f'{base}/privacy/',f'{base}/terms/',f'{base}/disclaimer/',f'{base}/contact/',f'{base}/affiliate-disclosure/']+[f'{base}/guides/{slug}/' for slug in SHOPPING_GUIDES]+[f'{base}/blog/']+[f'{base}/blog/{slug}/' for slug in BLOG_POSTS]+[f'{base}/states/{s}/' for s in STATES]+[f'{base}/cities/{x}/' for x in CITIES]+[f'{base}/categories/{x}/' for x in CATEGORIES]
     return Response('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{u}</loc></url>' for u in urls)+'</urlset>',mimetype='application/xml')
 
 @app.route('/sitemap-stores-<int:part>.xml')
