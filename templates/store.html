@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
-{% block title %}{{ store.name }} Promo Code & Coupon Codes {{ current_year }} | Up to 90% Off | US Coupon Hub{% endblock %}
+{% block title %}{{ store.name }} Coupons & Promo Codes {{ current_year }} | US Coupon Hub{% endblock %}
 {% block description %}Explore {{ store.name }} promo codes, coupon codes, sale information and shopping tips for {{ current_year }}. Review current offers and store terms before checkout.{% endblock %}
 {% block content %}
 <nav class="breadcrumbs"><a href="/">Home</a> <span>›</span> <span>{{ store.name }} Coupons</span></nav>
 <section class="storehero coupon-hero">
   <div class="storehero-inner">
     <p class="eyebrow">{{ store.category|upper }} • SAVINGS GUIDE</p>
-    <h1>{{ store.name }} Coupons & Promo Codes - UP TO 90% OFF</h1>
-    <p class="lead">Browse current savings opportunities for {{ store.name }}. We show verified codes when available and clearly separate code offers from no-code deals.</p>
+    <h1>{{ store.name }} Coupons & Promo Codes {{ current_year }}</h1>
+    <p class="lead">Browse the latest savings opportunities for {{ store.name }}. We clearly separate verified coupon codes from no-code deals and avoid publishing unverified discount claims.</p>
     <div class="coupon-hero-points"><span>✓ Clear offer details</span><span>✓ One-click copy</span><span>✓ Check terms before checkout</span></div>
   </div>
 </section>
@@ -19,8 +19,8 @@
 
 <section id="offers" class="coupon-section">
   <div class="coupon-section-head">
-    <div><p class="eyebrow">AUTOMATIC SAVINGS</p><h2>{{ store.name }} offers</h2><p>Verified coupon codes are shown when available. Otherwise, automatic no-code deal cards help shoppers compare current offers without inventing coupon codes.</p></div>
-    <span class="offer-count">{{ offers|length }} verified listing{{ '' if offers|length == 1 else 's' }}</span>
+    <div><p class="eyebrow">AUTOMATIC SAVINGS</p><h2>{{ store.name }} offers</h2><p>Verified coupon codes are shown when available. Otherwise, no-code deal cards help shoppers compare available savings without inventing coupon codes.</p></div>
+    <span class="offer-count">{{ offers|length }} offer{{ '' if offers|length == 1 else 's' }} listed</span>
   </div>
 
   {% if offers %}
@@ -75,7 +75,45 @@
  </article>
  <aside class="seo-card"><h3>Saving checklist</h3><p>Compare the offer with the current sale price and review exclusions before buying.</p><a href="/search/?q={{ store.name|urlencode }}">Find related stores →</a></aside>
 </section>
+
+<section class="content store-seo-links">
+  <div class="store-seo-intro">
+    <p class="eyebrow">SHOPPING RESOURCES</p>
+    <h2>More ways to shop and save</h2>
+    <p>Use US Coupon Hub to compare {{ store.name }} savings with broader shopping resources. These guides can help you research prices, promotions and seasonal shopping opportunities before checkout.</p>
+  </div>
+  <div class="store-resource-grid">
+    <a class="seo-card" href="/guides/find-legit-promo-codes/"><h3>How to Find Legit Promo Codes</h3><p>Learn how to check expiry dates, restrictions and other offer conditions.</p></a>
+    <a class="seo-card" href="/guides/compare-online-deals/"><h3>How to Compare Online Deals</h3><p>Compare product price, shipping, returns and the complete purchase cost.</p></a>
+    <a class="seo-card" href="/guides/save-money-online-shopping/"><h3>Online Shopping Tips</h3><p>Simple ways to plan purchases and avoid relying on headline discounts alone.</p></a>
+    <a class="seo-card" href="/seasonal/black-friday/"><h3>Black Friday Savings</h3><p>Plan major seasonal purchases with price checks and a clear budget.</p></a>
+  </div>
+</section>
+
+{% if related %}
+<section class="content related-stores-section">
+  <p class="eyebrow">RELATED STORES</p>
+  <h2>More stores to explore</h2>
+  <div class="related-store-grid">
+    {% for item in related %}
+    <a class="related-store-card" href="/{{ item.slug }}/">{{ item.name }} Coupons <span>→</span></a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
 <section class="content"><h2>About {{ store.name }}</h2><p>{{ store.name }} is listed in the US Coupon Hub store directory to help shoppers discover relevant savings pages. Store promotions and policies can change, so information should be verified with the merchant before purchase.</p><h2>{{ store.name }} Coupon FAQ</h2><details><summary>Does {{ store.name }} have promo codes?</summary><p>Availability can change. Verified offers will be displayed above when they are available.</p></details><details><summary>Can I combine discounts?</summary><p>Combination rules depend on the merchant and the specific promotion. Check the applicable terms.</p></details><details><summary>Why might a promo code not work?</summary><p>A code may be expired, limited to selected products, require a minimum purchase, or be restricted to certain customers or locations.</p></details></section>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebPage",
+  "name":"{{ store.name }} Coupons & Promo Codes {{ current_year }}",
+  "url":"https://uscouponhub.com/{{ store.slug }}",
+  "isPartOf":{"@type":"WebSite","name":"US Coupon Hub","url":"https://uscouponhub.com/"},
+  "breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://uscouponhub.com/"},{"@type":"ListItem","position":2,"name":"{{ store.name }} Coupons","item":"https://uscouponhub.com/{{ store.slug }}"}]}
+}
+</script>
 <script>
 function copyCoupon(button){
   const code=button.dataset.code;
