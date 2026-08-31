@@ -1,1 +1,43 @@
-{% extends 'base.html' %}{% block title %}{{ event }} Deals, Coupons & Promo Codes {{ current_year }} | US Coupon Hub{% endblock %}{% block content %}<section class="storehero"><p class="eyebrow">SEASONAL SAVINGS</p><h1>{{ event }} Deals & Coupons {{ current_year }}</h1><p>Plan your seasonal shopping with useful deal guides, participating stores and updated savings opportunities.</p></section><section class="content"><h2>How to shop {{ event }} deals smarter</h2><p>Compare offers, check terms and avoid relying on outdated promotions. We will prioritize useful deal information over repetitive keyword pages.</p></section>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}{{ event }} Deals, Coupons & Promo Codes {{ current_year }} | US Coupon Hub{% endblock %}
+{% block description %}Plan {{ event }} shopping with key dates, price-comparison tips, budgeting guidance and smarter seasonal savings from US Coupon Hub.{% endblock %}
+{% block content %}
+<section class="storehero">
+  <p class="eyebrow">SEASONAL SAVINGS</p>
+  <h1>{{ event }} Deals & Coupons {{ current_year }}</h1>
+  <p>Plan your seasonal shopping with useful deal guides, participating stores and updated savings opportunities.</p>
+</section>
+<section class="content">
+  {% if event|lower == 'black friday' %}
+  <h2>2026 Black Friday Shopping Calendar & Planning Guide</h2>
+  <p>Black Friday 2026 falls on <strong>Friday, November 27</strong>, and Cyber Monday falls on <strong>Monday, November 30</strong>. Use this calendar to research prices early, set a budget and focus on purchases you actually need.</p>
+  <h3>August–September: Build your plan</h3>
+  <p>Make a list of planned purchases and set a realistic budget for each category. Note the products that matter most so you can research them before the busiest sale period.</p>
+  <h3>October: Research normal prices</h3>
+  <p>Track the usual prices of important items and compare exact models, sizes and versions. This gives you useful context when retailers publish sale prices.</p>
+  <h3>Early November: Organize your shortlist</h3>
+  <p>Review your list, remove purchases you no longer need and identify trusted stores or suitable alternatives. Check return policies and delivery expectations before the major sale weekend.</p>
+  <h3>Black Friday — November 27, 2026</h3>
+  <p>Compare the actual checkout price rather than the advertised percentage alone. Include shipping, taxes, membership requirements and any conditions attached to a promotion.</p>
+  <h3>Cyber Monday — November 30, 2026</h3>
+  <p>Compare online offers for the same products or suitable alternatives. Do not rush into a purchase simply because a countdown or limited-time message creates pressure.</p>
+  <h3>December: Finish with a clear budget</h3>
+  <p>After Cyber Monday, focus on remaining needs and delivery deadlines. Keep order confirmations and review return windows for important purchases.</p>
+  <div class="guide-tips">
+    <p class="eyebrow">QUICK CHECKLIST</p>
+    <h2>Before you buy</h2>
+    <ul>
+      <li>✓ Research normal prices before judging a Black Friday discount.</li>
+      <li>✓ Compare the complete checkout cost, not only the headline discount.</li>
+      <li>✓ Keep your shopping list and budget visible while browsing.</li>
+      <li>✓ Use trusted retailers and verify return and delivery terms.</li>
+      <li>✓ Do not buy an item simply because it is advertised as a limited-time deal.</li>
+    </ul>
+  </div>
+  <p><a href="/blog/">Explore more US Coupon Hub shopping articles →</a></p>
+  {% else %}
+  <h2>How to shop {{ event }} deals smarter</h2>
+  <p>Compare offers, check terms and avoid relying on outdated promotions. We will prioritize useful deal information over repetitive keyword pages.</p>
+  {% endif %}
+</section>
+{% endblock %}
