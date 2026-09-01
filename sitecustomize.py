@@ -18,7 +18,10 @@ class _AppLoader(importlib.abc.Loader):
         try:
             from flask import Response, request, render_template, abort
 
-            # Retire the old marketplace completely.
+            # Retire the old marketplace completely. The live site is Amazon-only.
+            # Define the helper too so older app.py versions cannot raise a
+            # NameError if their eBay search function is reached unexpectedly.
+            module.smart_ebay_queries = lambda *args, **kwargs: []
             module.ebay_search_smart = lambda *args, **kwargs: ([], None, "")
 
             # Never expose legacy eBay offers on store pages.
