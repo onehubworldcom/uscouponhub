@@ -13,8 +13,8 @@
 </section>
 
 <section class="content affiliate-quick-links">
-  <div><p class="eyebrow">COMPARE MARKETPLACES</p><h2>Search {{ store.name }} Deals across major marketplaces</h2><p>Amazon links use your US Coupon Hub Associates tag. eBay results are shown through the live eBay search already connected to this site.</p></div>
-  <div class="coupon-hero-points"><a class="get-deal-button" href="/amazon/search/{{ store.slug }}/" rel="nofollow sponsored">Search Amazon →</a><a class="ebay-store-button" href="/ebay/search/?q={{ store.name|urlencode }}&amp;category={{ store.category|urlencode }}">Search eBay →</a></div>
+  <div><p class="eyebrow">COMPARE MARKETPLACES</p><h2>Search {{ store.name }} Deals across major marketplaces</h2><p>Amazon links use your US Coupon Hub Associates tag. Use the merchant offer details above and review terms before checkout.</p></div>
+  <div class="coupon-hero-points"><a class="get-deal-button" href="/amazon/search/{{ store.slug }}/" rel="nofollow sponsored">Search Amazon →</a></div>
 </section>
 
 <section id="offers" class="coupon-section">
@@ -35,8 +35,6 @@
           <button class="code-button" type="button" data-code="{{ offer.code }}" onclick="copyCoupon(this)"><span class="code-label">{{ offer.code[:3] }}••••</span><strong>Show &amp; Copy</strong></button>
           {% elif offer.offer_type == 'amazon' or offer.source == 'amazon' %}
           <a class="get-deal-button" href="/amazon/search/{{ store.slug }}/" rel="nofollow sponsored">Search Amazon →</a>
-          {% elif offer.offer_type == 'ebay' or offer.source == 'ebay' %}
-          <a class="get-deal-button" href="/ebay/search/?q={{ store.name|urlencode }}&amp;category={{ store.category|urlencode }}" rel="nofollow sponsored">Search eBay →</a>
           {% elif affiliate_match %}
           <a class="get-deal-button" href="/go/{{ store.slug }}/" rel="nofollow sponsored">Get Deal →</a>
           {% else %}
@@ -55,15 +53,6 @@
     {% if affiliate_match %}<a class="get-deal-button" href="/go/{{ store.slug }}/" rel="nofollow sponsored">Check Current Deal →</a>{% endif %}
   </div>
   {% endif %}
-</section>
-
-<section class="ebay-store-bridge">
-  <div class="ebay-store-copy">
-    <span class="ebay-live-badge">LIVE EBAY SEARCH</span>
-    <h2>Find {{ store.name }} Deals on eBay</h2>
-    <p>Search live eBay listings related to {{ store.name }} and compare available products, prices and shipping.</p>
-  </div>
-  <a class="ebay-store-button" href="/ebay/search/?q={{ store.name|urlencode }}&amp;category={{ store.category|urlencode }}">Search {{ store.name }} on eBay <span>→</span></a>
 </section>
 
 <section id="terms" class="content seo-grid coupon-info-grid">
