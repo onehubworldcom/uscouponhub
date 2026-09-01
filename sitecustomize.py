@@ -1,4 +1,4 @@
-"""Keep retired marketplace code from affecting live store/category pages."""
+"""Keep retired marketplace code from affecting live store/category pages and SEO."""
 import importlib.abc
 import importlib.machinery
 import re
@@ -18,11 +18,10 @@ class _AppLoader(importlib.abc.Loader):
         try:
             from flask import Response, request, render_template, abort
 
-            # The old marketplace integration is retired. Never call its API.
+            # Retire the old marketplace completely.
             module.ebay_search_smart = lambda *args, **kwargs: ([], None, "")
 
-            # Filter legacy database offers and generated offers so store pages
-            # cannot expose the retired marketplace card.
+            # Never expose legacy eBay offers on store pages.
             original_automatic_offers = getattr(module, "automatic_store_offers", None)
             if original_automatic_offers:
                 def _amazon_only_offers(store, existing_offers):
@@ -34,6 +33,16 @@ class _AppLoader(importlib.abc.Loader):
                             if str(o.get("source", "")).lower() != "ebay"
                             and str(o.get("offer_type", "")).lower() != "ebay"]
                 module.automatic_store_offers = _amazon_only_offers
+
+            # Search must never fall back to the retired marketplace.
+            original_classify_search = getattr(module, "classify_search", None)
+            if original_classify_search:
+                def _safe_classify_search(c, q):
+                    result = original_classify_search(c, q)
+                    if isinstance(result, tuple) and result and result[0] == "ebay":
+                        return "directory", None, result[2] if len(result) > 2 else 0
+                    return result
+                module.classify_search = _safe_classify_search
 
             app = getattr(module, "app", None)
             if app is not None:
@@ -91,6 +100,58 @@ class _AppLoader(importlib.abc.Loader):
                                 )
                             app.view_functions[endpoint] = _safe_category_page
                         break
+
+                # Keep only useful store URLs in XML sitemaps. The CSV contains
+                # a very large number of store records, but thin/unverified
+                # store pages should not all be submitted to Google.
+                def _curated_sitemap_index():
+                    c = module.conn()
+                    count = c.execute("""SELECT COUNT(*) FROM stores s
+                        WHERE s.active=1 AND (
+                          EXISTS (SELECT 1 FROM offers o WHERE o.store_id=s.id AND o.active=1)
+                          OR EXISTS (SELECT 1 FROM store_affiliate_matches m WHERE m.store_id=s.id AND m.status IN ('active','approved','matched'))
+                        )""").fetchone()[0]
+                    c.close()
+                    parts = (count + 49999) // 50000
+                    base = "https://uscouponhub.com"
+                    entries = ''.join(f'<sitemap><loc>{base}/sitemap-stores-{i}.xml</loc></sitemap>' for i in range(1, parts + 1))
+                    entries += f'<sitemap><loc>{base}/sitemap-static.xml</loc></sitemap>'
+                    return Response('<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + entries + '</sitemapindex>', mimetype='application/xml')
+
+                def _curated_sitemap_stores(part):
+                    if part < 1:
+                        return abort(404)
+                    per = 50000
+                    offset = (part - 1) * per
+                    c = module.conn()
+                    rows = c.execute("""SELECT s.slug FROM stores s
+                        WHERE s.active=1 AND (
+                          EXISTS (SELECT 1 FROM offers o WHERE o.store_id=s.id AND o.active=1)
+                          OR EXISTS (SELECT 1 FROM store_affiliate_matches m WHERE m.store_id=s.id AND m.status IN ('active','approved','matched'))
+                        )
+                        ORDER BY s.id LIMIT ? OFFSET ?""", (per, offset)).fetchall()
+                    c.close()
+                    if not rows:
+                        return abort(404)
+                    base = "https://uscouponhub.com"
+                    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+                    xml += ''.join(f'<url><loc>{base}/{r["slug"]}</loc></url>' for r in rows)
+                    xml += '</urlset>'
+                    return Response(xml, mimetype='application/xml')
+
+                if "sitemap_index" in app.view_functions:
+                    app.view_functions["sitemap_index"] = _curated_sitemap_index
+                if "sitemap_stores" in app.view_functions:
+                    app.view_functions["sitemap_stores"] = _curated_sitemap_stores
+
+                # Search pages are site functionality, not landing pages. Keep
+                # them crawlable only as needed for users, but tell search
+                # engines not to index query/pagination variants.
+                @app.after_request
+                def _noindex_search_variants(response):
+                    if request.path.rstrip("/") in ("/search", "/stores"):
+                        response.headers["X-Robots-Tag"] = "noindex, follow"
+                    return response
 
                 # Safety net for any legacy store HTML still present in a
                 # deployment: convert marketplace wording and links to Amazon.
