@@ -69,17 +69,17 @@
 <section id="terms" class="content seo-grid coupon-info-grid">
  <article>
   <h2>How to use a {{ store.name }} Coupon Code</h2>
-  <ol class="coupon-steps"><li><span>1</span><div><b>Choose an Offer</b><small>Pick a verified Code or a no-code Deal.</small></div></li><li><span>2</span><div><b>Copy the Code</b><small>Select “Show &amp; Copy” and continue to checkout.</small></div></li><li><span>3</span><div><b>Check the Savings</b><small>Confirm the Discount is applied before placing your order.</small></div></li></ol>
+  <ol class="coupon-steps"><li><span>1</span><div><b>Choose an Offer</b><small>Pick a verified Coupon Code or a no-code Deal.</small></div></li><li><span>2</span><div><b>Copy the Code</b><small>Select “Show &amp; Copy” and continue to checkout.</small></div></li><li><span>3</span><div><b>Check the Savings</b><small>Confirm the Discount is applied before placing your order.</small></div></li></ol>
   <h2>{{ store.name }} Discount Codes, Deals &amp; Offers</h2>
   <p>Depending on the promotion, shoppers may find Promo Codes, Coupon Codes, Discount Codes, seasonal sales, limited-time Deals or other eligible Offers. A Discount is not guaranteed for every product or order.</p>
  </article>
- <aside class="seo-card"><h3>Saving Checklist</h3><p>Compare the Offer with the current sale price and review exclusions before buying.</p><a href="/search/?q={{ store.name|urlencode }}">Find related stores →</a></aside>
+ <aside class="seo-card"><h3>Saving Checklist</h3><p>Compare the Offer with the current sale price and review exclusions before buying.</p><a href="/search/?q={{ store.name|urlencode }}">Find Related Stores →</a></aside>
 </section>
 
 <section class="content store-seo-links">
   <div class="store-seo-intro">
     <p class="eyebrow">SHOPPING RESOURCES</p>
-    <h2>More ways to shop and save</h2>
+    <h2>More Ways to Shop and Save</h2>
     <p>Use US Coupon Hub to compare {{ store.name }} savings with broader shopping resources. These guides can help you research prices, promotions and seasonal shopping opportunities before checkout.</p>
   </div>
   <div class="store-resource-grid">
@@ -93,7 +93,7 @@
 {% if related %}
 <section class="content related-stores-section">
   <p class="eyebrow">RELATED STORES</p>
-  <h2>More stores to explore</h2>
+  <h2>More Stores to Explore</h2>
   <div class="related-store-grid">
     {% for item in related %}
     <a class="related-store-card" href="/{{ item.slug }}/">{{ item.name }} Coupons <span>→</span></a>
