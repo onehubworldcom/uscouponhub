@@ -1,25 +1,25 @@
 {% extends 'base.html' %}
 {% block title %}{{ store.name }} Promo Code {{ current_year }}, Coupon Code & Discount Codes | US Coupon Hub{% endblock %}
-{% block description %}Find {{ store.name }} promo code and coupon code offers for {{ current_year }}, plus discount codes, deals, offers and practical savings tips. Check offer terms before checkout.{% endblock %}
+{% block description %}Find {{ store.name }} Promo Code and Coupon Code offers for {{ current_year }}, plus Discount Codes, Deals, Offers and practical savings tips. Check offer terms before checkout.{% endblock %}
 {% block content %}
 <nav class="breadcrumbs"><a href="/">Home</a> <span>›</span> <span>{{ store.name }} Coupons</span></nav>
 <section class="storehero coupon-hero">
   <div class="storehero-inner">
     <p class="eyebrow">{{ store.category|upper }} • SAVINGS GUIDE</p>
     <h1>{{ store.name }} Promo Code {{ current_year }}, Coupon Code &amp; Discount Codes</h1>
-    <p class="lead">Browse {{ store.name }} promo codes, coupon codes, discount opportunities, deals and offers. We clearly separate verified coupon codes from no-code deals and avoid publishing unverified discount claims.</p>
-    <div class="coupon-hero-points"><span>✓ Clear offer details</span><span>✓ One-click copy</span><span>✓ Check terms before checkout</span></div>
+    <p class="lead">Browse {{ store.name }} Promo Codes, Coupon Codes, Discount opportunities, Deals and Offers. We clearly separate verified Coupon Codes from no-code Deals and avoid publishing unverified Discount claims.</p>
+    <div class="coupon-hero-points"><span>✓ Clear Offer details</span><span>✓ One-click copy</span><span>✓ Check terms before checkout</span></div>
   </div>
 </section>
 
 <section class="content affiliate-quick-links">
-  <div><p class="eyebrow">COMPARE MARKETPLACES</p><h2>Search {{ store.name }} deals across major marketplaces</h2><p>Amazon links use your US Coupon Hub Associates tag. eBay results are shown through the live eBay search already connected to this site.</p></div>
+  <div><p class="eyebrow">COMPARE MARKETPLACES</p><h2>Search {{ store.name }} Deals across major marketplaces</h2><p>Amazon links use your US Coupon Hub Associates tag. eBay results are shown through the live eBay search already connected to this site.</p></div>
   <div class="coupon-hero-points"><a class="get-deal-button" href="/amazon/search/{{ store.slug }}/" rel="nofollow sponsored">Search Amazon →</a><a class="ebay-store-button" href="/ebay/search/?q={{ store.name|urlencode }}&amp;category={{ store.category|urlencode }}">Search eBay →</a></div>
 </section>
 
 <section id="offers" class="coupon-section">
   <div class="coupon-section-head">
-    <div><p class="eyebrow">AUTOMATIC SAVINGS</p><h2>{{ store.name }} Deals &amp; Offers</h2><p>Verified coupon codes are shown when available. Otherwise, no-code deal cards help shoppers compare available savings without inventing coupon codes.</p></div>
+    <div><p class="eyebrow">AUTOMATIC SAVINGS</p><h2>{{ store.name }} Deals &amp; Offers</h2><p>Verified Coupon Codes are shown when available. Otherwise, no-code Deal cards help shoppers compare available savings without inventing Coupon Codes.</p></div>
     <span class="offer-count">{{ offers|length }} offer{{ '' if offers|length == 1 else 's' }} listed</span>
   </div>
 
@@ -44,14 +44,14 @@
           {% endif %}
         </div>
       </div>
-      <div class="coupon-meta"><span>📌 Review offer terms</span>{% if offer.expires_at %}<span>⏰ Expires {{ offer.expires_at }}</span>{% else %}<span>🕒 Availability can change</span>{% endif %}</div>
+      <div class="coupon-meta"><span>📌 Review Offer terms</span>{% if offer.expires_at %}<span>⏰ Expires {{ offer.expires_at }}</span>{% else %}<span>🕒 Availability can change</span>{% endif %}</div>
     </article>
     {% endfor %}
   </div>
   {% else %}
   <div class="no-offers-card">
     <div class="no-offers-icon">🏷️</div>
-    <div><h3>No verified coupon code is listed yet</h3><p>We do not invent discount codes. When a verified offer is added for {{ store.name }}, it will appear here with a Show &amp; Copy button.</p></div>
+    <div><h3>No verified Coupon Code is listed yet</h3><p>We do not invent Discount Codes. When a verified Offer is added for {{ store.name }}, it will appear here with a Show &amp; Copy button.</p></div>
     {% if affiliate_match %}<a class="get-deal-button" href="/go/{{ store.slug }}/" rel="nofollow sponsored">Check Current Deal →</a>{% endif %}
   </div>
   {% endif %}
@@ -60,7 +60,7 @@
 <section class="ebay-store-bridge">
   <div class="ebay-store-copy">
     <span class="ebay-live-badge">LIVE EBAY SEARCH</span>
-    <h2>Find {{ store.name }} deals on eBay</h2>
+    <h2>Find {{ store.name }} Deals on eBay</h2>
     <p>Search live eBay listings related to {{ store.name }} and compare available products, prices and shipping.</p>
   </div>
   <a class="ebay-store-button" href="/ebay/search/?q={{ store.name|urlencode }}&amp;category={{ store.category|urlencode }}">Search {{ store.name }} on eBay <span>→</span></a>
@@ -68,12 +68,12 @@
 
 <section id="terms" class="content seo-grid coupon-info-grid">
  <article>
-  <h2>How to use a {{ store.name }} coupon code</h2>
-  <ol class="coupon-steps"><li><span>1</span><div><b>Choose an offer</b><small>Pick a verified code or a no-code deal.</small></div></li><li><span>2</span><div><b>Copy the code</b><small>Select “Show &amp; Copy” and continue to checkout.</small></div></li><li><span>3</span><div><b>Check the savings</b><small>Confirm the discount is applied before placing your order.</small></div></li></ol>
+  <h2>How to use a {{ store.name }} Coupon Code</h2>
+  <ol class="coupon-steps"><li><span>1</span><div><b>Choose an Offer</b><small>Pick a verified Code or a no-code Deal.</small></div></li><li><span>2</span><div><b>Copy the Code</b><small>Select “Show &amp; Copy” and continue to checkout.</small></div></li><li><span>3</span><div><b>Check the Savings</b><small>Confirm the Discount is applied before placing your order.</small></div></li></ol>
   <h2>{{ store.name }} Discount Codes, Deals &amp; Offers</h2>
-  <p>Depending on the promotion, shoppers may find promo codes, coupon codes, discount codes, seasonal sales, limited-time deals or other eligible offers. A discount is not guaranteed for every product or order.</p>
+  <p>Depending on the promotion, shoppers may find Promo Codes, Coupon Codes, Discount Codes, seasonal sales, limited-time Deals or other eligible Offers. A Discount is not guaranteed for every product or order.</p>
  </article>
- <aside class="seo-card"><h3>Saving checklist</h3><p>Compare the offer with the current sale price and review exclusions before buying.</p><a href="/search/?q={{ store.name|urlencode }}">Find related stores →</a></aside>
+ <aside class="seo-card"><h3>Saving Checklist</h3><p>Compare the Offer with the current sale price and review exclusions before buying.</p><a href="/search/?q={{ store.name|urlencode }}">Find related stores →</a></aside>
 </section>
 
 <section class="content store-seo-links">
@@ -83,9 +83,9 @@
     <p>Use US Coupon Hub to compare {{ store.name }} savings with broader shopping resources. These guides can help you research prices, promotions and seasonal shopping opportunities before checkout.</p>
   </div>
   <div class="store-resource-grid">
-    <a class="seo-card" href="/guides/find-legit-promo-codes/"><h3>How to Find Legit Promo Codes</h3><p>Learn how to check expiry dates, restrictions and other offer conditions.</p></a>
+    <a class="seo-card" href="/guides/find-legit-promo-codes/"><h3>How to Find Legit Promo Codes</h3><p>Learn how to check expiry dates, restrictions and other Offer conditions.</p></a>
     <a class="seo-card" href="/guides/compare-online-deals/"><h3>How to Compare Online Deals</h3><p>Compare product price, shipping, returns and the complete purchase cost.</p></a>
-    <a class="seo-card" href="/guides/save-money-online-shopping/"><h3>Online Shopping Tips</h3><p>Simple ways to plan purchases and avoid relying on headline discounts alone.</p></a>
+    <a class="seo-card" href="/guides/save-money-online-shopping/"><h3>Online Shopping Tips</h3><p>Simple ways to plan purchases and avoid relying on headline Discounts alone.</p></a>
     <a class="seo-card" href="/seasonal/black-friday/"><h3>Black Friday Savings</h3><p>Plan major seasonal purchases with price checks and a clear budget.</p></a>
   </div>
 </section>
@@ -102,7 +102,7 @@
 </section>
 {% endif %}
 
-<section class="content"><h2>About {{ store.name }}</h2><p>{{ store.name }} is listed in the US Coupon Hub store directory to help shoppers discover relevant savings pages. Store promotions and policies can change, so information should be verified with the merchant before purchase.</p><h2>{{ store.name }} Coupon FAQ</h2><details><summary>Does {{ store.name }} have a promo code?</summary><p>Availability can change. Verified offers will be displayed above when they are available.</p></details><details><summary>Does {{ store.name }} offer discount codes or deals?</summary><p>Available discounts, deals and offers depend on the merchant and current promotions. Check the listings above and the applicable terms.</p></details><details><summary>Can I combine discounts?</summary><p>Combination rules depend on the merchant and the specific promotion. Check the applicable terms.</p></details><details><summary>Why might a promo code not work?</summary><p>A code may be expired, limited to selected products, require a minimum purchase, or be restricted to certain customers or locations.</p></details></section>
+<section class="content"><h2>About {{ store.name }}</h2><p>{{ store.name }} is listed in the US Coupon Hub store directory to help shoppers discover relevant savings pages. Store promotions and policies can change, so information should be verified with the merchant before purchase.</p><h2>{{ store.name }} Coupon FAQ</h2><details><summary>Does {{ store.name }} have a Promo Code?</summary><p>Availability can change. Verified Offers will be displayed above when they are available.</p></details><details><summary>Does {{ store.name }} offer Discount Codes or Deals?</summary><p>Available Discounts, Deals and Offers depend on the merchant and current promotions. Check the listings above and the applicable terms.</p></details><details><summary>Can I combine Discounts?</summary><p>Combination rules depend on the merchant and the specific promotion. Check the applicable terms.</p></details><details><summary>Why might a Promo Code not work?</summary><p>A Code may be expired, limited to selected products, require a minimum purchase, or be restricted to certain customers or locations.</p></details></section>
 
 <script type="application/ld+json">
 {
