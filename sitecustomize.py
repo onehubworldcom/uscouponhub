@@ -1,4 +1,4 @@
-"""Retire the old marketplace integration and keep store pages Amazon-only."""
+"""Keep retired marketplace code from affecting live store/category pages."""
 import importlib.abc
 import importlib.machinery
 import re
@@ -16,9 +16,10 @@ class _AppLoader(importlib.abc.Loader):
     def exec_module(self, module):
         self.loader.exec_module(module)
         try:
-            from flask import Response, request
+            from flask import Response, request, render_template, abort
 
-            # Category/store pages must not call the retired marketplace API.
+            # The old marketplace integration is retired. Never call its API
+            # from category/store pages.
             module.ebay_search_smart = lambda *args, **kwargs: ([], None, "")
 
             app = getattr(module, "app", None)
@@ -35,6 +36,55 @@ class _AppLoader(importlib.abc.Loader):
                             },
                             content_type="text/plain; charset=utf-8",
                         )
+
+                # Replace the old category handler so category pages do not
+                # depend on the retired marketplace API at all.
+                if app.view_functions.get("category_page"):
+                    def _safe_category_page(category_slug):
+                        categories = getattr(module, "CATEGORIES", [])
+                        if category_slug not in categories:
+                            return abort(404)
+                        config = getattr(module, "CATEGORY_CONFIG", {}).get(
+                            category_slug,
+                            {
+                                "label": category_slug.replace("-", " ").title(),
+                                "query": category_slug.replace("-", " "),
+                                "subcategories": [],
+                            },
+                        )
+                        category = config["label"]
+                        c = module.conn()
+                        stores = c.execute(
+                            "SELECT * FROM stores WHERE active=1 AND lower(category)=? ORDER BY name COLLATE NOCASE LIMIT 24",
+                            (category.lower(),),
+                        ).fetchall()
+                        if not stores:
+                            words = [
+                                w for w in re.split(r"[^a-z0-9]+", config["query"].lower())
+                                if len(w) > 2
+                            ]
+                            aliases = config.get("aliases", [])
+                            terms = list(dict.fromkeys(words + aliases))[:8]
+                            clauses = " OR ".join(["lower(name) LIKE ?" for _ in terms])
+                            params = [f"%{term.lower()}%" for term in terms]
+                            if clauses:
+                                stores = c.execute(
+                                    f"SELECT * FROM stores WHERE active=1 AND ({clauses}) ORDER BY name COLLATE NOCASE LIMIT 24",
+                                    params,
+                                ).fetchall()
+                        c.close()
+                        return render_template(
+                            "category.html",
+                            category=category,
+                            category_slug=category_slug,
+                            stores=stores,
+                            subcategories=config.get("subcategories", []),
+                            ebay_items=[],
+                            ebay_error=None,
+                            ebay_query="",
+                        )
+
+                    app.view_functions["category_page"] = _safe_category_page
 
                 original_store_page = app.view_functions.get("store_page")
                 if original_store_page:
