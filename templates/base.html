@@ -7,10 +7,8 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-0RV6N62WGY');
 </script>
-
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{% block title %}US Coupon Hub | Coupons, Promo Codes & Deals{% endblock %}</title>
 <meta name="description" content="{% block description %}Find coupons, promo codes, discount codes and deals from popular stores across the United States.{% endblock %}">
@@ -20,32 +18,12 @@
 <link rel="apple-touch-icon" href="/static/favicon.png">
 <meta name="theme-color" content="#0b2b59">
 <link rel="stylesheet" href="/static/css/style.css">
-
 <style>
-header{
-  min-height:220px;
-  padding-top:15px;
-  padding-bottom:15px;
-  display:flex;
-  align-items:center;
-}
-header .brand{
-  display:flex;
-  align-items:center;
-}
-header .brand img{
-  height:190px !important;
-  width:auto !important;
-  max-width:500px !important;
-  object-fit:contain;
-  display:block;
-}
-@media (max-width:700px){
-  header{min-height:155px;}
-  header .brand img{height:135px !important; max-width:360px !important;}
-}
+header{min-height:220px;padding-top:15px;padding-bottom:15px;display:flex;align-items:center}
+header .brand{display:flex;align-items:center}
+header .brand img{height:190px !important;width:auto !important;max-width:500px !important;object-fit:contain;display:block}
+@media (max-width:700px){header{min-height:155px}header .brand img{height:135px !important;max-width:360px !important}}
 </style>
-
 </head>
 <body>
 <div class="topbar">🇺🇸 Made for smarter shopping across the United States <span>•</span> Updated deals & seasonal savings</div>
@@ -55,4 +33,12 @@ header .brand img{
 </header>
 <main>{% block content %}{% endblock %}</main>
 <footer class="site-footer"><div><strong>US Coupon Hub</strong><p>Coupon codes, promo codes, discounts and smarter seasonal savings across the United States.</p></div><div class="footer-links"><a href="/about/">About Us</a><a href="/guides/">Shopping Guides</a><a href="/blog/">Blog</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms & Conditions</a><a href="/disclaimer/">Disclaimer</a><a href="/affiliate-disclosure/">Affiliate Disclosure</a><a href="/categories/shopping/">Categories</a><a href="/seasonal/black-friday/">Black Friday</a></div><p>© {{ current_year }} US Coupon Hub. All rights reserved.</p></footer>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('a[href*="/amazon/search/"]').forEach(function (link) {
+    link.target = '_blank';
+    link.rel = 'nofollow sponsored noopener';
+  });
+});
+</script>
 </body></html>
