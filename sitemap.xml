@@ -7,4 +7,7 @@
   <url><loc>https://uscouponhub.com/states</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://uscouponhub.com/seasonal</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://uscouponhub.com/guides</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://uscouponhub.com/guides/holiday-shopping-calendar/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://uscouponhub.com/guides/black-friday-shopping-guide/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://uscouponhub.com/guides/cyber-monday-shopping-guide/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
