@@ -125,6 +125,8 @@ class _AppLoader(importlib.abc.Loader):
                 # a very large number of store records, but thin/unverified
                 # store pages should not all be submitted to Google.
                 def _indexable_store_where():
+                    if not getattr(module, "CURATED_STORE_INDEXING_ENABLED", False):
+                        return "s.active=1"
                     return getattr(
                         module,
                         "STORE_INDEXABLE_WHERE",
