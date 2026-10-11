@@ -28,13 +28,30 @@ class _AppLoader(importlib.abc.Loader):
             original_automatic_offers = getattr(module, "automatic_store_offers", None)
             if original_automatic_offers:
                 def _amazon_only_offers(store, existing_offers):
-                    offers = [o for o in list(existing_offers or [])
-                              if str(o.get("source", "")).lower() != "ebay"
-                              and str(o.get("offer_type", "")).lower() != "ebay"]
+                    def _as_dict(offer):
+                        if isinstance(offer, dict):
+                            return offer
+                        try:
+                            return dict(offer)
+                        except (TypeError, ValueError):
+                            return offer
+
+                    def _field(offer, key):
+                        if isinstance(offer, dict):
+                            return offer.get(key, "")
+                        try:
+                            return offer[key]
+                        except (KeyError, IndexError, TypeError):
+                            return ""
+
+                    offers = [_as_dict(o) for o in list(existing_offers or [])]
+                    offers = [o for o in offers
+                              if str(_field(o, "source")).lower() != "ebay"
+                              and str(_field(o, "offer_type")).lower() != "ebay"]
                     result = original_automatic_offers(store, offers)
                     return [o for o in list(result or [])
-                            if str(o.get("source", "")).lower() != "ebay"
-                            and str(o.get("offer_type", "")).lower() != "ebay"]
+                            if str(_field(o, "source")).lower() != "ebay"
+                            and str(_field(o, "offer_type")).lower() != "ebay"]
                 module.automatic_store_offers = _amazon_only_offers
 
             # Search must never fall back to the retired marketplace.
