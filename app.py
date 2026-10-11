@@ -209,7 +209,7 @@ def amazon_search_url(query):
 def automatic_store_offers(store, existing_offers):
     if existing_offers: return list(existing_offers)
     category=(store['category'] or 'Shopping').replace('-', ' ').title()
-    return [{'title':f'Shop current {store["name"]} offers','description':'Automatic savings card. Compare current prices and available promotions before checkout. No coupon code is claimed.','code':None,'offer_type':'auto-deal','badge':'AUTO DEAL','verified':0,'expires_at':None,'active':1,'source':'auto'}, {'title':f'Compare {category} prices on Amazon','description':'Search current products and offers on Amazon. Availability and prices can change.','code':None,'offer_type':'amazon','badge':'AMAZON','verified':0,'expires_at':None,'active':1,'source':'amazon'}, {'title':f'Check live eBay listings for {store["name"]}','description':'Search current eBay listings and compare available items, prices and shipping.','code':None,'offer_type':'ebay','badge':'EBAY','verified':0,'expires_at':None,'active':1,'source':'ebay'}]
+    return [{'title':f'Shop current {store["name"]} offers','description':'Automatic savings card. Compare current prices and available promotions before checkout. No coupon code is claimed.','code':None,'offer_type':'auto-deal','badge':'AUTO DEAL','verified':0,'expires_at':None,'active':1,'source':'auto'}, {'title':f'Compare {category} prices on Amazon','description':'Search current products and offers on Amazon. Availability and prices can change.','code':None,'offer_type':'amazon','badge':'AMAZON','verified':0,'expires_at':None,'active':1,'source':'amazon'}]
 
 def is_store_indexable(store, db_offers, match):
     has_unique_description=len((store['description'] or '').strip()) >= 160
@@ -252,6 +252,9 @@ def init_db():
 @app.context_processor
 def globals_ctx(): return {'current_year':datetime.now().year,'site_name':'US Coupon Hub','states':STATES,'cities':CITIES,'categories':CATEGORIES,'format_number':lambda n:f'{n:,}'}
 
+@app.route('/favicon.ico')
+def favicon(): return app.send_static_file('favicon.ico')
+
 @app.route('/')
 def home():
     c=conn(); stores=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT 12').fetchall(); total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1').fetchone()[0]; c.close(); return render_template('home.html',stores=stores,total=total)
@@ -270,7 +273,7 @@ def classify_search(c,q):
     if count==1:
         one=c.execute('SELECT slug FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?) LIMIT 1',(pattern,pattern)).fetchone()
         if one: return 'store',one['slug'],count
-    return ('directory' if count else 'ebay'),None,count
+    return 'directory',None,count
 
 def log_search(c,q,route_type,matched_slug=None,results_count=0):
     if not q: return
@@ -288,7 +291,6 @@ def search_page():
     per_page=50; offset=(page-1)*per_page; c=conn(); route_type,target,classified_count=classify_search(c,q)
     if q and route_type=='store' and target: log_search(c,q,'store',target,classified_count); c.close(); return redirect(url_for('store_page',slug=target))
     if q and route_type=='category' and target: log_search(c,q,'category',target,classified_count); c.close(); return redirect(url_for('category_page',category_slug=target))
-    if q and route_type=='ebay': log_search(c,q,'ebay',None,0); c.close(); return redirect(url_for('ebay_search_page',q=q))
     if q:
         pattern=f'%{q}%'; total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?)',(pattern,pattern)).fetchone()[0]; results=c.execute('SELECT * FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?) ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(pattern,pattern,per_page,offset)).fetchall(); log_search(c,q,'directory',None,total)
     else:
@@ -333,13 +335,11 @@ def affiliate_go(slug):
 
 @app.route('/ebay/search/')
 def ebay_search_page():
-    q=request.args.get('q','').strip(); category=request.args.get('category','').strip(); items=[]; error=None; matched_query=''
-    if q: items,error,matched_query=ebay_search_smart(q,category=category); items=items or []
-    return render_template('ebay_search.html',q=q,items=items,error=error,matched_query=matched_query,category=category)
+    return Response('This marketplace search has been permanently retired.',status=410,headers={'X-Robots-Tag':'noindex, nofollow, noarchive'},content_type='text/plain; charset=utf-8')
 
 @app.route('/ebay/debug/')
 def ebay_debug():
-    client_id=os.environ.get('EBAY_CLIENT_ID','').strip(); client_secret=os.environ.get('EBAY_CLIENT_SECRET','').strip(); ebay_env=os.environ.get('EBAY_ENV','production').strip().lower(); marketplace=os.environ.get('EBAY_MARKETPLACE_ID','EBAY_US').strip(); token=ebay_get_application_token(); return {'client_id_present':bool(client_id),'client_secret_present':bool(client_secret),'ebay_env':ebay_env,'marketplace_id':marketplace,'oauth_token_obtained':bool(token),'oauth_error':_EBAY_LAST_ERROR}
+    return Response('This diagnostic endpoint has been permanently retired.',status=410,headers={'X-Robots-Tag':'noindex, nofollow, noarchive'},content_type='text/plain; charset=utf-8')
 
 @app.route('/ebay/account-deletion',methods=['GET','POST'])
 @app.route('/ebay/account-deletion/',methods=['GET','POST'])
