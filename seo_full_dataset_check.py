@@ -23,6 +23,10 @@ with tempfile.TemporaryDirectory() as tmp:
 
     assert client.get("/categories/shopping/").status_code == 200
     assert client.get("/stores", follow_redirects=False).status_code == 301
+    stores_page = client.get("/stores/")
+    assert stores_page.status_code == 200
+    assert stores_page.headers.get("X-Robots-Tag") is None
+    assert client.get("/search/").headers.get("X-Robots-Tag") == "noindex, follow"
     assert client.get("/blog", follow_redirects=False).status_code == 301
     assert client.get("/seasonal/not-a-real-event/").status_code == 404
 
