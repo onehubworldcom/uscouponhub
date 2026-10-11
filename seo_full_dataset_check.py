@@ -41,6 +41,18 @@ with tempfile.TemporaryDirectory() as tmp:
     assert client.post("/ebay/account-deletion").status_code == 204
 
     assert client.get("/blog", follow_redirects=False).status_code == 301
+    assert client.get("/blog/").status_code == 200
+    assert client.get("/guides/").status_code == 200
+    assert client.get("/guides/check-sale-price-real-deal/").status_code == 200
+    assert client.get("/guides/free-shipping-vs-coupon-discount/").status_code == 200
+    assert client.get("/guides/online-return-policy-checklist/").status_code == 200
+    assert client.get("/guides/safe-online-shopping-checklist/").status_code == 200
+    assert client.get("/guides/holiday-shipping-deadlines-guide/").status_code == 200
+    assert client.get("/blog/why-20-percent-coupon-can-cost-more-than-free-shipping/").status_code == 200
+    assert client.get("/blog/coupon-code-not-working-things-to-check/").status_code == 200
+    assert client.get("/blog/percentage-off-vs-dollar-off/").status_code == 200
+    assert client.get("/blog/return-shipping-can-change-deal/").status_code == 200
+    assert client.get("/blog/simple-price-tracking-before-major-sales/").status_code == 200
     assert client.get("/seasonal/not-a-real-event/").status_code == 404
 
     sitemap = client.get("/sitemap.xml")
