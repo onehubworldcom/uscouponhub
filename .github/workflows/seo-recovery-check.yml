@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [seo-recovery-20261011]
+    branches: [seo-recovery-20261011, seo-followup-20261011]
 
 jobs:
   seo-recovery:
