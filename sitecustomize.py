@@ -107,13 +107,27 @@ class _AppLoader(importlib.abc.Loader):
                 # Keep only useful store URLs in XML sitemaps. The CSV contains
                 # a very large number of store records, but thin/unverified
                 # store pages should not all be submitted to Google.
+                def _indexable_store_where():
+                    return getattr(
+                        module,
+                        "STORE_INDEXABLE_WHERE",
+                        """s.active=1 AND (
+                          length(trim(coalesce(s.description,''))) >= 160
+                          OR EXISTS (SELECT 1 FROM offers o WHERE o.store_id=s.id AND o.active=1 AND o.verified=1)
+                          OR EXISTS (
+                            SELECT 1 FROM store_affiliate_matches m
+                            JOIN affiliate_networks n ON n.id=m.network_id
+                            WHERE m.store_id=s.id AND m.status='approved' AND n.active=1
+                              AND (m.affiliate_url LIKE 'http://%' OR m.affiliate_url LIKE 'https://%')
+                          )
+                        )""",
+                    )
+
                 def _curated_sitemap_index():
                     c = module.conn()
-                    count = c.execute("""SELECT COUNT(*) FROM stores s
-                        WHERE s.active=1 AND (
-                          EXISTS (SELECT 1 FROM offers o WHERE o.store_id=s.id AND o.active=1)
-                          OR EXISTS (SELECT 1 FROM store_affiliate_matches m WHERE m.store_id=s.id AND m.status IN ('active','approved','matched'))
-                        )""").fetchone()[0]
+                    count = c.execute(
+                        f"SELECT COUNT(*) FROM stores s WHERE {_indexable_store_where()}"
+                    ).fetchone()[0]
                     c.close()
                     parts = (count + 49999) // 50000
                     base = "https://uscouponhub.com"
@@ -127,12 +141,10 @@ class _AppLoader(importlib.abc.Loader):
                     per = 50000
                     offset = (part - 1) * per
                     c = module.conn()
-                    rows = c.execute("""SELECT s.slug FROM stores s
-                        WHERE s.active=1 AND (
-                          EXISTS (SELECT 1 FROM offers o WHERE o.store_id=s.id AND o.active=1)
-                          OR EXISTS (SELECT 1 FROM store_affiliate_matches m WHERE m.store_id=s.id AND m.status IN ('active','approved','matched'))
-                        )
-                        ORDER BY s.id LIMIT ? OFFSET ?""", (per, offset)).fetchall()
+                    rows = c.execute(
+                        f"SELECT s.slug FROM stores s WHERE {_indexable_store_where()} ORDER BY s.id LIMIT ? OFFSET ?",
+                        (per, offset),
+                    ).fetchall()
                     c.close()
                     if not rows:
                         return abort(404)
