@@ -23,7 +23,10 @@ jobs:
         run: python -m pip install -r requirements.txt
 
       - name: Compile Python
-        run: python -m py_compile app.py affiliate.py seo_recovery_check.py
+        run: python -m py_compile app.py affiliate.py sitecustomize.py seo_recovery_check.py seo_full_dataset_check.py
 
       - name: Run SEO recovery regression check
         run: python seo_recovery_check.py
+
+      - name: Run full dataset SEO smoke test
+        run: python seo_full_dataset_check.py
