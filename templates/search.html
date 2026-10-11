@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Search Stores | US Coupon Hub{% endblock %}
+{% block title %}{% if request.path.startswith('/search') %}Search Stores | US Coupon Hub{% else %}Browse Stores & Coupon Pages | US Coupon Hub{% endif %}{% endblock %}
+{% block robots %}{% if request.path.startswith('/search') %}noindex,follow{% else %}index,follow{% endif %}{% endblock %}
 {% block content %}
 <section class="directory-hero"><p class="eyebrow">STORE DIRECTORY</p><h1>Find a store</h1><p>Search the USCouponHub directory by store or brand name.</p><form class="search directory-search" action="/search/" method="get"><input name="q" value="{{ q }}" placeholder="Search store or brand..."><button>Search</button></form></section>
 <section class="section search-results"><h2>{% if q %}Results for “{{ q }}”{% else %}Browse stores{% endif %}</h2>
