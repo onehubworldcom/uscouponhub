@@ -1,0 +1,32 @@
+name: SEO recovery check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [seo-recovery-20261011]
+
+jobs:
+  seo-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Compile Python
+        run: python -m py_compile app.py affiliate.py sitecustomize.py seo_recovery_check.py seo_full_dataset_check.py
+
+      - name: Run SEO recovery regression check
+        run: python seo_recovery_check.py
+
+      - name: Run full dataset SEO smoke test
+        run: python seo_full_dataset_check.py

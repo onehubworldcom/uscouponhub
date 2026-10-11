@@ -28,13 +28,30 @@ class _AppLoader(importlib.abc.Loader):
             original_automatic_offers = getattr(module, "automatic_store_offers", None)
             if original_automatic_offers:
                 def _amazon_only_offers(store, existing_offers):
-                    offers = [o for o in list(existing_offers or [])
-                              if str(o.get("source", "")).lower() != "ebay"
-                              and str(o.get("offer_type", "")).lower() != "ebay"]
+                    def _as_dict(offer):
+                        if isinstance(offer, dict):
+                            return offer
+                        try:
+                            return dict(offer)
+                        except (TypeError, ValueError):
+                            return offer
+
+                    def _field(offer, key):
+                        if isinstance(offer, dict):
+                            return offer.get(key, "")
+                        try:
+                            return offer[key]
+                        except (KeyError, IndexError, TypeError):
+                            return ""
+
+                    offers = [_as_dict(o) for o in list(existing_offers or [])]
+                    offers = [o for o in offers
+                              if str(_field(o, "source")).lower() != "ebay"
+                              and str(_field(o, "offer_type")).lower() != "ebay"]
                     result = original_automatic_offers(store, offers)
                     return [o for o in list(result or [])
-                            if str(o.get("source", "")).lower() != "ebay"
-                            and str(o.get("offer_type", "")).lower() != "ebay"]
+                            if str(_field(o, "source")).lower() != "ebay"
+                            and str(_field(o, "offer_type")).lower() != "ebay"]
                 module.automatic_store_offers = _amazon_only_offers
 
             # Search must never fall back to the retired marketplace.
@@ -107,13 +124,29 @@ class _AppLoader(importlib.abc.Loader):
                 # Keep only useful store URLs in XML sitemaps. The CSV contains
                 # a very large number of store records, but thin/unverified
                 # store pages should not all be submitted to Google.
+                def _indexable_store_where():
+                    if not getattr(module, "CURATED_STORE_INDEXING_ENABLED", False):
+                        return "s.active=1"
+                    return getattr(
+                        module,
+                        "STORE_INDEXABLE_WHERE",
+                        """s.active=1 AND (
+                          length(trim(coalesce(s.description,''))) >= 160
+                          OR EXISTS (SELECT 1 FROM offers o WHERE o.store_id=s.id AND o.active=1 AND o.verified=1)
+                          OR EXISTS (
+                            SELECT 1 FROM store_affiliate_matches m
+                            JOIN affiliate_networks n ON n.id=m.network_id
+                            WHERE m.store_id=s.id AND m.status='approved' AND n.active=1
+                              AND (m.affiliate_url LIKE 'http://%' OR m.affiliate_url LIKE 'https://%')
+                          )
+                        )""",
+                    )
+
                 def _curated_sitemap_index():
                     c = module.conn()
-                    count = c.execute("""SELECT COUNT(*) FROM stores s
-                        WHERE s.active=1 AND (
-                          EXISTS (SELECT 1 FROM offers o WHERE o.store_id=s.id AND o.active=1)
-                          OR EXISTS (SELECT 1 FROM store_affiliate_matches m WHERE m.store_id=s.id AND m.status IN ('active','approved','matched'))
-                        )""").fetchone()[0]
+                    count = c.execute(
+                        f"SELECT COUNT(*) FROM stores s WHERE {_indexable_store_where()}"
+                    ).fetchone()[0]
                     c.close()
                     parts = (count + 49999) // 50000
                     base = "https://uscouponhub.com"
@@ -127,12 +160,10 @@ class _AppLoader(importlib.abc.Loader):
                     per = 50000
                     offset = (part - 1) * per
                     c = module.conn()
-                    rows = c.execute("""SELECT s.slug FROM stores s
-                        WHERE s.active=1 AND (
-                          EXISTS (SELECT 1 FROM offers o WHERE o.store_id=s.id AND o.active=1)
-                          OR EXISTS (SELECT 1 FROM store_affiliate_matches m WHERE m.store_id=s.id AND m.status IN ('active','approved','matched'))
-                        )
-                        ORDER BY s.id LIMIT ? OFFSET ?""", (per, offset)).fetchall()
+                    rows = c.execute(
+                        f"SELECT s.slug FROM stores s WHERE {_indexable_store_where()} ORDER BY s.id LIMIT ? OFFSET ?",
+                        (per, offset),
+                    ).fetchall()
                     c.close()
                     if not rows:
                         return abort(404)
@@ -152,7 +183,7 @@ class _AppLoader(importlib.abc.Loader):
                 # engines not to index query/pagination variants.
                 @app.after_request
                 def _noindex_search_variants(response):
-                    if request.path.rstrip("/") in ("/search", "/stores"):
+                    if request.path.rstrip("/") == "/search":
                         response.headers["X-Robots-Tag"] = "noindex, follow"
                     return response
 
