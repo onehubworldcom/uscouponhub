@@ -106,6 +106,62 @@ SHOPPING_GUIDES = {
         'intro': 'Seasonal promotions can be useful for planned purchases, but the best approach is to start with a need and then evaluate available offers.',
         'sections': [('Plan around real needs', 'Make a list of purchases you expect in the coming months before major sale periods begin.'), ('Understand the season', 'Different events emphasize different product categories, so compare what is actually relevant to your list.'), ('Check stock and alternatives', 'Have alternatives ready for popular products that may sell out.'), ('Review policies before checkout', 'Seasonal sales can have different return or delivery conditions.'), ('Track results after shopping', 'Review whether the purchases were useful and within budget to improve future planning.')],
         'tips': ['Use seasonal events as opportunities, not obligations.', 'Compare the final price before buying.', 'Keep a record of large purchases for warranty and return purposes.']},
+
+    'check-sale-price-real-deal': {
+        'title': 'How to Check If a Sale Price Is Really a Deal',
+        'description': 'A practical way to judge sale prices using normal price ranges, product details and the final checkout total.',
+        'intro': 'A sale label does not automatically mean the price is unusually low. The safest comparison starts with the exact product, its recent price range and the complete amount you will pay.',
+        'sections': [
+            ('Match the exact product', 'Check the model number, size, color, condition and included accessories before comparing prices. A similar-looking item may not be the same version.'),
+            ('Look for a normal price range', 'Compare the current price with prices from other established sellers and, when possible, with prices you have previously noted for the same product.'),
+            ('Ignore the percentage until the price makes sense', 'A large percentage discount can look impressive even when the starting price is unusually high. Focus first on the actual selling price.'),
+            ('Calculate the checkout total', 'Add shipping, required fees and any minimum-spend conditions. The best-looking sale can become the more expensive option at checkout.'),
+            ('Check whether the timing works for you', 'A lower price is not useful if the delivery date, return policy or product condition does not meet your needs.')],
+        'tips': ['Compare the same product version.', 'Use the final checkout total as your main number.', 'Do not buy only because a sale timer creates urgency.']},
+    'free-shipping-vs-coupon-discount': {
+        'title': 'Free Shipping vs Coupon Discount: Which Saves More?',
+        'description': 'Compare shipping charges and coupon discounts using the total amount due rather than the headline promotion.',
+        'intro': 'Free shipping and percentage-off coupons can both reduce an order, but the better option depends on the starting price, shipping charge and coupon conditions.',
+        'sections': [
+            ('Write down the starting total', 'Begin with the cost of the items you already planned to buy. Do not add extra products simply to make an offer look better.'),
+            ('Calculate the coupon result', 'Apply the coupon to eligible items and note the discounted subtotal. Check whether any exclusions or minimum-spend rules change the result.'),
+            ('Add shipping to the coupon option', 'A strong coupon can still be less useful if the order carries a high delivery charge.'),
+            ('Calculate the free-shipping option separately', 'Compare the same basket with free shipping and no coupon when the retailer does not allow promotions to be combined.'),
+            ('Choose the lower final total', 'The promotion with the smaller advertised benefit can still produce the lower checkout price.')],
+        'tips': ['Compare both options with the same basket.', 'Check whether promotions can be combined.', 'Do not add unnecessary items only to reach a free-shipping threshold.']},
+    'online-return-policy-checklist': {
+        'title': 'Online Return Policy Checklist Before You Buy',
+        'description': 'Check return windows, return shipping, final-sale rules and refund methods before placing an online order.',
+        'intro': 'A low price can lose its value if an item is difficult or expensive to return. Reading the return policy before checkout can prevent avoidable costs later.',
+        'sections': [
+            ('Check the return window', 'Find out how many days you have to start a return and whether the clock begins at purchase, shipment or delivery.'),
+            ('Look for final-sale exclusions', 'Clearance items, personalized products, opened electronics and other categories may have different rules or may not be returnable.'),
+            ('Check who pays return shipping', 'Some retailers provide prepaid returns while others deduct shipping or handling charges from the refund.'),
+            ('Confirm the refund method', 'A return may go back to the original payment method, store credit or an exchange depending on the policy and item type.'),
+            ('Keep packaging and records when needed', 'For higher-value purchases, save the order confirmation and any packaging required by the seller until you know the item is suitable.')],
+        'tips': ['Read return rules before buying expensive items.', 'Check whether sale items have different conditions.', 'Keep order records until the return period ends.']},
+    'safe-online-shopping-checklist': {
+        'title': 'Safe Online Shopping Checklist',
+        'description': 'Simple checks for website identity, checkout security, payment methods and order records before buying online.',
+        'intro': 'Online shopping is easier when you use a short safety routine. The goal is to confirm that you are dealing with the intended retailer and that the checkout process looks legitimate.',
+        'sections': [
+            ('Verify the website address', 'Check the domain name carefully before entering account or payment information, especially when you arrived from an ad, message or unfamiliar link.'),
+            ('Use trusted checkout methods', 'Prefer payment methods and checkout systems you recognize, and avoid sending payment through unusual methods requested outside the normal checkout flow.'),
+            ('Be cautious with unrealistic prices', 'An unusually low price on an unfamiliar website is a reason to check the seller, policies and contact information more carefully.'),
+            ('Protect shopping accounts', 'Use strong, unique passwords and enable additional account security features when a retailer provides them.'),
+            ('Save your confirmation', 'Keep the order confirmation, seller name, total paid and delivery information until the purchase is completed satisfactorily.')],
+        'tips': ['Type a retailer address directly when in doubt.', 'Do not share unnecessary personal information for a coupon.', 'Keep order confirmations for important purchases.']},
+    'holiday-shipping-deadlines-guide': {
+        'title': 'How to Plan Holiday Shipping and Delivery Deadlines',
+        'description': 'Plan holiday purchases around delivery estimates, seller processing times and backup options.',
+        'intro': 'Holiday shopping is not only about finding a price. Delivery timing becomes part of the decision when an item is needed for a specific date.',
+        'sections': [
+            ('Start with the date you actually need the item', 'Work backward from the event or holiday instead of relying only on a retailer headline such as arrives before the holidays.'),
+            ('Include seller processing time', 'Some orders need time to be prepared before the carrier receives the package, especially personalized or marketplace items.'),
+            ('Review the delivery estimate at checkout', 'The product page estimate can change after you enter your address or select a shipping method.'),
+            ('Leave a buffer for important gifts', 'Weather, inventory changes and carrier delays can happen, so avoid choosing the last possible delivery date when timing matters.'),
+            ('Prepare a backup option', 'For time-sensitive purchases, identify a local pickup or alternative product in case shipping changes unexpectedly.')],
+        'tips': ['Check the final delivery estimate before paying.', 'Order time-sensitive items earlier when possible.', 'Keep tracking and order information together.']},
 }
 
 
@@ -128,7 +184,58 @@ BLOG_POSTS = {
         'intro': 'A lower sticker price does not always mean a lower final cost. Comparing the same product carefully can help you make a clearer decision.',
         'sections': [('Match the exact product', 'Check model numbers, sizes, colors and included accessories so you are comparing like with like.'), ('Calculate the total cost', 'Include shipping, taxes and required membership fees when reviewing offers.'), ('Check delivery timing', 'A cheaper option may not be useful if the delivery date does not meet your needs.'), ('Read return information', 'Before buying, review the return window and any conditions that apply to the item.'), ('Save your comparison', 'For larger purchases, keep a short note of the options so you can avoid repeatedly starting from scratch.')],
         'tips': ['Compare total cost, not just sticker price.', 'Check exact product specifications.', 'Keep important order records.']
-    }
+    },
+
+    'why-20-percent-coupon-can-cost-more-than-free-shipping': {
+        'title': 'Why a 20% Coupon Can Cost More Than Free Shipping',
+        'description': 'A simple example of why shoppers should compare the final checkout total instead of the biggest-looking promotion.',
+        'date': '2026-10-11', 'category': 'Smart Shopping', 'read_time': '5 min read', 'icon': '🧮',
+        'intro': 'A percentage-off coupon often looks more valuable than free shipping, but that is not always true. The only reliable comparison is the amount you will actually pay for the same basket.',
+        'sections': [('Start with the same basket', 'Compare promotions using identical items so the result is meaningful.'), ('Calculate the percentage discount', 'Work out the eligible discount and check whether excluded items or a maximum discount limit apply.'), ('Add delivery charges', 'If the coupon option still has shipping, include that charge before comparing it with free shipping.'), ('Check minimum-spend rules', 'A promotion that requires extra purchases can increase total spending even when it creates a discount.'), ('Use the final total', 'Choose based on the complete checkout amount and your actual need for the items, not the size of the promotional headline.')],
+        'tips': ['Use the same basket for every comparison.', 'Include shipping before deciding.', 'Do not spend extra only to unlock a promotion.'],
+        'related_guide_slug': 'free-shipping-vs-coupon-discount',
+        'related_guide_title': 'Free Shipping vs Coupon Discount: Which Saves More?'
+    },
+    'coupon-code-not-working-things-to-check': {
+        'title': 'Coupon Code Not Working? 7 Things to Check',
+        'description': 'Common reasons a coupon is rejected, including expiry dates, minimum spends, exclusions and customer eligibility.',
+        'date': '2026-10-11', 'category': 'Promo Codes', 'read_time': '6 min read', 'icon': '🏷️',
+        'intro': 'A rejected coupon does not always mean the code was fake. Retailers often attach conditions that determine when and where a promotion can be used.',
+        'sections': [('Check the expiry date', 'The promotion may have ended or may only work during a specified time period.'), ('Check the minimum spend', 'Some coupons only activate after the eligible subtotal reaches a required amount.'), ('Review product exclusions', 'Certain brands, sale items, gift cards or categories may not qualify.'), ('Check customer eligibility', 'The offer may be for new customers, members, app users or a specific region.'), ('Look for automatic discounts', 'A store may already be applying another promotion that cannot be combined with the coupon.'), ('Check spelling and spacing', 'Enter the code exactly as provided and remove accidental spaces before or after it.'), ('Read the checkout message', 'The retailer error message often explains whether the problem is expiry, eligibility or the contents of the cart.')],
+        'tips': ['Do not keep trying unrelated codes at random.', 'Read the retailer terms when available.', 'Confirm any accepted discount in the order summary.'],
+        'related_guide_slug': 'find-legit-promo-codes',
+        'related_guide_title': 'How to Find Legit Promo Codes'
+    },
+    'percentage-off-vs-dollar-off': {
+        'title': 'Percentage Off vs Dollar Off: How to Compare Them',
+        'description': 'Compare percentage and fixed-dollar discounts by calculating what each promotion does to the same eligible order.',
+        'date': '2026-10-11', 'category': 'Savings Math', 'read_time': '5 min read', 'icon': '💵',
+        'intro': 'A 15% discount and a $20 discount cannot be compared by appearance alone. The better promotion depends on the eligible order value and any limits attached to the offer.',
+        'sections': [('Use the eligible subtotal', 'Start with the amount that actually qualifies for the promotion.'), ('Calculate the percentage option', 'Multiply the eligible subtotal by the percentage and check whether the retailer sets a maximum discount.'), ('Calculate the fixed-dollar option', 'Subtract the fixed amount, making sure the order meets any minimum-spend requirement.'), ('Add other costs', 'Shipping and fees can change the better choice even after the discount is calculated.'), ('Check whether you needed the full basket', 'Do not increase an order only to cross a threshold unless the added products were already planned purchases.')],
+        'tips': ['Calculate both discounts on the same eligible subtotal.', 'Check maximum-discount limits.', 'Compare the final checkout amount.'],
+        'related_guide_slug': 'compare-online-deals',
+        'related_guide_title': 'How to Compare Online Deals'
+    },
+    'return-shipping-can-change-deal': {
+        'title': 'How Return Shipping Can Change the Real Cost of a Deal',
+        'description': 'Why return shipping, restocking rules and refund methods belong in your price comparison for higher-value purchases.',
+        'date': '2026-10-11', 'category': 'Buyer Planning', 'read_time': '5 min read', 'icon': '📦',
+        'intro': 'Two retailers can sell the same item at similar prices while offering very different return terms. Those differences matter most when size, fit or product compatibility is uncertain.',
+        'sections': [('Check return shipping', 'A prepaid return can be more convenient than paying to ship a large or heavy item back.'), ('Look for restocking charges', 'Some categories may have fees or special conditions that reduce the refund.'), ('Check the refund method', 'Store credit may be less flexible than a refund to the original payment method.'), ('Compare the return window', 'A longer window can be useful for gifts or products that need time to evaluate.'), ('Balance price and flexibility', 'A slightly higher purchase price can sometimes be worthwhile when the return policy materially reduces your risk and potential cost.')],
+        'tips': ['Read the return policy before buying.', 'Pay extra attention to large or hard-to-fit items.', 'Keep packaging until you know the product works for you.'],
+        'related_guide_slug': 'online-return-policy-checklist',
+        'related_guide_title': 'Online Return Policy Checklist Before You Buy'
+    },
+    'simple-price-tracking-before-major-sales': {
+        'title': 'Simple Price Tracking Before Black Friday and Holiday Sales',
+        'description': 'Create a basic price record before major sales so you can judge promotions with more context.',
+        'date': '2026-10-11', 'category': 'Seasonal Planning', 'read_time': '6 min read', 'icon': '📈',
+        'intro': 'You do not need a complicated system to understand whether a major sale price looks useful. A short record of the products you actually plan to buy can give you helpful context.',
+        'sections': [('Choose only planned products', 'Track items you genuinely expect to purchase rather than collecting dozens of random sale targets.'), ('Record the exact model', 'Save the model number, size or version so later comparisons are like for like.'), ('Note the current price', 'Write down the price from one or two established sellers before the sale period starts.'), ('Record shipping and bundle details', 'A price comparison is more useful when you also know whether shipping or accessories are included.'), ('Compare sale-day totals', 'When the event begins, compare the final checkout price with your earlier notes instead of relying only on the advertised percentage.')],
+        'tips': ['Track a short list of real purchase targets.', 'Record exact product versions.', 'Compare final prices during the sale.'],
+        'related_guide_slug': 'black-friday-shopping-guide',
+        'related_guide_title': 'Complete Black Friday Shopping Guide'
+    },
 }
 
 def category_from_query(value):
