@@ -68,7 +68,8 @@ class _AppLoader(importlib.abc.Loader):
             if app is not None:
                 @app.before_request
                 def _retire_old_marketplace_routes():
-                    if request.path.lower().startswith("/ebay"):
+                    retired_path = request.path.lower().rstrip("/")
+                    if retired_path in {"/ebay/search", "/ebay/debug"}:
                         return Response(
                             "The requested page has been permanently removed.",
                             status=410,
