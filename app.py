@@ -24,6 +24,7 @@ CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chi
 CATEGORIES=['shopping','fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
 SEASONAL_EVENTS={'halloween':'Halloween','black-friday':'Black Friday','cyber-monday':'Cyber Monday'}
 RESERVED={'states','cities','categories','seasonal','guides','blog','search','stores','about','privacy','terms','disclaimer','contact','affiliate-disclosure','affiliate-status','sitemap.xml','robots.txt','static','favicon.ico'}
+CURATED_STORE_INDEXING_ENABLED=os.environ.get('CURATED_STORE_INDEXING_ENABLED','0').strip().lower() in {'1','true','yes','on'}
 STORE_INDEXABLE_WHERE="""s.active=1 AND (length(trim(coalesce(s.description,''))) >= 160 OR EXISTS (SELECT 1 FROM offers o WHERE o.store_id=s.id AND o.active=1 AND o.verified=1) OR EXISTS (SELECT 1 FROM store_affiliate_matches m JOIN affiliate_networks n ON n.id=m.network_id WHERE m.store_id=s.id AND m.status='approved' AND n.active=1 AND (m.affiliate_url LIKE 'http://%' OR m.affiliate_url LIKE 'https://%')))"""
 
 
@@ -312,7 +313,7 @@ def store_page(slug):
     first=(store['name'] or '')[:1]; related=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? AND name LIKE ? COLLATE NOCASE ORDER BY name LIMIT 6',(slug,f'{first}%')).fetchall()
     if len(related)<6:
         extra=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? ORDER BY name COLLATE NOCASE LIMIT ?',(slug,6-len(related))).fetchall(); related=list(related)+list(extra)
-    db_offers=c.execute('SELECT * FROM offers WHERE store_id=? AND active=1 ORDER BY verified DESC, id DESC',(store['id'],)).fetchall(); offers=automatic_store_offers(store,db_offers); match=get_match(c,store['id']); store_indexable=is_store_indexable(store,db_offers,match); c.close(); return render_template('store.html',store=store,related=related,offers=offers,affiliate_match=match,amazon_url=amazon_search_url(store['name']),store_indexable=store_indexable)
+    db_offers=c.execute('SELECT * FROM offers WHERE store_id=? AND active=1 ORDER BY verified DESC, id DESC',(store['id'],)).fetchall(); offers=automatic_store_offers(store,db_offers); match=get_match(c,store['id']); store_indexable=(not CURATED_STORE_INDEXING_ENABLED) or is_store_indexable(store,db_offers,match); c.close(); return render_template('store.html',store=store,related=related,offers=offers,affiliate_match=match,amazon_url=amazon_search_url(store['name']),store_indexable=store_indexable)
 
 @app.route('/amazon/search/<slug>/')
 def amazon_store_search(slug):
@@ -397,7 +398,7 @@ def category_page(category_slug):
     if not stores:
         words=[w for w in re.split(r'[^a-z0-9]+',cfg['query'].lower()) if len(w)>2]; aliases=cfg.get('aliases',[]); terms=list(dict.fromkeys(words+aliases))[:8]; clauses=' OR '.join(['lower(name) LIKE ?' for _ in terms]); params=[f'%{term.lower()}%' for term in terms]
         if clauses: stores=c.execute(f'SELECT * FROM stores WHERE active=1 AND ({clauses}) ORDER BY name COLLATE NOCASE LIMIT 24',params).fetchall()
-    c.close(); ebay_items,ebay_error,ebay_query=ebay_search_smart(category,category=category,limit=9); return render_template('category.html',category=category,category_slug=category_slug,stores=stores,subcategories=cfg.get('subcategories',[]),ebay_items=ebay_items or [],ebay_error=ebay_error,ebay_query=ebay_query)
+    c.close(); return render_template('category.html',category=category,category_slug=category_slug,stores=stores,subcategories=cfg.get('subcategories',[]),ebay_items=[],ebay_error=None,ebay_query='')
 @app.route('/seasonal/<event_slug>/')
 def seasonal_page(event_slug):
     if event_slug not in SEASONAL_EVENTS: abort(404)
@@ -405,13 +406,14 @@ def seasonal_page(event_slug):
 
 @app.route('/sitemap.xml')
 def sitemap_index():
-    c=conn(); total=c.execute(f'SELECT COUNT(*) FROM stores s WHERE {STORE_INDEXABLE_WHERE}').fetchone()[0]; c.close(); parts=(total+49999)//50000; base='https://uscouponhub.com'; return Response('<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<sitemap><loc>{base}/sitemap-stores-{i}.xml</loc></sitemap>' for i in range(1,parts+1))+f'<sitemap><loc>{base}/sitemap-static.xml</loc></sitemap></sitemapindex>',mimetype='application/xml')
+    c=conn(); where=STORE_INDEXABLE_WHERE if CURATED_STORE_INDEXING_ENABLED else 's.active=1'; total=c.execute(f'SELECT COUNT(*) FROM stores s WHERE {where}').fetchone()[0]; c.close(); parts=(total+49999)//50000; base='https://uscouponhub.com'; return Response('<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<sitemap><loc>{base}/sitemap-stores-{i}.xml</loc></sitemap>' for i in range(1,parts+1))+f'<sitemap><loc>{base}/sitemap-static.xml</loc></sitemap></sitemapindex>',mimetype='application/xml')
 @app.route('/sitemap-static.xml')
 def sitemap_static():
     base='https://uscouponhub.com'; urls=[f'{base}/',f'{base}/stores/',f'{base}/guides/',f'{base}/about/',f'{base}/privacy/',f'{base}/terms/',f'{base}/disclaimer/',f'{base}/contact/',f'{base}/affiliate-disclosure/']+[f'{base}/guides/{slug}/' for slug in SHOPPING_GUIDES]+[f'{base}/blog/']+[f'{base}/blog/{slug}/' for slug in BLOG_POSTS]+[f'{base}/states/{s}/' for s in STATES]+[f'{base}/cities/{x}/' for x in CITIES]+[f'{base}/categories/{x}/' for x in CATEGORIES]+[f'{base}/seasonal/{slug}/' for slug in SEASONAL_EVENTS]; return Response('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{u}</loc></url>' for u in urls)+'</urlset>',mimetype='application/xml')
 @app.route('/sitemap-stores-<int:part>.xml')
 def sitemap_stores(part):
-    per=50000; offset=(part-1)*per; c=conn(); rows=c.execute(f'SELECT s.slug FROM stores s WHERE {STORE_INDEXABLE_WHERE} ORDER BY s.id LIMIT ? OFFSET ?',(per,offset)).fetchall(); c.close(); base='https://uscouponhub.com'
+    if part < 1: abort(404)
+    per=50000; offset=(part-1)*per; where=STORE_INDEXABLE_WHERE if CURATED_STORE_INDEXING_ENABLED else 's.active=1'; c=conn(); rows=c.execute(f'SELECT s.slug FROM stores s WHERE {where} ORDER BY s.id LIMIT ? OFFSET ?',(per,offset)).fetchall(); c.close(); base='https://uscouponhub.com'
     if not rows: abort(404)
     return Response('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{base}/{r["slug"]}</loc></url>' for r in rows)+'</urlset>',mimetype='application/xml')
 @app.route('/robots.txt')
