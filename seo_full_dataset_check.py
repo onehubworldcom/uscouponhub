@@ -22,11 +22,24 @@ with tempfile.TemporaryDirectory() as tmp:
     client = site.app.test_client()
 
     assert client.get("/categories/shopping/").status_code == 200
+    assert client.get("/favicon.ico").status_code == 200
+
     assert client.get("/stores", follow_redirects=False).status_code == 301
     stores_page = client.get("/stores/")
     assert stores_page.status_code == 200
     assert stores_page.headers.get("X-Robots-Tag") is None
-    assert client.get("/search/").headers.get("X-Robots-Tag") == "noindex, follow"
+    assert b'name="robots" content="index,follow"' in stores_page.data
+
+    search_page = client.get("/search/?q=definitely-no-such-store")
+    assert search_page.status_code == 200
+    assert search_page.headers.get("X-Robots-Tag") == "noindex, follow"
+    assert b'name="robots" content="noindex,follow"' in search_page.data
+
+    assert client.get("/ebay/search/").status_code == 410
+    assert client.get("/ebay/debug/").status_code == 410
+    assert client.get("/ebay/account-deletion").status_code == 200
+    assert client.post("/ebay/account-deletion").status_code == 204
+
     assert client.get("/blog", follow_redirects=False).status_code == 301
     assert client.get("/seasonal/not-a-real-event/").status_code == 404
 
@@ -52,6 +65,8 @@ with tempfile.TemporaryDirectory() as tmp:
     store_page = client.get(f"/{sample['slug']}")
     assert store_page.status_code == 200
     assert b'name="robots" content="index,follow"' in store_page.data
+    assert b"ebay" not in store_page.data.lower()
+    assert b"amazon" in store_page.data.lower()
 
 print("SEO_FULL_DATASET_CHECK=PASS")
 print(f"TOTAL_STORES={total_before}")
