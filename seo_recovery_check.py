@@ -6,6 +6,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 with tempfile.TemporaryDirectory() as tmp:
     os.environ["DATABASE_PATH"] = os.path.join(tmp, "seo-recovery-test.db")
     os.environ["STORES_CSV"] = os.path.join(ROOT, "data", "test_stores.csv")
+    os.environ["CURATED_STORE_INDEXING_ENABLED"] = "1"
 
     # Import explicitly so the production runtime patch is exercised by CI.
     import sitecustomize  # noqa: F401
@@ -30,6 +31,7 @@ with tempfile.TemporaryDirectory() as tmp:
 
     assert client.get("/seasonal/not-a-real-event/").status_code == 404
     assert client.get("/seasonal/black-friday/").status_code == 200
+    assert client.get("/categories/shopping/").status_code == 200
 
     # Thin stores remain available to visitors but are not indexable.
     r = client.get(f"/{slug}")
