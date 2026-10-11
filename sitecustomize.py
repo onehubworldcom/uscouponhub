@@ -183,7 +183,7 @@ class _AppLoader(importlib.abc.Loader):
                 # engines not to index query/pagination variants.
                 @app.after_request
                 def _noindex_search_variants(response):
-                    if request.path.rstrip("/") in ("/search", "/stores"):
+                    if request.path.rstrip("/") == "/search":
                         response.headers["X-Robots-Tag"] = "noindex, follow"
                     return response
 
