@@ -12,14 +12,25 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="msvalidate.01" content="C2AE7990771D46A5F11EAA0F36AEB1C5">
 <title>{% block title %}US Coupon Hub | Coupons, Promo Codes & Deals{% endblock %}</title>
-<meta name="description" content="{% block description %}Find coupons, promo codes, discount codes and deals from popular stores across the United States.{% endblock %}">
+<meta name="description" content="{% block description %}Find Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF savings where available from popular US Stores at US Coupon Hub.{% endblock %}">
 <meta name="robots" content="{% block robots %}index,follow{% endblock %}">
-<link rel="canonical" href="https://uscouponhub.com{{ request.path }}">
+{% block canonical_link %}<link rel="canonical" href="https://uscouponhub.com{{ request.path }}">{% endblock %}
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Organization",
+  "name":"US Coupon Hub",
+  "url":"https://uscouponhub.com/",
+  "logo":"https://uscouponhub.com/static/img/us-coupon-hub-logo.png",
+  "sameAs":["https://www.facebook.com/profile.php?id=61593912758809"]
+}
+</script>
 <link rel="icon" href="/static/favicon.ico" sizes="any"><link rel="icon" type="image/png" href="/static/favicon.png"><link rel="apple-touch-icon" href="/static/favicon.png"><meta name="theme-color" content="#0b2b59"><link rel="stylesheet" href="/static/css/style.css">
 <style>
 header{min-height:220px;padding-top:15px;padding-bottom:15px;display:flex;align-items:center}header .brand{display:flex;align-items:center}header .brand img{height:190px!important;width:auto!important;max-width:500px!important;object-fit:contain;display:block}@media(max-width:700px){header{min-height:155px}header .brand img{height:135px!important;max-width:360px!important}}
 .social-links{display:flex;gap:12px;align-items:center;margin-top:12px}.social-links a{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:#1877f2;color:#fff;text-decoration:none;font-size:22px;font-weight:700}.social-links a:hover{opacity:.85}
-</style></head><body>
+</style>{% block head_extra %}{% endblock %}</head><body>
 <div class="topbar">🇺🇸 Made for smarter shopping across the United States <span>•</span> Updated deals & seasonal savings</div>
 <header><a class="brand" href="/"><img src="/static/img/us-coupon-hub-logo.png" alt="US Coupon Hub" onerror="this.style.display='none'"></a><nav><a href="/">Home</a><a href="/stores/">Search Stores</a><a href="/guides/">Shopping Guides</a><a href="/blog/">Blog</a><a href="/stores/?q=amazon">Amazon Deals</a><a href="/categories/shopping/">Categories</a><a href="/seasonal/black-friday/">Black Friday</a></nav></header>
 <main>{% block content %}{% endblock %}</main>

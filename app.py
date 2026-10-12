@@ -19,6 +19,48 @@ def format_number(value):
         return f"{int(value):,}"
     except (ValueError, TypeError):
         return value
+
+@app.template_filter('store_meta_description')
+def store_meta_description(value):
+    name=(value or 'Store').strip()
+    variants=[
+        f'Find {name} Promo Codes, Coupon Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF where available. Compare current Store Deals and Offers.',
+        f'Find {name} Promo Codes, Coupon Codes, Discounts, Sale Offers and Black Friday Deals. Up to 90% OFF where available. Check Store Deals before checkout.',
+        f'{name}: Promo Codes, Coupon Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF where available. Compare current Store Deals.',
+        f'{name}: Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF where available. Check current Store Deals.',
+        f'{name}: Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF where available. Check Store Deals.',
+    ]
+    for description in variants:
+        if 150 <= len(description) <= 160:
+            return description
+    # Extremely long Store names are shortened only inside the Meta Description.
+    # The full Store name remains unchanged everywhere else on the page.
+    short_name=name if len(name) <= 38 else name[:37].rstrip() + '…'
+    return f'{short_name}: Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF where available. Check Store Deals.'
+@app.template_filter('content_meta_description')
+def content_meta_description(value):
+    text=re.sub(r'\s+',' ',(value or 'Practical shopping guidance from US Coupon Hub.').strip())
+    additions=[
+        ' Compare prices, Offer terms, delivery and returns before checkout.',
+        ' Review current Store details and shopping terms before checkout.',
+        ' Use this practical US Coupon Hub guide before you buy.'
+    ]
+    candidate=text
+    for extra in additions:
+        if len(candidate) >= 150:
+            break
+        candidate += extra
+    if len(candidate) > 160:
+        cut=candidate.rfind(' ',0,158)
+        candidate=(candidate[:cut if cut >= 150 else 157].rstrip(' ,;:-') + '.')
+    if len(candidate) < 150:
+        candidate=(candidate + ' Shop smarter with US Coupon Hub.').strip()
+    if len(candidate) > 160:
+        cut=candidate.rfind(' ',0,158)
+        candidate=(candidate[:cut if cut >= 150 else 157].rstrip(' ,;:-') + '.')
+    return candidate
+
+
 STATES={'california':'California','texas':'Texas','florida':'Florida','new-york':'New York','illinois':'Illinois','pennsylvania':'Pennsylvania','ohio':'Ohio','georgia':'Georgia','north-carolina':'North Carolina','michigan':'Michigan'}
 CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chicago, IL','houston':'Houston, TX','phoenix':'Phoenix, AZ','philadelphia':'Philadelphia, PA','san-antonio':'San Antonio, TX','san-diego':'San Diego, CA','dallas':'Dallas, TX','san-jose':'San Jose, CA'}
 CATEGORIES=['shopping','fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
@@ -359,6 +401,14 @@ def init_db():
 @app.context_processor
 def globals_ctx(): return {'current_year':datetime.now().year,'site_name':'US Coupon Hub','states':STATES,'cities':CITIES,'categories':CATEGORIES,'format_number':lambda n:f'{n:,}'}
 
+@app.after_request
+def seo_response_headers(response):
+    if request.path.startswith('/sitemap'):
+        response.headers['Cache-Control']='public, max-age=3600, stale-while-revalidate=86400'
+    if request.path in {'/search-insights/','/affiliate-status/'}:
+        response.headers['X-Robots-Tag']='noindex, nofollow'
+    return response
+
 @app.route('/favicon.ico')
 def favicon(): return app.send_static_file('favicon.ico')
 
@@ -458,6 +508,11 @@ def ebay_account_deletion():
     if request.method=='GET': return {'status':'eBay account deletion endpoint is ready','challenge_required':True},200
     return '',204
 
+@app.route('/blog/how-to-check-promo-code')
+@app.route('/blog/how-to-check-promo-code/')
+def legacy_how_to_check_promo_code():
+    return redirect('/guides/find-legit-promo-codes/',code=301)
+
 @app.route('/blog')
 def blog_redirect(): return redirect('/blog/',code=301)
 @app.route('/blog/')
@@ -525,7 +580,7 @@ def sitemap_stores(part):
     return Response('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{base}/{r["slug"]}</loc></url>' for r in rows)+'</urlset>',mimetype='application/xml')
 @app.route('/robots.txt')
 def robots():
-    body='\n'.join(['User-agent: *','Allow: /','Disallow: /search/','Disallow: /search-insights/','Disallow: /go/','Disallow: /amazon/search/','Disallow: /ebay/search/','Disallow: /ebay/debug/','Sitemap: https://uscouponhub.com/sitemap.xml',''])
+    body='\n'.join(['User-agent: *','Allow: /','Disallow: /go/','Disallow: /amazon/search/','Disallow: /ebay/search/','Disallow: /ebay/debug/','Sitemap: https://uscouponhub.com/sitemap.xml',''])
     return Response(body,mimetype='text/plain')
 init_db()
 if __name__=='__main__': app.run(debug=True)

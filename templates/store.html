@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}{{ store.name }} Coupons & Promo Codes {{ current_year }} | US Coupon Hub{% endblock %}
-{% block description %}Find {{ store.name }} Promo Code and Coupon Code offers for {{ current_year }}, plus Discount Codes, Deals, Offers and practical savings tips. Check offer terms before checkout.{% endblock %}
+{% block description %}{{ store.name|store_meta_description }}{% endblock %}
 {% block robots %}{% if store_indexable %}index,follow{% else %}noindex,follow{% endif %}{% endblock %}
 {% block content %}
 <nav class="breadcrumbs"><a href="/">Home</a> <span>›</span> <span>{{ store.name }} Coupons</span></nav>
