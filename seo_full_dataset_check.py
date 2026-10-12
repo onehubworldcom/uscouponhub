@@ -23,7 +23,7 @@ with tempfile.TemporaryDirectory() as tmp:
 
     home_page = client.get("/")
     assert home_page.status_code == 200
-    assert b'Find Coupon Codes, Promo Codes, Store Deals, Shopping Guides and Seasonal Savings from popular US Stores. Compare Offers and shop smarter with US Coupon Hub.' in home_page.data
+    assert b'Find Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF savings where available from popular US Stores at US Coupon Hub.' in home_page.data
 
     assert client.get("/categories/shopping/").status_code == 200
     assert client.get("/favicon.ico").status_code == 200
