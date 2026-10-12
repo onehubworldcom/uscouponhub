@@ -580,7 +580,7 @@ def sitemap_stores(part):
     return Response('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{base}/{r["slug"]}</loc></url>' for r in rows)+'</urlset>',mimetype='application/xml')
 @app.route('/robots.txt')
 def robots():
-    body='\n'.join(['User-agent: *','Allow: /','Disallow: /search/','Disallow: /search-insights/','Disallow: /go/','Disallow: /amazon/search/','Disallow: /ebay/search/','Disallow: /ebay/debug/','Sitemap: https://uscouponhub.com/sitemap.xml',''])
+    body='\n'.join(['User-agent: *','Allow: /','Disallow: /go/','Disallow: /amazon/search/','Disallow: /ebay/search/','Disallow: /ebay/debug/','Sitemap: https://uscouponhub.com/sitemap.xml',''])
     return Response(body,mimetype='text/plain')
 init_db()
 if __name__=='__main__': app.run(debug=True)
