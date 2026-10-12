@@ -51,6 +51,8 @@ with tempfile.TemporaryDirectory() as tmp:
     assert b'Find Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF savings where available from popular US Stores at US Coupon Hub.' in home_page.data
     assert b'"@type":"Organization"' in home_page.data
     assert b'"@type":"WebSite"' in home_page.data
+    assert b'https://www.instagram.com/uscouponhub/' in home_page.data
+    assert b'aria-label="Visit US Coupon Hub on Instagram"' in home_page.data
     assert b"Stores in directory" in home_page.data
 
     assert client.get("/categories/shopping/").status_code == 200
