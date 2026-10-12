@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
-{% block title %}{% if request.path.startswith('/search') %}Search Stores | US Coupon Hub{% else %}Browse Stores & Coupon Pages | US Coupon Hub{% endif %}{% endblock %}
-{% block description %}{% if request.path.startswith('/search') %}Search US Stores for Coupon Codes, Promo Codes, Discounts, Sale Offers and current Deals. Browse matching Store pages and compare Offers before checkout.{% else %}Browse US Stores for Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF savings where available at US Coupon Hub.{% endif %}{% endblock %}
-{% block robots %}{% if request.path.startswith('/search') %}noindex,follow{% else %}index,follow{% endif %}{% endblock %}
+{% block title %}{% if request.path.startswith('/search') %}Search Stores | US Coupon Hub{% elif page > 1 %}Browse Stores & Coupon Pages – Page {{ page }} | US Coupon Hub{% else %}Browse Stores & Coupon Pages | US Coupon Hub{% endif %}{% endblock %}
+{% block description %}{% if request.path.startswith('/search') or q %}Search US Stores for Coupon Codes, Promo Codes, Discounts and current Deals. Browse matching Store pages and compare available Offers before checkout.{% else %}Browse US Stores for Coupon Codes, Promo Codes, Discounts, Sale Offers and seasonal Deals. Compare Store pages and current savings information before checkout.{% endif %}{% endblock %}
+{% block robots %}{% if request.path.startswith('/search') or q %}noindex,follow{% else %}index,follow{% endif %}{% endblock %}
+{% block canonical_link %}<link rel="canonical" href="{% if request.path.startswith('/stores') and not q and page > 1 %}https://uscouponhub.com/stores/?page={{ page }}{% else %}https://uscouponhub.com{{ request.path }}{% endif %}">{% endblock %}
 {% block content %}
 <section class="directory-hero"><p class="eyebrow">STORE DIRECTORY</p><h1>Find a store</h1><p>Search the USCouponHub directory by store or brand name.</p><form class="search directory-search" action="/search/" method="get"><input name="q" value="{{ q }}" placeholder="Search store or brand..."><button>Search</button></form></section>
 <section class="section search-results"><h2>{% if q %}Results for “{{ q }}”{% else %}Browse stores{% endif %}</h2>
