@@ -1,6 +1,7 @@
 import os
 import re
 import tempfile
+from html import unescape
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -25,7 +26,7 @@ with tempfile.TemporaryDirectory() as tmp:
     def meta_description(response):
         match = re.search(br'<meta name="description" content="([^"]*)">', response.data)
         assert match, "Missing meta description"
-        return match.group(1).decode("utf-8")
+        return unescape(match.group(1).decode("utf-8"))
 
     def assert_meta_length(response, label):
         description = meta_description(response)
