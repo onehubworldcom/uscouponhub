@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}{{ store.name }} Coupons & Promo Codes {{ current_year }} | US Coupon Hub{% endblock %}
-{% block description %}Find {{ store.name }} Promo Codes, Coupon Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF where available. Compare Deals and Offers before checkout.{% endblock %}
+{% block description %}{{ store.name|store_meta_description }}{% endblock %}
 {% block robots %}{% if store_indexable %}index,follow{% else %}noindex,follow{% endif %}{% endblock %}
 {% block content %}
 <nav class="breadcrumbs"><a href="/">Home</a> <span>›</span> <span>{{ store.name }} Coupons</span></nav>
