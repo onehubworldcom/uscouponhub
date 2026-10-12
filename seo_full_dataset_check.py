@@ -23,6 +23,12 @@ with tempfile.TemporaryDirectory() as tmp:
 
     client = site.app.test_client()
 
+    for store_name in ["3M", "Walmart", "Daniel Wellington", "Very Very Long Store Name With Many Words And Extra Text"]:
+        store_meta = site.store_meta_description(store_name)
+        assert 150 <= len(store_meta) <= 160, f"Store meta length={len(store_meta)} for {store_name}: {store_meta}"
+        for keyword in ["Coupon Codes", "Promo Codes", "Discounts", "Sale Offers", "Black Friday Deals", "Up to 90% OFF", "Store"]:
+            assert keyword in store_meta, f"Missing {keyword} in Store meta: {store_meta}"
+
     def meta_description(response):
         match = re.search(br'<meta name="description" content="([^"]*)">', response.data)
         assert match, "Missing meta description"
