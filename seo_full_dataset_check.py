@@ -1,4 +1,5 @@
 import os
+import re
 import tempfile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -21,22 +22,52 @@ with tempfile.TemporaryDirectory() as tmp:
 
     client = site.app.test_client()
 
+    def meta_description(response):
+        match = re.search(br'<meta name="description" content="([^"]*)">', response.data)
+        assert match, "Missing meta description"
+        return match.group(1).decode("utf-8")
+
+    def assert_meta_length(response, label):
+        description = meta_description(response)
+        assert 150 <= len(description) <= 160, f"{label} meta description length={len(description)}: {description}"
+        return description
+
     home_page = client.get("/")
     assert home_page.status_code == 200
+    assert_meta_length(home_page, "home")
     assert b'Find Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF savings where available from popular US Stores at US Coupon Hub.' in home_page.data
 
     assert client.get("/categories/shopping/").status_code == 200
+    assert_meta_length(client.get("/guides/"), "guides")
+    assert_meta_length(client.get("/blog/"), "blog")
+    assert_meta_length(client.get("/categories/beauty/"), "category-beauty")
+    assert_meta_length(client.get("/categories/home-garden/"), "category-home-garden")
+    assert_meta_length(client.get("/states/ohio/"), "state-ohio")
+    assert_meta_length(client.get("/states/north-carolina/"), "state-north-carolina")
+    assert_meta_length(client.get("/cities/dallas/"), "city-dallas")
+    assert_meta_length(client.get("/cities/philadelphia/"), "city-philadelphia")
+    assert_meta_length(client.get("/seasonal/halloween/"), "seasonal-halloween")
+    assert_meta_length(client.get("/seasonal/black-friday/"), "seasonal-black-friday")
+    assert_meta_length(client.get("/about/"), "about")
+    assert_meta_length(client.get("/contact/"), "contact")
+    assert_meta_length(client.get("/privacy/"), "privacy")
+    assert_meta_length(client.get("/terms/"), "terms")
+    assert_meta_length(client.get("/disclaimer/"), "disclaimer")
+    assert_meta_length(client.get("/affiliate-disclosure/"), "affiliate-disclosure")
+
     assert client.get("/favicon.ico").status_code == 200
 
     assert client.get("/stores", follow_redirects=False).status_code == 301
     stores_page = client.get("/stores/")
     assert stores_page.status_code == 200
     assert stores_page.headers.get("X-Robots-Tag") is None
+    assert_meta_length(stores_page, "stores-directory")
     assert b'name="robots" content="index,follow"' in stores_page.data
 
     search_page = client.get("/search/?q=definitely-no-such-store")
     assert search_page.status_code == 200
     assert search_page.headers.get("X-Robots-Tag") == "noindex, follow"
+    assert_meta_length(search_page, "search")
     assert b'name="robots" content="noindex,follow"' in search_page.data
 
     assert client.get("/ebay/search/").status_code == 410
@@ -80,6 +111,7 @@ with tempfile.TemporaryDirectory() as tmp:
 
     store_page = client.get(f"/{sample['slug']}")
     assert store_page.status_code == 200
+    assert_meta_length(store_page, "store-page")
     assert b'name="robots" content="index,follow"' in store_page.data
     assert b"Promo Codes" in store_page.data
     assert b"Coupon Codes" in store_page.data
