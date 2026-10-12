@@ -401,6 +401,14 @@ def init_db():
 @app.context_processor
 def globals_ctx(): return {'current_year':datetime.now().year,'site_name':'US Coupon Hub','states':STATES,'cities':CITIES,'categories':CATEGORIES,'format_number':lambda n:f'{n:,}'}
 
+@app.after_request
+def seo_response_headers(response):
+    if request.path.startswith('/sitemap'):
+        response.headers['Cache-Control']='public, max-age=3600, stale-while-revalidate=86400'
+    if request.path in {'/search-insights/','/affiliate-status/'}:
+        response.headers['X-Robots-Tag']='noindex, nofollow'
+    return response
+
 @app.route('/favicon.ico')
 def favicon(): return app.send_static_file('favicon.ico')
 
@@ -499,6 +507,11 @@ def ebay_account_deletion():
         challenge_response=hashlib.sha256((challenge_code+verification_token+endpoint).encode('utf-8')).hexdigest(); return {'challengeResponse':challenge_response},200
     if request.method=='GET': return {'status':'eBay account deletion endpoint is ready','challenge_required':True},200
     return '',204
+
+@app.route('/blog/how-to-check-promo-code')
+@app.route('/blog/how-to-check-promo-code/')
+def legacy_how_to_check_promo_code():
+    return redirect('/guides/find-legit-promo-codes/',code=301)
 
 @app.route('/blog')
 def blog_redirect(): return redirect('/blog/',code=301)
