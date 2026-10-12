@@ -23,6 +23,13 @@ with tempfile.TemporaryDirectory() as tmp:
 
     client = site.app.test_client()
 
+    for collection_name, collection in [("guide", site.SHOPPING_GUIDES), ("blog", site.BLOG_POSTS)]:
+        for slug, item in collection.items():
+            content_meta = site.content_meta_description(item["title"])
+            assert 150 <= len(content_meta) <= 160, f"{collection_name} {slug} meta length={len(content_meta)}: {content_meta}"
+            for keyword in ["Coupon Codes", "Promo Codes", "Discounts", "Sale Offers", "Black Friday Deals", "Up to 90% OFF"]:
+                assert keyword in content_meta, f"Missing {keyword} in {collection_name} {slug} meta: {content_meta}"
+
     for store_name in ["3M", "Walmart", "Daniel Wellington", "Very Very Long Store Name With Many Words And Extra Text"]:
         store_meta = site.store_meta_description(store_name)
         assert 150 <= len(store_meta) <= 160, f"Store meta length={len(store_meta)} for {store_name}: {store_meta}"
