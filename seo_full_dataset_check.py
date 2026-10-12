@@ -81,6 +81,12 @@ with tempfile.TemporaryDirectory() as tmp:
     store_page = client.get(f"/{sample['slug']}")
     assert store_page.status_code == 200
     assert b'name="robots" content="index,follow"' in store_page.data
+    assert b"Promo Codes" in store_page.data
+    assert b"Coupon Codes" in store_page.data
+    assert b"Discounts" in store_page.data
+    assert b"Sale Offers" in store_page.data
+    assert b"Black Friday Deals" in store_page.data
+    assert b"Up to 90% OFF where available" in store_page.data
     assert b"ebay" not in store_page.data.lower()
     assert b"amazon" in store_page.data.lower()
 
