@@ -19,6 +19,24 @@ def format_number(value):
         return f"{int(value):,}"
     except (ValueError, TypeError):
         return value
+
+@app.template_filter('store_meta_description')
+def store_meta_description(value):
+    name=(value or 'Store').strip()
+    variants=[
+        f'Find {name} Promo Codes, Coupon Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF where available. Compare current Store Deals and Offers.',
+        f'Find {name} Promo Codes, Coupon Codes, Discounts, Sale Offers and Black Friday Deals. Up to 90% OFF where available. Check Store Deals before checkout.',
+        f'{name}: Promo Codes, Coupon Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF where available. Compare current Store Deals.',
+        f'{name}: Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals and Up to 90% OFF where available. Check current Store Deals.',
+        f'{name}: Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF where available. Check Store Deals.',
+    ]
+    for description in variants:
+        if 150 <= len(description) <= 160:
+            return description
+    # Extremely long Store names are shortened only inside the Meta Description.
+    # The full Store name remains unchanged everywhere else on the page.
+    short_name=name if len(name) <= 38 else name[:37].rstrip() + '…'
+    return f'{short_name}: Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF where available. Check Store Deals.'
 STATES={'california':'California','texas':'Texas','florida':'Florida','new-york':'New York','illinois':'Illinois','pennsylvania':'Pennsylvania','ohio':'Ohio','georgia':'Georgia','north-carolina':'North Carolina','michigan':'Michigan'}
 CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chicago, IL','houston':'Houston, TX','phoenix':'Phoenix, AZ','philadelphia':'Philadelphia, PA','san-antonio':'San Antonio, TX','san-diego':'San Diego, CA','dallas':'Dallas, TX','san-jose':'San Jose, CA'}
 CATEGORIES=['shopping','fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
