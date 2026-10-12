@@ -37,6 +37,30 @@ def store_meta_description(value):
     # The full Store name remains unchanged everywhere else on the page.
     short_name=name if len(name) <= 38 else name[:37].rstrip() + '…'
     return f'{short_name}: Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF where available. Check Store Deals.'
+@app.template_filter('content_meta_description')
+def content_meta_description(value):
+    title=(value or 'Shopping Guide').strip()
+    suffixes=[
+        ': Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF if available.',
+        ': Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF where offered.',
+        ': Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF if available. Shop smart.',
+        ': Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF if available. Compare Deals.',
+        ': Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF if available. Compare Store Deals.',
+        ': Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF if available. Compare Store Offers.',
+        ': Coupon Codes, Promo Codes, Discounts, Sale Offers, Black Friday Deals, Up to 90% OFF if available. Compare Store Savings.',
+    ]
+    for suffix in suffixes:
+        description=title + suffix
+        if 150 <= len(description) <= 160:
+            return description
+    short_title=title if len(title) <= 60 else title[:59].rstrip() + '…'
+    description=short_title + suffixes[0]
+    if len(description) > 160:
+        short_title=short_title[:max(1, 160-len(suffixes[0]))].rstrip()
+        description=short_title + suffixes[0]
+    return description
+
+
 STATES={'california':'California','texas':'Texas','florida':'Florida','new-york':'New York','illinois':'Illinois','pennsylvania':'Pennsylvania','ohio':'Ohio','georgia':'Georgia','north-carolina':'North Carolina','michigan':'Michigan'}
 CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chicago, IL','houston':'Houston, TX','phoenix':'Phoenix, AZ','philadelphia':'Philadelphia, PA','san-antonio':'San Antonio, TX','san-diego':'San Diego, CA','dallas':'Dallas, TX','san-jose':'San Jose, CA'}
 CATEGORIES=['shopping','fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
