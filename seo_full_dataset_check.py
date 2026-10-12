@@ -53,6 +53,8 @@ with tempfile.TemporaryDirectory() as tmp:
     assert b'"@type":"WebSite"' in home_page.data
     assert b'https://www.instagram.com/uscouponhub/' in home_page.data
     assert b'aria-label="Visit US Coupon Hub on Instagram"' in home_page.data
+    assert b'https://www.reddit.com/user/uscouponhub/' in home_page.data
+    assert b'aria-label="Visit US Coupon Hub on Reddit"' in home_page.data
     assert b"Stores in directory" in home_page.data
 
     assert client.get("/categories/shopping/").status_code == 200
