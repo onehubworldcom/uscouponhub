@@ -1,0 +1,18 @@
+url,status,content_type,xml_urls,error,seconds
+https://uscouponhub.com/sitemap.xml,200,application/xml; charset=utf-8,7,,5.15
+https://uscouponhub.com/sitemap-stores-1.xml,200,application/xml; charset=utf-8,50000,,5.89
+https://uscouponhub.com/sitemap-stores-2.xml,200,application/xml; charset=utf-8,50000,,6.5
+https://uscouponhub.com/sitemap-stores-3.xml,200,application/xml; charset=utf-8,50000,,5.43
+https://uscouponhub.com/sitemap-stores-4.xml,200,application/xml; charset=utf-8,50000,,4.32
+https://uscouponhub.com/sitemap-stores-5.xml,200,application/xml; charset=utf-8,50000,,4.62
+https://uscouponhub.com/sitemap-stores-6.xml,200,application/xml; charset=utf-8,38414,,4.5
+https://uscouponhub.com/sitemap-static.xml,200,application/xml; charset=utf-8,64,,3.36
+https://uscouponhub.com/guides/avoid-expired-coupon-codes/,200,text/html; charset=utf-8,,,2.82
+https://uscouponhub.com/cities/dallas/,200,text/html; charset=utf-8,,,4.11
+https://uscouponhub.com/about/,200,text/html; charset=utf-8,,,4.16
+https://uscouponhub.com/,200,text/html; charset=utf-8,,,3.53
+https://uscouponhub.com/2020ave-coupon-code,200,text/html; charset=utf-8,,,4.1
+https://uscouponhub.com/stores/,200,text/html; charset=utf-8,,,4.05
+https://uscouponhub.com/states/florida/,200,text/html; charset=utf-8,,,3.91
+https://uscouponhub.com/32-bar-blues-coupon-code,200,text/html; charset=utf-8,,,3.87
+https://uscouponhub.com/42538-promo-code,200,text/html; charset=utf-8,,,3.92

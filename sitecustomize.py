@@ -126,6 +126,9 @@ class _AppLoader(importlib.abc.Loader):
                 # a very large number of store records, but thin/unverified
                 # store pages should not all be submitted to Google.
                 def _indexable_store_where():
+                    if hasattr(module, "store_sitemap_where"):
+                        return module.store_sitemap_where(
+                            getattr(module, "CURATED_STORE_INDEXING_ENABLED", False))
                     if not getattr(module, "CURATED_STORE_INDEXING_ENABLED", False):
                         return "s.active=1"
                     return getattr(
@@ -156,7 +159,7 @@ class _AppLoader(importlib.abc.Loader):
                     return Response('<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + entries + '</sitemapindex>', mimetype='application/xml')
 
                 def _curated_sitemap_stores(part):
-                    if part < 1:
+                    if part < 1 or part > 1 + (2**63 - 1) // 50000:
                         return abort(404)
                     per = 50000
                     offset = (part - 1) * per

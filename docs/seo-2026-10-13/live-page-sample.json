@@ -1,0 +1,158 @@
+[
+  {
+    "url": "https://uscouponhub.com/contact/",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/contact/"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": false,
+    "stored_description_visible": false,
+    "automatic_deal_card": false
+  },
+  {
+    "url": "https://uscouponhub.com/1320video-coupon-code",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/1320video-coupon-code"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": true,
+    "stored_description_visible": false,
+    "automatic_deal_card": true
+  },
+  {
+    "url": "https://uscouponhub.com/105-west-boutique-coupon-code",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/105-west-boutique-coupon-code"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": true,
+    "stored_description_visible": false,
+    "automatic_deal_card": true
+  },
+  {
+    "url": "https://uscouponhub.com/1015-store-coupon-code",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/1015-store-coupon-code"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": true,
+    "stored_description_visible": false,
+    "automatic_deal_card": true
+  },
+  {
+    "url": "https://uscouponhub.com/terms/",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/terms/"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": false,
+    "stored_description_visible": false,
+    "automatic_deal_card": false
+  },
+  {
+    "url": "https://uscouponhub.com/privacy/",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/privacy/"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": false,
+    "stored_description_visible": false,
+    "automatic_deal_card": false
+  },
+  {
+    "url": "https://uscouponhub.com/guides/",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/guides/"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": false,
+    "stored_description_visible": false,
+    "automatic_deal_card": false
+  },
+  {
+    "url": "https://uscouponhub.com/disclaimer/",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/disclaimer/"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": false,
+    "stored_description_visible": false,
+    "automatic_deal_card": false
+  },
+  {
+    "url": "https://uscouponhub.com/daniel-wellington-promo-code",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/daniel-wellington-promo-code"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": true,
+    "stored_description_visible": false,
+    "automatic_deal_card": true
+  },
+  {
+    "url": "https://uscouponhub.com/daniel-wellington-promo-codes",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/daniel-wellington-promo-codes"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": true,
+    "stored_description_visible": false,
+    "automatic_deal_card": true
+  },
+  {
+    "url": "https://uscouponhub.com/daniel-wellington-coupon-code",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/daniel-wellington-coupon-code"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": true,
+    "stored_description_visible": false,
+    "automatic_deal_card": true
+  },
+  {
+    "url": "https://uscouponhub.com/42538-promo-code",
+    "status": 200,
+    "canonical": [
+      "https://uscouponhub.com/42538-promo-code"
+    ],
+    "robots": [
+      "index,follow"
+    ],
+    "generic_about_only": true,
+    "stored_description_visible": false,
+    "automatic_deal_card": true
+  }
+]
