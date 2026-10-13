@@ -3,6 +3,8 @@ from urllib import request as urlrequest, parse as urlparse, error as urlerror
 from affiliate import get_match, get_networks, build_destination, log_click
 from datetime import datetime
 from flask import Flask, render_template, abort, Response, request, url_for, redirect
+from seo_eligibility import (RESERVED_SLUGS, STORE_INDEXABLE_WHERE,
+                             CURRENT_OFFER_WHERE, store_sitemap_where)
 
 BASE=os.path.dirname(os.path.abspath(__file__))
 DB=os.environ.get('DATABASE_PATH', os.path.join(BASE,'data','uscouponhub.db'))
@@ -65,9 +67,8 @@ STATES={'california':'California','texas':'Texas','florida':'Florida','new-york'
 CITIES={'new-york':'New York, NY','los-angeles':'Los Angeles, CA','chicago':'Chicago, IL','houston':'Houston, TX','phoenix':'Phoenix, AZ','philadelphia':'Philadelphia, PA','san-antonio':'San Antonio, TX','san-diego':'San Diego, CA','dallas':'Dallas, TX','san-jose':'San Jose, CA'}
 CATEGORIES=['shopping','fashion','electronics','beauty','home-garden','travel','food-drink','software','baby-kids']
 SEASONAL_EVENTS={'halloween':'Halloween','black-friday':'Black Friday','cyber-monday':'Cyber Monday'}
-RESERVED={'states','cities','categories','seasonal','guides','blog','search','stores','about','privacy','terms','disclaimer','contact','affiliate-disclosure','affiliate-status','sitemap.xml','robots.txt','static','favicon.ico'}
+RESERVED=RESERVED_SLUGS
 CURATED_STORE_INDEXING_ENABLED=os.environ.get('CURATED_STORE_INDEXING_ENABLED','0').strip().lower() in {'1','true','yes','on'}
-STORE_INDEXABLE_WHERE="""s.active=1 AND (length(trim(coalesce(s.description,''))) >= 160 OR EXISTS (SELECT 1 FROM offers o WHERE o.store_id=s.id AND o.active=1 AND o.verified=1) OR EXISTS (SELECT 1 FROM store_affiliate_matches m JOIN affiliate_networks n ON n.id=m.network_id WHERE m.store_id=s.id AND m.status='approved' AND n.active=1 AND (m.affiliate_url LIKE 'http://%' OR m.affiliate_url LIKE 'https://%')))"""
 
 
 CATEGORY_CONFIG={
@@ -360,11 +361,11 @@ def automatic_store_offers(store, existing_offers):
     category=(store['category'] or 'Shopping').replace('-', ' ').title()
     return [{'title':f'Shop current {store["name"]} offers','description':'Automatic savings card. Compare current prices and available promotions before checkout. No coupon code is claimed.','code':None,'offer_type':'auto-deal','badge':'AUTO DEAL','verified':0,'expires_at':None,'active':1,'source':'auto'}, {'title':f'Compare {category} prices on Amazon','description':'Search current products and offers on Amazon. Availability and prices can change.','code':None,'offer_type':'amazon','badge':'AMAZON','verified':0,'expires_at':None,'active':1,'source':'amazon'}]
 
-def is_store_indexable(store, db_offers, match):
-    has_unique_description=len((store['description'] or '').strip()) >= 160
-    has_verified_offer=any(int(offer['verified'] or 0) == 1 for offer in db_offers)
-    has_affiliate_destination=bool(match and build_destination(match))
-    return has_unique_description or has_verified_offer or has_affiliate_destination
+def is_store_indexable(store, c):
+    # The exact same predicate decides sitemap inclusion and page robots tags.
+    where=store_sitemap_where(CURATED_STORE_INDEXING_ENABLED)
+    return c.execute(f'SELECT 1 FROM stores s WHERE s.id=? AND {where}',
+                     (store['id'],)).fetchone() is not None
 
 def conn():
     c=sqlite3.connect(DB); c.row_factory=sqlite3.Row; return c
@@ -404,7 +405,7 @@ def globals_ctx(): return {'current_year':datetime.now().year,'site_name':'US Co
 @app.after_request
 def seo_response_headers(response):
     if request.path.startswith('/sitemap'):
-        response.headers['Cache-Control']='public, max-age=3600, stale-while-revalidate=86400'
+        response.headers['Cache-Control']='public, max-age=3600, stale-while-revalidate=86400' if response.status_code==200 else 'no-store'
     if request.path in {'/search-insights/','/affiliate-status/'}:
         response.headers['X-Robots-Tag']='noindex, nofollow'
     return response
@@ -445,34 +446,48 @@ def search_page():
     q=request.args.get('q','').strip()
     try: page=max(1,int(request.args.get('page',1)))
     except (TypeError,ValueError): page=1
-    per_page=50; offset=(page-1)*per_page; c=conn(); route_type,target,classified_count=classify_search(c,q)
+    per_page=50; c=conn(); route_type,target,classified_count=classify_search(c,q)
     if q and route_type=='store' and target: log_search(c,q,'store',target,classified_count); c.close(); return redirect(url_for('store_page',slug=target))
     if q and route_type=='category' and target: log_search(c,q,'category',target,classified_count); c.close(); return redirect(url_for('category_page',category_slug=target))
-    if q:
-        pattern=f'%{q}%'; total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?)',(pattern,pattern)).fetchone()[0]; results=c.execute('SELECT * FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?) ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(pattern,pattern,per_page,offset)).fetchall(); log_search(c,q,'directory',None,total)
-    else:
-        total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1').fetchone()[0]; results=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(per_page,offset)).fetchall()
+    pattern=f'%{q}%'
+    where='active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?)' if q else 'active=1'
+    params=(pattern,pattern) if q else ()
+    total=c.execute(f'SELECT COUNT(*) FROM stores WHERE {where}',params).fetchone()[0]
     total_pages=max(1,(total+per_page-1)//per_page)
-    if page>total_pages:
-        page=total_pages; offset=(page-1)*per_page
-        if q:
-            pattern=f'%{q}%'; results=c.execute('SELECT * FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?) ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(pattern,pattern,per_page,offset)).fetchall()
-        else: results=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(per_page,offset)).fetchall()
-    c.close(); return render_template('search.html',q=q,results=results,page=page,total=total,per_page=per_page,total_pages=total_pages)
+    page=min(page,total_pages)
+    # Bound page before passing OFFSET to SQLite (huge integers caused 500s).
+    raw_page=request.args.get('page')
+    if raw_page is not None and (raw_page!=str(page) or page==1):
+        c.close()
+        args={'q':q} if q else {}
+        if page>1: args['page']=page
+        suffix=urlparse.urlencode(args)
+        return redirect(request.path+('?' + suffix if suffix else ''),code=301)
+    offset=(page-1)*per_page
+    results=c.execute(f'SELECT * FROM stores WHERE {where} ORDER BY name COLLATE NOCASE, id LIMIT ? OFFSET ?',params+(per_page,offset)).fetchall()
+    if q: log_search(c,q,'directory',None,total)
+    page_links=sorted({1,total_pages,*range(max(1,page-2),min(total_pages,page+2)+1)})
+    c.close(); return render_template('search.html',q=q,results=results,page=page,total=total,per_page=per_page,total_pages=total_pages,page_links=page_links)
 
 @app.route('/search-insights/')
 def search_insights():
     days=max(1,min(365,int(request.args.get('days',30)))); c=conn(); since=f'-{days} days'; summary=c.execute("SELECT COUNT(*) AS searches, COUNT(DISTINCT normalized_query) AS unique_queries FROM search_events WHERE created_at >= datetime('now', ?)",(since,)).fetchone(); top=c.execute("SELECT normalized_query, COUNT(*) AS volume, SUM(CASE WHEN route_type='store' THEN 1 ELSE 0 END) AS store_matches, SUM(CASE WHEN route_type='category' THEN 1 ELSE 0 END) AS category_matches, SUM(CASE WHEN route_type='ebay' THEN 1 ELSE 0 END) AS ebay_fallbacks FROM search_events WHERE created_at >= datetime('now', ?) AND normalized_query<>'' GROUP BY normalized_query ORDER BY volume DESC, normalized_query LIMIT 100",(since,)).fetchall(); c.close(); return render_template('search_insights.html',days=days,summary=summary,top=top)
 
+@app.route('/<slug>/')
 @app.route('/<slug>')
 def store_page(slug):
     if slug in RESERVED: abort(404)
     c=conn(); store=c.execute('SELECT * FROM stores WHERE slug=? AND active=1',(slug,)).fetchone()
     if not store: c.close(); abort(404)
+    if request.path.endswith('/'):
+        c.close()
+        return redirect(url_for('store_page',slug=store['slug']),code=301)
     first=(store['name'] or '')[:1]; related=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? AND name LIKE ? COLLATE NOCASE ORDER BY name LIMIT 6',(slug,f'{first}%')).fetchall()
     if len(related)<6:
-        extra=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? ORDER BY name COLLATE NOCASE LIMIT ?',(slug,6-len(related))).fetchall(); related=list(related)+list(extra)
-    db_offers=c.execute('SELECT * FROM offers WHERE store_id=? AND active=1 ORDER BY verified DESC, id DESC',(store['id'],)).fetchall(); offers=automatic_store_offers(store,db_offers); match=get_match(c,store['id']); store_indexable=(not CURATED_STORE_INDEXING_ENABLED) or is_store_indexable(store,db_offers,match); c.close(); return render_template('store.html',store=store,related=related,offers=offers,affiliate_match=match,amazon_url=amazon_search_url(store['name']),store_indexable=store_indexable)
+        excluded=[store['id']]+[r['id'] for r in related]
+        placeholders=','.join('?' for _ in excluded)
+        extra=c.execute(f'SELECT * FROM stores WHERE active=1 AND id NOT IN ({placeholders}) ORDER BY name COLLATE NOCASE LIMIT ?',excluded+[6-len(related)]).fetchall(); related=list(related)+list(extra)
+    db_offers=c.execute(f'SELECT o.* FROM offers o WHERE o.store_id=? AND {CURRENT_OFFER_WHERE} ORDER BY o.verified DESC, o.id DESC',(store['id'],)).fetchall(); offers=automatic_store_offers(store,db_offers); match=get_match(c,store['id']); store_indexable=is_store_indexable(store,c); c.close(); return render_template('store.html',store=store,related=related,offers=offers,affiliate_match=match,amazon_url=amazon_search_url(store['name']),store_indexable=store_indexable)
 
 @app.route('/amazon/search/<slug>/')
 def amazon_store_search(slug):
@@ -568,14 +583,14 @@ def seasonal_page(event_slug):
 
 @app.route('/sitemap.xml')
 def sitemap_index():
-    c=conn(); where=STORE_INDEXABLE_WHERE if CURATED_STORE_INDEXING_ENABLED else 's.active=1'; total=c.execute(f'SELECT COUNT(*) FROM stores s WHERE {where}').fetchone()[0]; c.close(); parts=(total+49999)//50000; base='https://uscouponhub.com'; return Response('<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<sitemap><loc>{base}/sitemap-stores-{i}.xml</loc></sitemap>' for i in range(1,parts+1))+f'<sitemap><loc>{base}/sitemap-static.xml</loc></sitemap></sitemapindex>',mimetype='application/xml')
+    c=conn(); where=store_sitemap_where(CURATED_STORE_INDEXING_ENABLED); total=c.execute(f'SELECT COUNT(*) FROM stores s WHERE {where}').fetchone()[0]; c.close(); parts=(total+49999)//50000; base='https://uscouponhub.com'; return Response('<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<sitemap><loc>{base}/sitemap-stores-{i}.xml</loc></sitemap>' for i in range(1,parts+1))+f'<sitemap><loc>{base}/sitemap-static.xml</loc></sitemap></sitemapindex>',mimetype='application/xml')
 @app.route('/sitemap-static.xml')
 def sitemap_static():
     base='https://uscouponhub.com'; urls=[f'{base}/',f'{base}/stores/',f'{base}/guides/',f'{base}/about/',f'{base}/privacy/',f'{base}/terms/',f'{base}/disclaimer/',f'{base}/contact/',f'{base}/affiliate-disclosure/']+[f'{base}/guides/{slug}/' for slug in SHOPPING_GUIDES]+[f'{base}/blog/']+[f'{base}/blog/{slug}/' for slug in BLOG_POSTS]+[f'{base}/states/{s}/' for s in STATES]+[f'{base}/cities/{x}/' for x in CITIES]+[f'{base}/categories/{x}/' for x in CATEGORIES]+[f'{base}/seasonal/{slug}/' for slug in SEASONAL_EVENTS]; return Response('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{u}</loc></url>' for u in urls)+'</urlset>',mimetype='application/xml')
 @app.route('/sitemap-stores-<int:part>.xml')
 def sitemap_stores(part):
-    if part < 1: abort(404)
-    per=50000; offset=(part-1)*per; where=STORE_INDEXABLE_WHERE if CURATED_STORE_INDEXING_ENABLED else 's.active=1'; c=conn(); rows=c.execute(f'SELECT s.slug FROM stores s WHERE {where} ORDER BY s.id LIMIT ? OFFSET ?',(per,offset)).fetchall(); c.close(); base='https://uscouponhub.com'
+    if part < 1 or part > 1+(2**63-1)//50000: abort(404)
+    per=50000; offset=(part-1)*per; where=store_sitemap_where(CURATED_STORE_INDEXING_ENABLED); c=conn(); rows=c.execute(f'SELECT s.slug FROM stores s WHERE {where} ORDER BY s.id LIMIT ? OFFSET ?',(per,offset)).fetchall(); c.close(); base='https://uscouponhub.com'
     if not rows: abort(404)
     return Response('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{base}/{r["slug"]}</loc></url>' for r in rows)+'</urlset>',mimetype='application/xml')
 @app.route('/robots.txt')

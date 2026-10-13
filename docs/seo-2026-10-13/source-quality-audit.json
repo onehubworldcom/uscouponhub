@@ -1,0 +1,340 @@
+{
+  "source_label": "Repository CSV reconstruction; NOT a production backup",
+  "pr9_baseline": {
+    "quick_check": "ok",
+    "stores_total": 288414,
+    "stores_active": 288414,
+    "stores_curated_sitemap_eligible": 0,
+    "active_stores_not_eligible": 288414,
+    "active_stores_with_description_160": 0,
+    "active_stores_with_verified_offer": 0,
+    "active_stores_invalid_slug_simple_check": 0,
+    "active_stores_suspicious_name_simple_check": 5,
+    "current_50k_store_sitemaps": 6,
+    "curated_50k_store_sitemaps": 0,
+    "note": "Eligibility matches current sitemap SQL, not guaranteed Google indexing."
+  },
+  "eligible_under_proposed_curated_rules": 0,
+  "invalid_active_store_count": 0,
+  "invalid_active_store_examples": [],
+  "normalized_name_review_groups": 24014,
+  "stores_in_normalized_name_review_groups": 51020,
+  "normalized_name_review_examples": [
+    [
+      [
+        1,
+        "Daniel Wellington",
+        "daniel-wellington-promo-code"
+      ],
+      [
+        208642,
+        "Daniel Wellington",
+        "daniel-wellington-promo-codes"
+      ],
+      [
+        236166,
+        "Daniel Wellington",
+        "daniel-wellington-coupon-code"
+      ]
+    ],
+    [
+      [
+        2,
+        "Deewatch",
+        "deewatch-promo-code"
+      ],
+      [
+        209022,
+        "Dee Watch",
+        "dee-watch-promo-codes"
+      ]
+    ],
+    [
+      [
+        3,
+        "Gaffos",
+        "gaffos-promo-code"
+      ],
+      [
+        270609,
+        "Gaffos",
+        "gaffos-coupon-code"
+      ]
+    ],
+    [
+      [
+        4,
+        "PandaHall",
+        "pandahall-promo-code"
+      ],
+      [
+        258708,
+        "Pandahall",
+        "pandahall-coupon-code"
+      ],
+      [
+        278608,
+        "Panda Hall",
+        "panda-hall-coupon-code"
+      ]
+    ],
+    [
+      [
+        5,
+        "Ipage",
+        "ipage-promo-code"
+      ],
+      [
+        222170,
+        "Ipage",
+        "ipage-promo-codes"
+      ],
+      [
+        273161,
+        "IPage",
+        "ipage-coupon-code"
+      ]
+    ],
+    [
+      [
+        6,
+        "Verseo",
+        "verseo-promo-code"
+      ],
+      [
+        286955,
+        "Verseo",
+        "verseo-coupon-code"
+      ]
+    ],
+    [
+      [
+        7,
+        "Authentic Watches",
+        "authentic-watches-promo-code"
+      ],
+      [
+        263080,
+        "Authentic Watches",
+        "authentic-watches-coupon-code"
+      ]
+    ],
+    [
+      [
+        8,
+        "Diamonds International",
+        "diamonds-international-promo-code"
+      ],
+      [
+        208648,
+        "Diamonds International",
+        "diamonds-international-promo-codes"
+      ],
+      [
+        267839,
+        "Diamonds International",
+        "diamonds-international-coupon-code"
+      ]
+    ],
+    [
+      [
+        9,
+        "EricDress",
+        "ericdress-promo-code"
+      ],
+      [
+        19480,
+        "Ericdress",
+        "ericdress-coupon-code"
+      ],
+      [
+        212123,
+        "Eric Dress",
+        "eric-dress-promo-codes"
+      ]
+    ],
+    [
+      [
+        10,
+        "Happy Feet Plus",
+        "happy-feet-plus-promo-code"
+      ],
+      [
+        19889,
+        "Happy Feet Plus",
+        "happy-feet-plus-coupon-code"
+      ]
+    ],
+    [
+      [
+        11,
+        "Hip Hop Bling",
+        "hip-hop-bling-promo-code"
+      ],
+      [
+        221360,
+        "Hip Hop Bling",
+        "hip-hop-bling-promo-codes"
+      ]
+    ],
+    [
+      [
+        13,
+        "KingIce",
+        "kingice-promo-code"
+      ],
+      [
+        224702,
+        "King Ice",
+        "king-ice-promo-codes"
+      ],
+      [
+        274039,
+        "King Ice",
+        "king-ice-coupon-code"
+      ]
+    ],
+    [
+      [
+        15,
+        "SuperJeweler",
+        "superjeweler-promo-code"
+      ],
+      [
+        284038,
+        "SuperJeweler",
+        "superjeweler-coupon-code"
+      ]
+    ],
+    [
+      [
+        17,
+        "PicturesOnGold",
+        "picturesongold-promo-code"
+      ],
+      [
+        279352,
+        "Pictures On Gold",
+        "pictures-on-gold-coupon-code"
+      ]
+    ],
+    [
+      [
+        18,
+        "Silver Rush Style",
+        "silver-rush-style-promo-code"
+      ],
+      [
+        138733,
+        "Silverrush Style",
+        "silverrush-style-coupon-code"
+      ],
+      [
+        282540,
+        "Silver Rush Style",
+        "silver-rush-style-coupon-code"
+      ]
+    ],
+    [
+      [
+        19,
+        "Depositphotos",
+        "depositphotos-promo-code"
+      ],
+      [
+        209041,
+        "Depositphotos",
+        "depositphotos-promo-codes"
+      ],
+      [
+        267717,
+        "Depositphotos",
+        "depositphotos-coupon-code"
+      ]
+    ],
+    [
+      [
+        20,
+        "Jalbum",
+        "jalbum-promo-code"
+      ],
+      [
+        273349,
+        "Jalbum",
+        "jalbum-discount-code"
+      ]
+    ],
+    [
+      [
+        21,
+        "Picanova",
+        "picanova-promo-code"
+      ],
+      [
+        279317,
+        "Picanova",
+        "picanova-coupon-code"
+      ]
+    ],
+    [
+      [
+        23,
+        "Sheet Music Plus",
+        "sheet-music-plus-promo-code"
+      ],
+      [
+        282226,
+        "Sheet Music Plus",
+        "sheet-music-plus-coupon-code"
+      ]
+    ],
+    [
+      [
+        24,
+        "The Karaoke Channel",
+        "the-karaoke-channel-promo-code"
+      ],
+      [
+        284963,
+        "The Karaoke Channel",
+        "the-karaoke-channel-coupon-code"
+      ]
+    ]
+  ],
+  "repeated_description_groups": 0,
+  "stores_with_repeated_description": 0,
+  "date_like_name_review_count": 5,
+  "date_like_name_review_examples": [
+    [
+      178812,
+      "17-Jun",
+      "42538-promo-code"
+    ],
+    [
+      181486,
+      "10-May",
+      "42500-promo-code"
+    ],
+    [
+      181487,
+      "26-May",
+      "42516-promo-code"
+    ],
+    [
+      183678,
+      "30-Oct",
+      "42673-promo-code"
+    ],
+    [
+      257460,
+      "17-Oct",
+      "43025-coupon-code"
+    ]
+  ],
+  "eligibility_is_quality_review_candidate_only": true,
+  "notes": [
+    "No records deleted, renamed, redirected or modified.",
+    "Description length and affiliate approval do not prove content quality.",
+    "Review merchant identity and repeated descriptions before any canonical consolidation."
+  ]
+}
