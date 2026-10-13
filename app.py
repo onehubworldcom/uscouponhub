@@ -474,6 +474,14 @@ def store_page(slug):
         extra=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? ORDER BY name COLLATE NOCASE LIMIT ?',(slug,6-len(related))).fetchall(); related=list(related)+list(extra)
     db_offers=c.execute('SELECT * FROM offers WHERE store_id=? AND active=1 ORDER BY verified DESC, id DESC',(store['id'],)).fetchall(); offers=automatic_store_offers(store,db_offers); match=get_match(c,store['id']); store_indexable=(not CURATED_STORE_INDEXING_ENABLED) or is_store_indexable(store,db_offers,match); c.close(); return render_template('store.html',store=store,related=related,offers=offers,affiliate_match=match,amazon_url=amazon_search_url(store['name']),store_indexable=store_indexable)
 
+@app.route('/<slug>/')
+def store_page_trailing_slash(slug):
+    # Store canonical URLs omit the trailing slash. Redirect only real, active stores.
+    if slug in RESERVED: abort(404)
+    c=conn(); match=c.execute('SELECT 1 FROM stores WHERE slug=? AND active=1 LIMIT 1',(slug,)).fetchone(); c.close()
+    if not match: abort(404)
+    return redirect(url_for('store_page',slug=slug),code=301)
+
 @app.route('/amazon/search/<slug>/')
 def amazon_store_search(slug):
     if slug in RESERVED: abort(404)
