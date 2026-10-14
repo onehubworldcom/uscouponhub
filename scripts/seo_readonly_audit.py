@@ -4,6 +4,7 @@ Usage: python scripts/seo_readonly_audit.py /path/to/uscouponhub.db
 Never run against production if a safe copied backup is available.
 """
 import argparse
+import csv
 import json
 import sqlite3
 from pathlib import Path
@@ -63,11 +64,63 @@ def audit(database):
                 'note': 'Eligibility matches current sitemap SQL, not guaranteed Google indexing.'}
 
 
+
+def export_duplicate_review(database, output_csv):
+    """Export duplicate-name variants with live evidence. Never modify the SQLite DB.
+
+    The report contains counts only: no offer codes, affiliate URLs, or private notes.
+    The output CSV must be a new path distinct from the SQLite database.
+    """
+    db_path = Path(database).resolve()
+    report_path = Path(output_csv).resolve()
+    if report_path == db_path:
+        raise ValueError('Output CSV cannot be the database file')
+    uri = db_path.as_uri() + '?mode=ro'
+    sql = """
+    WITH dup_names AS (
+      SELECT name AS merchant FROM stores WHERE active=1
+      GROUP BY name COLLATE NOCASE HAVING COUNT(*)>1
+    )
+    SELECT s.name, s.slug, s.id,
+      LENGTH(TRIM(COALESCE(s.description,''))) AS description_chars,
+      (SELECT COUNT(*) FROM offers o WHERE o.store_id=s.id AND o.active=1) AS active_offers,
+      (SELECT COUNT(*) FROM offers o WHERE o.store_id=s.id AND o.active=1 AND o.verified=1) AS verified_offers,
+      (SELECT COUNT(*) FROM store_affiliate_matches m JOIN affiliate_networks n ON n.id=m.network_id
+       WHERE m.store_id=s.id AND m.status='approved' AND n.active=1
+       AND (m.affiliate_url LIKE 'http://%' OR m.affiliate_url LIKE 'https://%')) AS approved_affiliate_links
+    FROM stores s JOIN dup_names d ON s.name=d.merchant COLLATE NOCASE
+    WHERE s.active=1 ORDER BY s.name COLLATE NOCASE, s.id
+    """
+    columns = ['merchant_name', 'store_slug', 'store_id', 'description_characters',
+               'active_offers', 'verified_active_offers', 'approved_active_affiliate_links',
+               'meets_current_indexing_evidence', 'review_status']
+    count = 0
+    with sqlite3.connect(uri, uri=True) as db:
+        db.execute('PRAGMA query_only=ON')
+        # Use exclusive creation so a rerun never overwrites an earlier report.
+        with report_path.open('x', encoding='utf-8', newline='') as handle:
+            writer = csv.writer(handle)
+            writer.writerow(columns)
+            for merchant, slug, store_id, desc_len, offers, verified, affiliate in db.execute(sql):
+                eligible = bool(desc_len >= 160 or verified or affiliate)
+                # Escape spreadsheet formula prefixes in externally sourced merchant names.
+                safe_merchant = "'" + merchant if merchant.lstrip().startswith(('=', '+', '-', '@')) else merchant
+                writer.writerow([safe_merchant, slug, store_id, desc_len, offers, verified, affiliate,
+                                 'yes' if eligible else 'no', 'MANUAL_REVIEW_NO_REDIRECT'])
+                count += 1
+    return count
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('database', help='Path to a backed-up SQLite database')
+    parser.add_argument('--duplicate-csv', help='New CSV path for read-only duplicate store evidence report')
     args = parser.parse_args()
-    print(json.dumps(audit(args.database), indent=2))
+    result = audit(args.database)
+    if args.duplicate_csv:
+        result['duplicate_export_rows'] = export_duplicate_review(args.database, args.duplicate_csv)
+        result['duplicate_export_path'] = str(Path(args.duplicate_csv).resolve())
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == '__main__':
