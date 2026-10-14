@@ -356,9 +356,9 @@ def amazon_search_url(query):
     return 'https://www.amazon.com/s?' + urlparse.urlencode(params)
 
 def automatic_store_offers(store, existing_offers):
-    if existing_offers: return list(existing_offers)
-    category=(store['category'] or 'Shopping').replace('-', ' ').title()
-    return [{'title':f'Shop current {store["name"]} offers','description':'Automatic savings card. Compare current prices and available promotions before checkout. No coupon code is claimed.','code':None,'offer_type':'auto-deal','badge':'AUTO DEAL','verified':0,'expires_at':None,'active':1,'source':'auto'}, {'title':f'Compare {category} prices on Amazon','description':'Search current products and offers on Amazon. Availability and prices can change.','code':None,'offer_type':'amazon','badge':'AMAZON','verified':0,'expires_at':None,'active':1,'source':'amazon'}]
+    # Display real stored offers only. The independent Amazon comparison link
+    # remains on the page but must not be counted as a merchant coupon or deal.
+    return list(existing_offers)
 
 def is_store_indexable(store, db_offers, match):
     has_unique_description=len((store['description'] or '').strip()) >= 160
