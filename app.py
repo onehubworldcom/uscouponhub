@@ -356,9 +356,9 @@ def amazon_search_url(query):
     return 'https://www.amazon.com/s?' + urlparse.urlencode(params)
 
 def automatic_store_offers(store, existing_offers):
-    if existing_offers: return list(existing_offers)
-    category=(store['category'] or 'Shopping').replace('-', ' ').title()
-    return [{'title':f'Shop current {store["name"]} offers','description':'Automatic savings card. Compare current prices and available promotions before checkout. No coupon code is claimed.','code':None,'offer_type':'auto-deal','badge':'AUTO DEAL','verified':0,'expires_at':None,'active':1,'source':'auto'}, {'title':f'Compare {category} prices on Amazon','description':'Search current products and offers on Amazon. Availability and prices can change.','code':None,'offer_type':'amazon','badge':'AMAZON','verified':0,'expires_at':None,'active':1,'source':'amazon'}]
+    # Display real stored offers only. The independent Amazon comparison link
+    # remains on the page but must not be counted as a merchant coupon or deal.
+    return list(existing_offers)
 
 def is_store_indexable(store, db_offers, match):
     has_unique_description=len((store['description'] or '').strip()) >= 160
@@ -445,19 +445,20 @@ def search_page():
     q=request.args.get('q','').strip()
     try: page=max(1,int(request.args.get('page',1)))
     except (TypeError,ValueError): page=1
-    per_page=50; offset=(page-1)*per_page; c=conn(); route_type,target,classified_count=classify_search(c,q)
+    per_page=50; c=conn(); route_type,target,classified_count=classify_search(c,q)
     if q and route_type=='store' and target: log_search(c,q,'store',target,classified_count); c.close(); return redirect(url_for('store_page',slug=target))
     if q and route_type=='category' and target: log_search(c,q,'category',target,classified_count); c.close(); return redirect(url_for('category_page',category_slug=target))
     if q:
-        pattern=f'%{q}%'; total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?)',(pattern,pattern)).fetchone()[0]; results=c.execute('SELECT * FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?) ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(pattern,pattern,per_page,offset)).fetchall(); log_search(c,q,'directory',None,total)
+        pattern=f'%{q}%'; total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?)',(pattern,pattern)).fetchone()[0]
     else:
-        total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1').fetchone()[0]; results=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(per_page,offset)).fetchall()
+        total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1').fetchone()[0]
     total_pages=max(1,(total+per_page-1)//per_page)
-    if page>total_pages:
-        page=total_pages; offset=(page-1)*per_page
-        if q:
-            pattern=f'%{q}%'; results=c.execute('SELECT * FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?) ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(pattern,pattern,per_page,offset)).fetchall()
-        else: results=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(per_page,offset)).fetchall()
+    page=min(page,total_pages)
+    offset=(page-1)*per_page
+    if q:
+        results=c.execute('SELECT * FROM stores WHERE active=1 AND (name LIKE ? COLLATE NOCASE OR slug LIKE ?) ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(pattern,pattern,per_page,offset)).fetchall(); log_search(c,q,'directory',None,total)
+    else:
+        results=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?',(per_page,offset)).fetchall()
     c.close(); return render_template('search.html',q=q,results=results,page=page,total=total,per_page=per_page,total_pages=total_pages)
 
 @app.route('/search-insights/')
@@ -469,10 +470,23 @@ def store_page(slug):
     if slug in RESERVED: abort(404)
     c=conn(); store=c.execute('SELECT * FROM stores WHERE slug=? AND active=1',(slug,)).fetchone()
     if not store: c.close(); abort(404)
-    first=(store['name'] or '')[:1]; related=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? AND name LIKE ? COLLATE NOCASE ORDER BY name LIMIT 6',(slug,f'{first}%')).fetchall()
+    # Rotate same-initial links by store ID instead of repeating the first six stores on every page.
+    # Bounded keyset queries use the primary-key index and avoid large OFFSET scans.
+    first=(store['name'] or '')[:1]; initial=f'{first}%'
+    related=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? AND name LIKE ? COLLATE NOCASE AND id>? ORDER BY id LIMIT 6',(slug,initial,store['id'])).fetchall()
     if len(related)<6:
-        extra=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? ORDER BY name COLLATE NOCASE LIMIT ?',(slug,6-len(related))).fetchall(); related=list(related)+list(extra)
+        extra=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? AND name LIKE ? COLLATE NOCASE AND id<? ORDER BY id LIMIT ?',(slug,initial,store['id'],6-len(related))).fetchall(); related=list(related)+list(extra)
+    if len(related)<6:
+        extra=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? AND name NOT LIKE ? COLLATE NOCASE ORDER BY id LIMIT ?',(slug,initial,6-len(related))).fetchall(); related=list(related)+list(extra)
     db_offers=c.execute('SELECT * FROM offers WHERE store_id=? AND active=1 ORDER BY verified DESC, id DESC',(store['id'],)).fetchall(); offers=automatic_store_offers(store,db_offers); match=get_match(c,store['id']); store_indexable=(not CURATED_STORE_INDEXING_ENABLED) or is_store_indexable(store,db_offers,match); c.close(); return render_template('store.html',store=store,related=related,offers=offers,affiliate_match=match,amazon_url=amazon_search_url(store['name']),store_indexable=store_indexable)
+
+@app.route('/<slug>/')
+def store_page_trailing_slash(slug):
+    # Store canonical URLs omit the trailing slash. Redirect only real, active stores.
+    if slug in RESERVED: abort(404)
+    c=conn(); match=c.execute('SELECT 1 FROM stores WHERE slug=? AND active=1 LIMIT 1',(slug,)).fetchone(); c.close()
+    if not match: abort(404)
+    return redirect(url_for('store_page',slug=slug),code=301)
 
 @app.route('/amazon/search/<slug>/')
 def amazon_store_search(slug):
