@@ -37,6 +37,34 @@ with tempfile.TemporaryDirectory() as tmp:
     r = client.get(f"/{slug}")
     assert r.status_code == 200
     assert b'name="robots" content="noindex,follow"' in r.data
+    # Empty stores should not claim automatically generated comparison cards
+    # are genuine coupon offers. The independent Amazon link remains.
+    assert b"0 offers listed" in r.data
+    assert b"AUTO DEAL" not in r.data
+    assert b"Search Amazon" in r.data
+
+    # Canonical related links must be slashless and existing active stores.
+    import re
+    related_section = re.search(rb'<section class="content related-stores-section">(.*?)</section>', r.data, flags=re.S)
+    assert related_section, "Expected related-store links"
+    related_slugs = re.findall(rb'class="related-store-card" href="/([^"/]+)"', related_section.group(1))
+    assert 1 <= len(related_slugs) <= 6, related_slugs
+    assert len(related_slugs) == len(set(related_slugs)), "Duplicate related links"
+    assert slug.encode() not in related_slugs, "Related stores include current page"
+    for related_slug in related_slugs:
+        assert client.get("/" + related_slug.decode()).status_code == 200
+
+    # Store path with slash is redirected only for real active stores.
+    slash_response = client.get(f"/{slug}/", follow_redirects=False)
+    assert slash_response.status_code == 301
+    assert slash_response.headers["Location"].endswith("/" + slug)
+    assert client.get("/definitely-not-a-store-20261014/", follow_redirects=False).status_code == 404
+
+    # A huge page parameter used to raise OverflowError when bound as
+    # a SQLite OFFSET before clamping to the directory page count.
+    huge_page = client.get("/stores/?page=99999999999999999999999999999999")
+    assert huge_page.status_code == 200
+    assert b"Page " in huge_page.data
 
     static_map = client.get("/sitemap-static.xml")
     assert static_map.status_code == 200
@@ -92,6 +120,9 @@ with tempfile.TemporaryDirectory() as tmp:
     r = client.get(f"/{slug}")
     assert b'name="robots" content="index,follow"' in r.data
     assert b"sitemap-stores-1.xml" in client.get("/sitemap.xml").data
+    # Existing merchant descriptions must be visible in both body and metadata.
+    assert b"Independent merchant information and shopping guidance." in r.data
+    assert b'content="Independent merchant information' in r.data
 
 print("SEO_RECOVERY_CHECK=PASS")
 print(f"STORES_PRESERVED={initial_count}")
