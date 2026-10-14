@@ -1,0 +1,25 @@
+name: SQLite backup safety
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/sqlite_hot_backup.py"
+      - "scripts/test_sqlite_hot_backup.py"
+      - ".github/workflows/sqlite-backup-check.yml"
+  push:
+    branches: [safety/uscouponhub-sqlite-backup-20261014]
+
+jobs:
+  sqlite-backup-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile backup scripts
+        run: python -m py_compile scripts/sqlite_hot_backup.py scripts/test_sqlite_hot_backup.py
+      - name: Test read-only snapshot and corrupt/empty database rejection
+        run: python -m unittest discover -s scripts -p "test_sqlite_hot_backup.py" -v
