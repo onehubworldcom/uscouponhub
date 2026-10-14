@@ -86,7 +86,7 @@
   <h2>More Stores to Explore</h2>
   <div class="related-store-grid">
     {% for item in related %}
-    <a class="related-store-card" href="/{{ item.slug }}/">{{ item.name }} Coupons <span>→</span></a>
+    <a class="related-store-card" href="{{ url_for('store_page', slug=item.slug) }}">{{ item.name }} Coupons <span>→</span></a>
     {% endfor %}
   </div>
 </section>

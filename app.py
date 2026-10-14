@@ -469,9 +469,14 @@ def store_page(slug):
     if slug in RESERVED: abort(404)
     c=conn(); store=c.execute('SELECT * FROM stores WHERE slug=? AND active=1',(slug,)).fetchone()
     if not store: c.close(); abort(404)
-    first=(store['name'] or '')[:1]; related=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? AND name LIKE ? COLLATE NOCASE ORDER BY name LIMIT 6',(slug,f'{first}%')).fetchall()
+    # Rotate same-initial links by store ID instead of repeating the first six stores on every page.
+    # Bounded keyset queries use the primary-key index and avoid large OFFSET scans.
+    first=(store['name'] or '')[:1]; initial=f'{first}%'
+    related=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? AND name LIKE ? COLLATE NOCASE AND id>? ORDER BY id LIMIT 6',(slug,initial,store['id'])).fetchall()
     if len(related)<6:
-        extra=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? ORDER BY name COLLATE NOCASE LIMIT ?',(slug,6-len(related))).fetchall(); related=list(related)+list(extra)
+        extra=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? AND name LIKE ? COLLATE NOCASE AND id<? ORDER BY id LIMIT ?',(slug,initial,store['id'],6-len(related))).fetchall(); related=list(related)+list(extra)
+    if len(related)<6:
+        extra=c.execute('SELECT * FROM stores WHERE active=1 AND slug<>? AND name NOT LIKE ? COLLATE NOCASE ORDER BY id LIMIT ?',(slug,initial,6-len(related))).fetchall(); related=list(related)+list(extra)
     db_offers=c.execute('SELECT * FROM offers WHERE store_id=? AND active=1 ORDER BY verified DESC, id DESC',(store['id'],)).fetchall(); offers=automatic_store_offers(store,db_offers); match=get_match(c,store['id']); store_indexable=(not CURATED_STORE_INDEXING_ENABLED) or is_store_indexable(store,db_offers,match); c.close(); return render_template('store.html',store=store,related=related,offers=offers,affiliate_match=match,amazon_url=amazon_search_url(store['name']),store_indexable=store_indexable)
 
 @app.route('/amazon/search/<slug>/')
