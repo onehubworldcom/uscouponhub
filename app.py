@@ -412,9 +412,36 @@ def seo_response_headers(response):
 @app.route('/favicon.ico')
 def favicon(): return app.send_static_file('favicon.ico')
 
+# Editorial selection for homepage discovery. Use existing, verified-import
+# store slugs; do not create duplicate store records or change their URLs.
+HOME_DISCOVERY_SLUGS = (
+    'lego-promo-code',
+    'staples-coupon-code',
+    'wayfair-coupon-code',
+    'petco-coupon-code',
+    'barnes-noble-coupon-code',
+    'lenovo-coupon-code',
+    'chewy-promo-code',
+    'sephora-coupon-code',
+    'dell-coupon-code',
+    'gap-coupon-code',
+    'home-depot-coupon-code',
+    'zappos-coupon-code',
+)
+
 @app.route('/')
 def home():
-    c=conn(); stores=c.execute('SELECT * FROM stores WHERE active=1 ORDER BY name COLLATE NOCASE LIMIT 12').fetchall(); total=c.execute('SELECT COUNT(*) FROM stores WHERE active=1').fetchone()[0]; c.close(); return render_template('home.html',stores=stores,total=total)
+    c=conn()
+    placeholders = ','.join('?' for _ in HOME_DISCOVERY_SLUGS)
+    selected = c.execute(
+        f'SELECT * FROM stores WHERE active=1 AND slug IN ({placeholders})',
+        HOME_DISCOVERY_SLUGS,
+    ).fetchall()
+    by_slug = {store['slug']: store for store in selected}
+    stores = [by_slug[slug] for slug in HOME_DISCOVERY_SLUGS if slug in by_slug]
+    total = c.execute('SELECT COUNT(*) FROM stores WHERE active=1').fetchone()[0]
+    c.close()
+    return render_template('home.html', stores=stores, total=total)
 
 def normalize_search_query(value):
     value=(value or '').strip().lower(); value=re.sub(r'\s+',' ',value); return value[:180]
