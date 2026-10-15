@@ -58,6 +58,14 @@ with tempfile.TemporaryDirectory() as tmp:
     assert b'https://www.linkedin.com/in/uscouponhub-online-93b483443/' in home_page.data
     assert b'aria-label="Visit US Coupon Hub on LinkedIn"' in home_page.data
     assert b"Stores in directory" in home_page.data
+    # Homepage discovery uses a small editorial set from real, imported
+    # merchant slugs rather than alphabetically first malformed CSV entries.
+    assert len(site.HOME_DISCOVERY_SLUGS) == 12
+    for home_slug in site.HOME_DISCOVERY_SLUGS:
+        assert f'href="/{home_slug}"'.encode() in home_page.data, home_slug
+    assert b"0039 Italy Promo Code" not in home_page.data
+    assert b"10-May Promo Code" not in home_page.data
+    assert b"17-Oct Promo Code" not in home_page.data
 
     assert client.get("/categories/shopping/").status_code == 200
     assert_meta_length(client.get("/guides/"), "guides")
