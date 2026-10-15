@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}{{ store.name }} Coupons & Promo Codes {{ current_year }} | US Coupon Hub{% endblock %}
-{% block description %}{{ store.name|store_meta_description }}{% endblock %}
+{% block description %}{% if store.description and store.description|trim %}{{ store.description|striptags|truncate(155, True, '…') }}{% else %}{{ store.name|store_meta_description }}{% endif %}{% endblock %}
 {% block robots %}{% if store_indexable %}index,follow{% else %}noindex,follow{% endif %}{% endblock %}
 {% block content %}
 <nav class="breadcrumbs"><a href="/">Home</a> <span>›</span> <span>{{ store.name }} Coupons</span></nav>
@@ -86,13 +86,18 @@
   <h2>More Stores to Explore</h2>
   <div class="related-store-grid">
     {% for item in related %}
-    <a class="related-store-card" href="/{{ item.slug }}/">{{ item.name }} Coupons <span>→</span></a>
+    <a class="related-store-card" href="{{ url_for('store_page', slug=item.slug) }}">{{ item.name }} Coupons <span>→</span></a>
     {% endfor %}
   </div>
 </section>
 {% endif %}
 
-<section class="content"><h2>About {{ store.name }}</h2><p>{{ store.name }} is listed in the US Coupon Hub store directory to help shoppers discover relevant savings pages. Store promotions and policies can change, so information should be verified with the merchant before purchase.</p><h2>{{ store.name }} Coupon FAQ</h2><details><summary>Does {{ store.name }} have a Promo Code?</summary><p>Availability can change. Verified Offers will be displayed above when they are available.</p></details><details><summary>Does {{ store.name }} offer Discount Codes or Deals?</summary><p>Available Discounts, Deals and Offers depend on the merchant and current promotions. Check the listings above and the applicable terms.</p></details><details><summary>Can I combine Discounts?</summary><p>Combination rules depend on the merchant and the specific promotion. Check the applicable terms.</p></details><details><summary>Why might a Promo Code not work?</summary><p>A Code may be expired, limited to selected products, require a minimum purchase, or be restricted to certain customers or locations.</p></details></section>
+<section class="content"><h2>About {{ store.name }}</h2>
+{% if store.description and store.description|trim %}
+<p>{{ store.description }}</p>
+{% else %}
+<p>{{ store.name }} is listed in the US Coupon Hub store directory to help shoppers discover relevant savings pages. Store promotions and policies can change, so information should be verified with the merchant before purchase.</p>
+{% endif %}<h2>{{ store.name }} Coupon FAQ</h2><details><summary>Does {{ store.name }} have a Promo Code?</summary><p>Availability can change. Verified Offers will be displayed above when they are available.</p></details><details><summary>Does {{ store.name }} offer Discount Codes or Deals?</summary><p>Available Discounts, Deals and Offers depend on the merchant and current promotions. Check the listings above and the applicable terms.</p></details><details><summary>Can I combine Discounts?</summary><p>Combination rules depend on the merchant and the specific promotion. Check the applicable terms.</p></details><details><summary>Why might a Promo Code not work?</summary><p>A Code may be expired, limited to selected products, require a minimum purchase, or be restricted to certain customers or locations.</p></details></section>
 
 <script type="application/ld+json">
 {
